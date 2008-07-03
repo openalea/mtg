@@ -161,7 +161,7 @@ StemElement(1,0.000000,0.04,0.04)
 def test_full():
     s="""
 newPlant
-[+(45)newAxe
+[newAxe
 newMetamer
 StemElement(1,0.000000,0.04,0.04)
  [+(45)newAxe
