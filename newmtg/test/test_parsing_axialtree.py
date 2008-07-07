@@ -3,12 +3,13 @@ from openalea.pylsystems import AxialTree, generateScene, Lsystem
 from openalea.plantgl.all import Scene, Viewer
 
 def str2mtg(s):
+    s = s.replace('N', 'F')
     tree = AxialTree(s) 
     l = Lsystem()
-    l.addHomRule('N --> F', 0)
+    #l.addHomRule('N --> F', 0)
     geom_tree = l.homomorphism(tree)
     scene = l.sceneInterpretation(geom_tree)
-    scale = dict(zip(('P','A','N', 'L'),(1,2,3,3)))
+    scale = dict(zip(('P','A','N', 'L', 'F'),(1,2,3,3,3)))
     mtg = axialtree2mtg(tree, scale, scene)
     return tree, mtg, scene
 
@@ -19,7 +20,7 @@ def str2mss(s, envelop):
 def check(tree, mtg, scene):
     s = str(tree)
     n1, n2 = [s.count(char) for char in ['P', 'A']]
-    n3 = s.count('N') + s.count('L')
+    n3 = s.count('N') + s.count('L') + s.count('F')
     assert mtg.nb_vertices(scale=1) == n1
     assert mtg.nb_vertices(scale=2) == n2
     assert mtg.nb_vertices(scale=3) == n3
