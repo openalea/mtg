@@ -385,6 +385,22 @@ class MTG(object):
             complex_id = self._complex.get(vtx_id)
         return complex_id
 
+    def complex_at_scale(self, vtx_id, scale):
+        '''
+        Return the complex of `vtx_id` at scale `scale`.
+
+        :Parameters:
+        - `vtx_id`: The vertex identifier.
+        - `scale`: The scale identifier.
+
+        :Return: vertex identifier
+        '''
+        complex_id = vtx_id
+        current_scale = self.scale(complex_id)
+        for i in range(scale, current_scale):
+            complex_id = self.complex(complex_id)
+        return complex_id
+
     def components(self, vid):
         '''
         Return a vertex iterator

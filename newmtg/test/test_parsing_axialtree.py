@@ -3,10 +3,10 @@ from openalea.pylsystems import AxialTree, generateScene, Lsystem
 from openalea.plantgl.all import Scene, Viewer
 
 def str2mtg(s):
-    s = s.replace('N', 'F')
+    #s = s.replace('N', 'F')
     tree = AxialTree(s) 
     l = Lsystem()
-    #l.addHomRule('N --> F', 0)
+    l.addHomRule('N --> F', 0)
     geom_tree = l.homomorphism(tree)
     scene = l.sceneInterpretation(geom_tree)
     scale = dict(zip(('P','A','N', 'L', 'F'),(1,2,3,3,3)))

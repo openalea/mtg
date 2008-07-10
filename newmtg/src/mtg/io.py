@@ -168,6 +168,8 @@ def read_lsystem_string( string, symbol_at_scale, functional_symbol={} ):
             s = s.replace('f(', '\nf(')
     l = s.split()
 
+    plant_name = [s for s in symbol_at_scale.keys() if 'plant' in s.lower()][0]
+
     for node in l:
         # Check if node is a module
 
@@ -201,7 +203,8 @@ def read_lsystem_string( string, symbol_at_scale, functional_symbol={} ):
             args = get_args(node[1:])
             if args:
                 length = get_float(args[1:-1])
-                turtle.f(length)
+                if length > 0:
+                    turtle.f(length)
             else:
                 turtle.f()
         else:
@@ -267,6 +270,11 @@ def read_lsystem_string( string, symbol_at_scale, functional_symbol={} ):
         
             # MANAGE the properties, the geometry and the indices!!!
             index[name] += 1
+            if name == plant_name:
+                for k in index.keys():
+                    if k != name:
+                        index[k] = 0
+
             mtg.property('index')[current_vertex] = index[name]
             if name in functional_symbol:
                 features = eval(node, functional_symbol)
@@ -282,7 +290,14 @@ def read_lsystem_string( string, symbol_at_scale, functional_symbol={} ):
                         args = get_args(node)[1:-1]
                         list_args= args.split(',')
                         length = float(list_args[1]) # 2nd arg
-                        turtle.f(length)
+                        if length > 0:
+                            turtle.f(length)
+
+                if canlabel:
+                    canlabel.elt_id = index[name]
+                    plant_id = mtg.complex_at_scale(current_vertex, scale=1)
+                    canlabel.plant_id = mtg.property('index')[plant_id]
+                    mtg.property('can_label')[current_vertex] = canlabel
         
     mtg = fat_mtg(mtg)
     return mtg
