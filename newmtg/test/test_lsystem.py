@@ -163,6 +163,29 @@ StemElement(1,0.000000,0.04,0.04)
     assert g.nb_vertices(scale=4)==4
     check_connectivity(g)
 
+def test6():
+    s="""
+newPlant
+[+(45)newAxe
+newMetamer
+StemElement(1,0.000000,0.04,0.04)
+ [+(45)newAxe
+ newMetamer
+ StemElement(1,0.000000,0.04,0.04)StemElement(1,0.540000,0.04,0.04)[/(180.000000)+(45.000000)LeafElement(1,5.095000,0.308000,0.000000,1,7,0.5)]]]
+"""
+    s = s+s+s
+    g = read_lsystem_string(s, symbols)
+
+    #assert len(g) ==10 
+    assert g.nb_scales() == 5
+    assert g.max_scale() == 4
+    assert g.nb_vertices(scale=1)==1*3
+    assert g.nb_vertices(scale=2)==2*3
+    assert g.nb_vertices(scale=3)==2*3
+    assert g.nb_vertices(scale=4)==4*3
+    assert g.nb_vertices(scale=1) == len(list(g.roots(scale=4)))
+
+
 def test_full():
     s="""
 newPlant

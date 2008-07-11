@@ -690,7 +690,7 @@ def fat_mtg(slim_mtg):
     """ 
     max_scale = max(slim_mtg.scales())
     roots = slim_mtg.roots(scale=max_scale)
-    assert len(list(roots)) == 1
+    #assert len(list(roots)) == 1
     
     for scale in range(max_scale-1,0,-1):
         compute_missing_edges(slim_mtg, scale)
