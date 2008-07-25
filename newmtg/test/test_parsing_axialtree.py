@@ -1,5 +1,5 @@
 from openalea.mtg.io import axialtree2mtg, mtg2mss 
-from openalea.pylsystems import AxialTree, generateScene, Lsystem
+from openalea.lpy import AxialTree, generateScene, Lsystem
 from openalea.plantgl.all import Scene, Viewer
 
 def str2mtg(s):
