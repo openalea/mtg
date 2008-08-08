@@ -1,0 +1,82 @@
+#
+#
+CODE:	FORM-A
+
+
+CLASSES:
+SYMBOL	SCALE	DECOMPOSITION	INDEXATION	DEFINITION
+$ 	0	FREE	FREE	IMPLICIT
+P 	1	FREE	FREE	EXPLICIT
+A 	2	FREE	FREE	EXPLICIT
+E	3	FREE	FREE	EXPLICIT
+
+DESCRIPTION :
+LEFT	RIGHT	RELTYPE	MAX
+A	A	+	?
+A	A	<	1
+E	E	+	?
+E	E	<	1
+
+
+
+FEATURES:
+NAME	TYPE	
+
+nbEl	INT
+diam	INT
+
+
+MTG:
+ENTITY-CODE					nbEl			diam
+
+/P1/A1
+^/E1
+^<E1
+^<E1
+^<E1
+^<E1
+^<E1
+	+A2
+	^/E1
+	^<E1
+	^<E1
+	^<E1
+^<E1
+^<E1
+^<E1
+^<E1
+^<E1
+	+A2
+	^/E1
+	^<E1
+	^<E1
+	^<E1
+		+A2
+		^/E1
+		^<E1
+^<E1
+^<E1
+^<E1
+^<E1
+^<E1
+	+A2
+	^/E1
+	^<E1
+	^<E1
+	^<E1
+^<E1
+^<E1
+^<E1
+^<E1
+^<E1
+	+A2
+	^/E1
+	^<E1
+	^<E1
+	^<E1
+
+
+
+
+
+

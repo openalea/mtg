@@ -27,14 +27,25 @@ def log(*args):
     if debug:
         print '  '.join(map(str,args))
 
-def multiscale_edit(s):
+def multiscale_edit(s, symbol_at_scale = {}):
+
+    def get_symbol(name):
+        res = re.search('[a-zA-Z]+', name)
+        return name[res.start():res.end()]
+
+    implicit_scale = bool(symbol_at_scale)
+
     mtg = MTG()
 
     vid = mtg.root # vid of the support tree, i.e. at the finest scale
     current_vertex = mtg.root
     branching_stack = []
 
-    symbols = ['/', '\\', '[', ']', '+', '<']
+    if not implicit_scale:
+        symbols = ['/', '\\', '[', ']', '+', '<']
+    else:
+        symbols = ['/', '[', ']', '+', '<']
+
     pending_edge = '' # edge type for the next edge to be created
     scale = 0
 
@@ -53,6 +64,13 @@ def multiscale_edit(s):
             current_vertex = vid
         else:
             name = node[1:]
+            if implicit_scale:
+                symbol_class = get_symbol(name)
+                new_scale = symbol_at_scale[symbol_class]
+                while new_scale < scale:
+                    scale -= 1
+                    current_vertex = mtg.complex(current_vertex)
+
             if tag in ['+', '<']:
                 if mtg.scale(vid) == scale:
                     vid = mtg.add_child(vid, edge_type=tag, label=name)
@@ -82,6 +100,7 @@ def multiscale_edit(s):
             elif tag == '\\':
                 scale -= 1
                 current_vertex = mtg.complex(current_vertex)
+    
     mtg = fat_mtg(mtg)
     return mtg
 
@@ -408,3 +427,17 @@ def mtg2mss(name, mtg, scene, envelop_type = 'CvxHull'):
     return ssFromDict(name, scene, l, envelop_type)
     
 
+def read_mtg_format(string, mtg = None):
+    '''
+     Read a mtg string in the classic mtg format.
+    
+     :Parameters:
+      - `string`: The lsystem string representing the axial tree.
+    
+    :Retturn: mtg
+    '''
+
+    
+    # 1. Create the mtg structure.
+    if mtg is None:
+        mtg = MTG()
