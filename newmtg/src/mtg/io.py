@@ -15,7 +15,7 @@
 ################################################################################
 
 '''
-This module provides functions to read / write mtg dtat structure.
+This module provides functions to read / write mtg data structure.
 '''
 
 from mtg import *
@@ -396,7 +396,10 @@ def axialtree2mtg(tree, scale, scene):
                         edge_type = '+'
                     else:
                         edge_type = '<'
-                    vid = mtg.add_child(vid, child=current_vertex, label=label, edge_type=edge_type)
+                    vid = mtg.add_child(vid, 
+                                        child=current_vertex, 
+                                        label=label, 
+                                        edge_type=edge_type)
                     assert vid == current_vertex
                     pending_edge = ''
             else:
@@ -427,17 +430,303 @@ def mtg2mss(name, mtg, scene, envelop_type = 'CvxHull'):
     return ssFromDict(name, scene, l, envelop_type)
     
 
-def read_mtg_format(string, mtg = None):
-    '''
-     Read a mtg string in the classic mtg format.
-    
-     :Parameters:
-      - `string`: The lsystem string representing the axial tree.
-    
-    :Retturn: mtg
-    '''
+###############################################################################
+# Class and methods to read the famous MTG file format.
+###############################################################################
 
-    
-    # 1. Create the mtg structure.
-    if mtg is None:
-        mtg = MTG()
+class Reader(object):
+    """
+    Parse a MTG string from a classic MTG file format.
+
+    The mtg format is composed of a header and the mtg code.
+    The header is used to construct and validate the mtg.
+    The code contains topology relations and properties.
+    """
+
+    def __init__(self, string):
+        self.mtg = None
+
+        # First implementation.
+        # Do not store 3 time the structure (mtg, txt and lines)
+        self.txt = string
+        self.lines = string.split('\n')
+
+        # header information
+        self._code = ""
+        self._symbols = {}
+        self._description = None
+        self._features = {}
+
+        # debug
+        self._no_line = 0
+        self.warnings = []
+
+    def parse(self):
+        """
+        """
+        self.header()
+        self.code()
+        
+        self.errors()
+        return self.mtg
+        
+    def header(self):
+        """
+        Parse an MTG header and create the mtg datastructure.
+
+        An mtg header contains different parts:
+            - code:  definition
+            - classes: symbol name and scale 
+            - description: allowed relationship between symbols
+            - features: property name and type
+        """
+
+        # 1. Read the file from the begining
+        self._no_line = -1 
+        self.code_form()
+        self.classes()
+        self.description()
+        self.features()
+
+
+    def check(self):
+        """
+        Check the validity of the MTG without building it.
+        """
+        return True
+
+    #### internal methods ####
+    def code_form(self):
+        """
+        CODE: FORM-A / FORM-B
+        """
+        l = self._next_line()
+        code = l.split()
+        if len(code) == 2 and 'CODE' in code[0] and 'FORM-' in code[1]:
+            self._code = code[1] 
+        else:
+            # error
+            self.warnings.append((self._no_line, "Code form error"))
+
+    def classes(self):
+        """
+        CLASSES:
+        SYMBOL  SCALE   DECOMPOSITION   INDEXATION  DEFINITION
+        ...
+        """
+        l = self._next_line()
+        if not l.startswith('CLASSES'):
+            self.warnings.append((self._no_line, "CLASSES section not found."))
+            
+        l = self._next_line()
+        class_header = l.split()
+        if class_header != ['SYMBOL', 'SCALE', 'DECOMPOSITION', 'INDEXATION', 'DEFINITION']:
+            self.warnings.append((self._no_line, "CLASS header error."))
+        
+        while l:
+            l = self._next_line()
+            if l.startswith('DESCRIPTION'):
+                break
+            line = l.split()
+            if len(line) != 5:
+                self.warnings.append((self._no_line, "CLASS error."))
+                break
+            else:
+                symbol, scale, decomposition, indexation, definition = line
+                # validation
+                if not symbol.isalpha() and symbol != '$':
+                    self.warnings.append((self._no_line, "Bad symbol %s."%symbol))
+                if not scale.isdigit():
+                    self.warnings.append((self._no_line, "Bad scale %s."%scale))
+                if decomposition not in ['NONE', 'FREE', 'CONNECTED', 'LINEAR', '<-LINEAR', '+-LINEAR']: 
+                    self.warnings.append((self._no_line, "Bad decomposition id %s."%decomposition))
+                # TODO: validate indexation
+                if definition not in ['IMPLICIT', 'EXPLICIT']:
+                    self.warnings.append((self._no_line, "Bad definition %s."%definition))
+
+                if symbol != '$':
+                    self._symbols[symbol] = int(scale)
+
+        if l.startswith('DESCRIPTION'):
+            self._no_line -= 1
+
+    def description(self):
+        """
+        DESCRIPTION:
+        LEFT RIGHT RELTYPE MAX
+        U U,I + ?
+        ...
+        """
+        l = self._next_line()
+        if not l.startswith('DESCRIPTION'):
+            self.warnings.append((self._no_line, "DESCRIPTION section not found."))
+            
+        l = self._next_line()
+        desc_header = l.split()
+        if desc_header != ['LEFT', 'RIGHT', 'RELTYPE', 'MAX']:
+            self.warnings.append((self._no_line, "DESCRIPTION header error."))
+
+        while l :
+            l = self._next_line()
+            if l.startswith('FEATURES'):
+                break
+            line = l.split()
+            if len(line) < 2:
+                self.warnings.append((self._no_line, "Class description error."))
+                continue
+
+            left = line[0]
+            if left not in self._symbols:
+                self.warnings.append((self._no_line, "Unknown left symbol %s."%left))
+            right = ''.join(line[1:-2])
+            rights = [symbol.strip() for symbol in right.split(',')]
+            bad_right= filter(lambda x: x not in self._symbols, rights)
+            if bad_right:
+                self.warnings.append((self._no_line, "Unknown right symbols %s."%bad_right))
+                
+            reltype, _max = line[-2:]
+            if reltype not in ['+', '<']:
+                self.warnings.append((self._no_line, "Unknown relation type %s."%reltype))
+                
+            if _max != '?' and not _max.isdigit():
+                self.warnings.append((self._no_line, "Error in the maximum number of relationships (%s). Give a number or ?"%_max))
+
+        if l.startswith('FEATURES'):
+            self._no_line -= 1
+
+    def features(self):
+        """
+        FEATURES:
+        NAME TYPE
+        nb_plant INT
+        """
+        l = self._next_line()
+        if not l.startswith('FEATURES'):
+            self.warnings.append((self._no_line, "FEATURES section not found."))
+            
+        l = self._next_line()
+        f_header = l.split()
+        if f_header != ['NAME', 'TYPE']:
+            self.warnings.append((self._no_line, "FEATURES header error."))
+
+        while l:
+            l = self._next_line()
+            if not l or l.startswith('MTG'):
+                break
+            line = l.split()
+            if len(line) != 2:
+                self.warnings.append((self._no_line, "FEATURE description error."))
+                continue
+            name, _type = line
+            self._features[name] = _type
+
+        if l.startswith('MTG'):
+            self._no_line -= 1
+
+    def _next_line(self):
+        self._no_line += 1
+        if self._no_line == len(self.lines):
+            self._no_line -= 1
+            return ""
+        
+        l = self.lines[self._no_line]
+        l = l.strip()
+        if not l or l[0] == '#':
+            return self._next_line()
+        else:
+            return l
+
+    def errors(self):
+        nb_lines = len(self.lines)
+        for id, warn in self.warnings:
+            if id < nb_lines:
+                print "== Line %d: %s"%(id, self.lines[id])
+                print warn
+            else:
+                print id, " ", warn
+    ############################################################################
+    ### Parsing of the MTG code
+    ### That's the real stuff...
+    ############################################################################
+
+    def code(self):
+        """
+        Parse the code and populate the MTG.
+        """
+        l = self._next_line()
+        
+        if not l.startswith('MTG'):
+            self.warnings.append((self._no_line, "MTG section not found."))
+
+        l = self._next_line()
+        if not l.startswith('ENTITY-CODE'):
+            self.warnings.append((self._no_line, "ENTITY-CODE not found."))
+        
+        features = l.split()[1:]
+        for feature in features:
+            if feature not in self._features:
+                self.warnings.append((self._no_line, "Error in ENTITY-CODE: Feature %s is unknown."%feature))
+
+
+        self.preprocess_code()
+        self.build_mtg()
+
+    def preprocess_code(self):
+        code = [l for l in self.lines[self._no_line+1:] if l.strip() and not l.strip().startswith('#')]
+
+        indent = [0]
+        tab = 0
+        new_code = []
+        for l in code:
+            l = l.expandtabs(4)
+            s = l.strip()
+
+            nb_spaces = len(l) - len(l.lstrip())
+
+            diff_space = nb_spaces - indent[-1]
+            
+            if diff_space == 0:
+                if s.startswith('^'):
+                    s = s[1:]
+                elif indent[-1] != 0:
+                    s = "][" + s
+            elif diff_space > 0:
+                # indent
+                indent.append(nb_spaces)
+                s = "["+s
+            else:
+                # unindent
+                brackets = []
+                while nb_spaces - indent[-1] < 0:
+                    indent.pop()
+                    brackets.append(']')
+
+                if nb_spaces - indent[-1] == 0:
+                    if s.startswith('^'):
+                        s = s[1:]
+                    else:
+                        brackets.append('][')
+                
+                s = ''.join(brackets+[s])
+            
+            new_code.append(s)
+            
+        while indent[-1] > 0:
+            indent.pop()
+            new_code.append(']')
+
+        self._new_code = ''.join(new_code)
+
+    def build_mtg(self):
+        self.mtg = multiscale_edit(self._new_code, self._symbols)
+
+def read_mtg(s):
+    reader = Reader(s)
+    g = reader.parse()
+    return g
+
+def read_mtg_file(fn):
+    f = open(fn)
+    txt = f.read()
+    f.close()
+    return read_mtg(txt)
