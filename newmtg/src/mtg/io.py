@@ -501,7 +501,7 @@ class Reader(object):
         CODE: FORM-A / FORM-B
         """
         l = self._next_line()
-        code = l.split()
+        code = l.split(':')
         if len(code) == 2 and 'CODE' in code[0] and 'FORM-' in code[1]:
             self._code = code[1] 
         else:
@@ -538,7 +538,7 @@ class Reader(object):
                     self.warnings.append((self._no_line, "Bad symbol %s."%symbol))
                 if not scale.isdigit():
                     self.warnings.append((self._no_line, "Bad scale %s."%scale))
-                if decomposition not in ['NONE', 'FREE', 'CONNECTED', 'LINEAR', '<-LINEAR', '+-LINEAR']: 
+                if decomposition not in ['NONE', 'FREE', 'CONNECTED', 'LINEAR', 'PURELINEAR', '<-LINEAR', '+-LINEAR']: 
                     self.warnings.append((self._no_line, "Bad decomposition id %s."%decomposition))
                 # TODO: validate indexation
                 if definition not in ['IMPLICIT', 'EXPLICIT']:
@@ -663,10 +663,17 @@ class Reader(object):
             self.warnings.append((self._no_line, "ENTITY-CODE not found."))
         
         features = l.split()[1:]
+        self._nb_features = len(features)
+        self._feature_head = []
         for feature in features:
             if feature not in self._features:
                 self.warnings.append((self._no_line, "Error in ENTITY-CODE: Feature %s is unknown."%feature))
+            else:
+                self._feature_head.append(feature)
 
+        code_topo = l[:l.find(features[0])]
+        nb_cols = len(code_topo.split('\t'))
+        self._feature_slice = slice(nb_cols-1, nb_cols-1+self._nb_features)
 
         self.preprocess_code()
         self.build_mtg()
@@ -675,49 +682,88 @@ class Reader(object):
         code = [l for l in self.lines[self._no_line+1:] if l.strip() and not l.strip().startswith('#')]
 
         indent = [0]
+        edge_type = []
         tab = 0
         new_code = []
         for l in code:
-            l = l.expandtabs(4)
+            #l = l.expandtabs(4)
             s = l.strip()
+            s= s.split()[0]
+            # args
+            args = l.split('\t')[self._feature_slice]
+            n = len(args)
+            params = [ "%s=%s"%(k,v) for k, v in zip(self._feature_head, args) if v]
 
-            nb_spaces = len(l) - len(l.lstrip())
+            print s,"("+', '.join(params)+")"
+            
+            # build 
+            nb_spaces = len(l) - len(l.lstrip('\t'))
 
             diff_space = nb_spaces - indent[-1]
             
             if diff_space == 0:
                 if s.startswith('^'):
                     s = s[1:]
-                elif indent[-1] != 0:
-                    s = "][" + s
+                    if s.startswith('+'):
+                        s = '[' + s
+                        edge_type.append('+')
+                elif s.startswith('+'):
+                    if edge_type[-1] == '+':
+                        s = '][' + s
+                    else:
+                        #error
+                        print "ERROR ", edge_type[-1], s
+
             elif diff_space > 0:
                 # indent
                 indent.append(nb_spaces)
-                s = "["+s
+                edge_type.append(s[0])
+                if s[0] == '^':
+                    print 'ERROR'
+                    print 'diff_space ', diff_space
+                    print 's ', s
+                    print nb_spaces, indent[:-1]
+                #assert s[0] != '^'
+                if s.startswith('+'):
+                    s = "[" + s
             else:
                 # unindent
                 brackets = []
                 while nb_spaces - indent[-1] < 0:
                     indent.pop()
-                    brackets.append(']')
+                    edge = edge_type.pop()
+                    if edge == '+':
+                        brackets.append(']')
 
                 if nb_spaces - indent[-1] == 0:
+                    if edge_type and edge_type[-1] == '+':
+                        brackets.append(']')
+                        edge_type.pop()
+
                     if s.startswith('^'):
                         s = s[1:]
-                    else:
-                        brackets.append('][')
+                        if s.startswith('+'):
+                            brackets.append('[')
+                            edge_type.append('+')
+                    elif s.startswith('+'):
+                        brackets.append('[')
+                        edge_type.append('+')
+                        
                 
                 s = ''.join(brackets+[s])
-            
             new_code.append(s)
             
-        while indent[-1] > 0:
-            indent.pop()
-            new_code.append(']')
+        while edge_type:
+            edge = edge_type.pop()
+            if edge == '+':
+                new_code.append(']')
 
         self._new_code = ''.join(new_code)
+        print self._new_code
 
     def build_mtg(self):
+        """
+        """
         self.mtg = multiscale_edit(self._new_code, self._symbols)
 
 def read_mtg(s):

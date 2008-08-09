@@ -27,3 +27,13 @@ def test4():
     assert g.nb_vertices(scale=2) == 6 
     assert g.nb_vertices(scale=3) == 39 
 
+def test5():
+    fn = r'data/test5_apricot2.mtg'
+    g = read_mtg_file(fn)
+    assert len(g) == 97 
+    assert g.nb_scales() == 5
+    assert g.nb_vertices(scale=1) == 1 
+    assert g.nb_vertices(scale=2) == 10 
+    assert g.nb_vertices(scale=3) == 20 
+    assert g.nb_vertices(scale=4) == 65 
+

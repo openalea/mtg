@@ -1,41 +1,6 @@
 from openalea.mtg.io import *
 
 
-"""
-def display( mtg ):
-    label = mtg.property('label')
-    edge_type = mtg.property('edge_type')
-    cid = mtg.root
-    stack = []
-    strings = []
-    for vid in iter_mtg(mtg, mtg.root):
-        if cid == vid:
-            continue
-        l = label.get(vid, vid)
-        etype = edge_type.get(vid,'/')
-        previous_scale = mtg.scale(cid)
-        scale = mtg.scale(vid)
-        if previous_scale < scale:
-            etype = '/'
-        if previous_scale == scale:
-            pid = cid
-            n = 0
-            while mtg.parent(vid) != pid and stack:
-                pid = stack.pop()
-                n+= 1
-            if etype == '+':
-                etype = '[+'
-                stack.append(cid)
-            strings.append(']'*n+etype+l)
-        else:
-            stack=[]
-            strings.append(etype+l)
-        cid = vid
-    while stack:
-        stack.pop()
-        strings.append(']')
-    return ''.join(strings)
-"""
 
 def test0():
     # simple set of two successives axes
