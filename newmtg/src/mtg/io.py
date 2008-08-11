@@ -27,11 +27,56 @@ def log(*args):
     if debug:
         print '  '.join(map(str,args))
 
-def multiscale_edit(s, symbol_at_scale = {}):
+################## UTILS
+def get_expr(s, expr):
+    res = re.search(expr, s)
+    _str = ''
+    if res:
+        _str = s[res.start():res.end()]
+    return _str
 
-    def get_symbol(name):
-        res = re.search('[a-zA-Z]+', name)
-        return name[res.start():res.end()]
+def get_label(s):
+    name = r'[a-zA-Z0-9]+'
+    return get_expr(s,name)
+
+def get_name(s):
+    name = r'[a-zA-Z]+'
+    return get_expr(s,name)
+
+def get_index(s):
+    name = r'[0-9]+'
+    return get_expr(s,name)
+
+def get_args(s):
+    args = r'\([0-9,-\.\+]+\)'
+    return get_expr(s,args)
+
+def get_float(s):
+    args = r'[0-9-\+]+'
+    num = get_expr(s,args)
+    return float(num)
+
+def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
+
+    def get_properties(name):
+        _type = dict([('INT', int), ('REAL', float), ('ALPHA', str)])
+        args = {}
+        l = name.strip().split('(')
+        label = l[0]
+        index = get_index(label)
+        print label, index
+        if index.isdigit():
+            args['index'] = int(index)
+        args['label'] = label
+        if len(l) > 1:
+            s = l[1][:-1]
+            if s:
+                l = s.split(',')
+                for arg in l:
+                    k, v = arg.split('=')
+                    klass = _type[class_type[k]]
+                    args[k] = klass(v)
+        return args
 
     implicit_scale = bool(symbol_at_scale)
 
@@ -42,20 +87,31 @@ def multiscale_edit(s, symbol_at_scale = {}):
     branching_stack = []
 
     if not implicit_scale:
-        symbols = ['/', '\\', '[', ']', '+', '<']
+        symbols = ['/', '\\', '[', ']', '+', '<', '<<']
     else:
-        symbols = ['/', '[', ']', '+', '<']
+        symbols = ['/', '[', ']', '+', '<', '<<']
 
     pending_edge = '' # edge type for the next edge to be created
     scale = 0
 
+    # 2. add some properties to the MTG
+    mtg.add_property('index')
+    for k in class_type.keys():
+        mtg.add_property(k)
+
     for edge_type in symbols:
         s = s.replace(edge_type, '\n%s'%edge_type)
-    l = s.split()
+    s = s.replace('<\n<', '<<')
+    l = filter( None, s.split('\n'))
 
     for node in l:
-        tag = node[0]
-        assert tag in symbols
+        if node.startswith('<<'):
+            tag = '<<'
+            name = node[2:]
+        else:
+            tag = node[0]
+            name = node[1:]
+            assert tag in symbols, tag
         
         if tag == '[':
             branching_stack.append(vid)
@@ -63,9 +119,17 @@ def multiscale_edit(s, symbol_at_scale = {}):
             vid = branching_stack.pop()
             current_vertex = vid
         else:
-            name = node[1:]
+            if class_type:
+                args = get_properties(name)
+            else:
+                label = get_label(name)
+                index = get_index(name)
+                args = {'label':label}
+                if index.isdigit():
+                    args['index'] = int(index)
+
             if implicit_scale:
-                symbol_class = get_symbol(name)
+                symbol_class = get_name(name)
                 new_scale = symbol_at_scale[symbol_class]
                 while new_scale < scale:
                     scale -= 1
@@ -73,21 +137,28 @@ def multiscale_edit(s, symbol_at_scale = {}):
 
             if tag in ['+', '<']:
                 if mtg.scale(vid) == scale:
-                    vid = mtg.add_child(vid, edge_type=tag, label=name)
+                    vid = mtg.add_child(vid, edge_type=tag, **args)
                     current_vertex = vid
                     pending_edge = ''
                 else:
                     complex = mtg.complex(current_vertex)
-                    current_vertex = mtg.add_component(complex, label=name)
+                    current_vertex = mtg.add_component(complex, **args)
                     pending_edge = tag
+            elif tag == '<<':
+                index = args['index']
+                previous_index = mtg.property('index')[current_vertex]
+                pending_edge = ''
+                for i in range(previous_index+1, index+1):
+                    args['index'] = i
+                    current_vertex = vid = mtg.add_child(vid, edge_type='<', **args)
             elif tag == '/':
                 if mtg.scale(vid) == scale:
-                    vid = mtg.add_component(vid, label=name)
+                    vid = mtg.add_component(vid, **args)
                     current_vertex = vid
                     scale += 1
                 else:
                     scale += 1
-                    component = mtg.add_component(current_vertex, label=name)
+                    component = mtg.add_component(current_vertex, **args)
                     if mtg.scale(vid) == scale:
                         vid = mtg.add_child(vid, 
                                             child=component, 
@@ -100,6 +171,7 @@ def multiscale_edit(s, symbol_at_scale = {}):
             elif tag == '\\':
                 scale -= 1
                 current_vertex = mtg.complex(current_vertex)
+        
     
     mtg = fat_mtg(mtg)
     return mtg
@@ -120,25 +192,6 @@ def read_lsystem_string( string, symbol_at_scale, functional_symbol={}, mtg=None
     '''
     
     s = string
-    def get_expr(s, expr):
-        res = re.search(expr, s)
-        _str = ''
-        if res:
-            _str = s[res.start():res.end()]
-        return _str
-
-    def get_name(s):
-        name = r'[a-zA-Z]*'
-        return get_expr(s,name)
-
-    def get_args(s):
-        args = r'\([0-9,-\.\+]+\)'
-        return get_expr(s,args)
-
-    def get_float(s):
-        args = r'[0-9-\+]+'
-        num = get_expr(s,args)
-        return float(num)
 
     def transform(turtle, mesh):
         x = turtle.getUp()
@@ -692,9 +745,10 @@ class Reader(object):
             # args
             args = l.split('\t')[self._feature_slice]
             n = len(args)
-            params = [ "%s=%s"%(k,v) for k, v in zip(self._feature_head, args) if v]
+            params = [ "%s=%s"%(k,v) for k, v in zip(self._feature_head, args) if v.strip()]
 
-            print s,"("+', '.join(params)+")"
+            if params:
+                s = s + "("+','.join(params)+")"
             
             # build 
             nb_spaces = len(l) - len(l.lstrip('\t'))
@@ -764,11 +818,13 @@ class Reader(object):
     def build_mtg(self):
         """
         """
-        self.mtg = multiscale_edit(self._new_code, self._symbols)
+        self.mtg = multiscale_edit(self._new_code, self._symbols, self._features)
 
 def read_mtg(s):
     reader = Reader(s)
     g = reader.parse()
+    print "DEBUG"
+    print reader._features
     return g
 
 def read_mtg_file(fn):
@@ -776,3 +832,4 @@ def read_mtg_file(fn):
     txt = f.read()
     f.close()
     return read_mtg(txt)
+

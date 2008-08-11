@@ -1,0 +1,59 @@
+#Pommier Melgueil Braeburn13				
+				
+CODE :	FORM-A			
+
+CLASSES:				
+SYMBOL	SCALE	DECOMPOSITION	INDEXATION	DEFINITION
+$ 	0	FREE	FREE	IMPLICIT
+P	1	FREE	FREE	EXPLICIT
+B	2	FREE	FREE	EXPLICIT
+U 	2	FREE	FREE	EXPLICIT
+W	2	FREE	FREE	EXPLICIT
+D 	2	FREE	FREE	EXPLICIT
+E	3	FREE	FREE	EXPLICIT
+
+
+
+DESCRIPTION :			
+LEFT	RIGHT	RELTYPE	MAX
+U	U,W,B,D	+	?
+U	U,W,B	<	1
+W	B,D	+	?
+W	B	<	1
+B	U,W,B,D	+	?
+D	U,B,D	<	1
+E	E	+	?
+E	E	<	1
+
+
+
+FEATURES:			
+NAME	TYPE		
+dist	INT		
+XX	INT
+YY	INT
+ZZ	INT
+TopDia	INT
+NFe	INT
+Nf	INT
+El1	INT
+Az1	INT
+Inc	INT
+psi	INT
+teta	INT
+phi	INT
+bidon	INT
+
+MTG:	
+
+ENTITY-CODE								dist	XX	YY	ZZ	TopDia	NFe	Nf	El1	Az1	Inc	psi	teta	phi	bidon
+/P1																					
+^/U94								161	0	0	0	375			260	1950	848	2057	1158	-6	848
+^/E1<<E35								825	-19	-20	825	330			880	2260	-839	2328	-1555	831	1519
+^<E36<<E45								0	-18	4	1000	281			0	0	693	1737	-530	212	181
+	+B95/E1							53	18	-30	1019	50			210	3170	-239	118	1221	-88	-1576
+		+D95/E1<B96/E1						53	18	-30	1019	50									
+			+D96/E1<<E4					32	32	-51	1038	50	40	0	380	3040	309	2818	1395	253	183
+^<E46																					
+	+B95/E1																				
+		+D95/E1<B96/E1																			
