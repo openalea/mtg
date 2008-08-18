@@ -85,18 +85,18 @@ def test_mtg_edition():
 
 
 def test_mtg_random():
-    mtg = MTG()
-    root = mtg.root
+    g = MTG()
+    root = g.root
     
-    root1 = mtg.add_component(root)
-    vid = random_tree(mtg, root1, nb_vertices=18)
+    root1 = g.add_component(root)
+    vid = random_tree(g, root1, nb_vertices=18)
 
-    v1, complex1 = mtg.add_child_and_complex(vid)
-    vid = random_tree(mtg, v1, nb_vertices=18)
+    v1, complex1 = g.add_child_and_complex(vid)
+    vid = random_tree(g, v1, nb_vertices=18)
 
-    v1, complex1 = mtg.add_child_and_complex(vid)
-    vid = random_tree(mtg, v1, nb_vertices=18)
-    assert len(mtg)==60
+    v1, complex1 = g.add_child_and_complex(vid)
+    vid = random_tree(g, v1, nb_vertices=18)
+    assert len(g)==60
     
 def test_api3():
     ''' Test clear function. '''

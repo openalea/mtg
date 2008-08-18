@@ -23,58 +23,61 @@ class MultiscaleTreeConcept(object):
     Multiscale Tree Graph definition.
     """
 
-  def set_root(self, vtx_id):
-    '''
-    Set the tree root.
+    def set_root(self, vtx_id):
+        '''
+        Set the tree root.
 
-    :Parameters:
-     - `vtx_id`: The vertex identifier.
-    '''
+        :Parameters:
+            - `vtx_id`: The vertex identifier.
+        '''
+        pass
 
-  def get_root(self): 
-    '''
-    Return the tree root.
+    def get_root(self): 
+        '''
+        Return the tree root.
 
-    :Return: vertex identifier
-    '''
+        :Return: vertex identifier
+        '''
+        pass
 
-  root= property( get_root, set_root )
+    root= property( get_root, set_root )
 
-  def parent(self, vtx_id):
-    '''
-    Return the parent of `vtx_id`.
+    def parent(self, vtx_id):
+        '''
+        Return the parent of `vtx_id`.
 
-    :Parameters:
-     - `vtx_id`: The vertex identifier.
+        :Parameters:
+            - `vtx_id`: The vertex identifier.
 
-    :Return: vertex identifier
-    '''
+        :Return: vertex identifier
+        '''
+        pass
 
-  def children(self, vtx_id):
-    '''
-    Return a vertex iterator
+    def children(self, vtx_id):
+        '''
+        Return a vertex iterator
 
-    :Parameters:
-     - `vtx_id`: The vertex identifier.
+        :Parameters:
+            - `vtx_id`: The vertex identifier.
 
-    :Return: iter of vertex identifier
-    '''
+        :Return: iter of vertex identifier
+        '''
 
-  def nb_children(self, vtx_id):
-    '''
-    Return the number of children
+    def nb_children(self, vtx_id):
+        '''
+        Return the number of children
 
-    :Parameters:
-     - `vtx_id`: The vertex identifier.
+        :Parameters:
+            - `vtx_id`: The vertex identifier.
 
-    :Return: int
-    '''
+        :Return: int
+        '''
 
-  def is_leaf(self, vtx_id):
-    '''
-    Test if `vtx_id` is a leaf.
+    def is_leaf(self, vtx_id):
+        '''
+        Test if `vtx_id` is a leaf.
 
-    :Return: bool
-    '''
+        :Return: bool
+        '''
 
   

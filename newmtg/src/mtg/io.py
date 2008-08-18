@@ -823,8 +823,6 @@ class Reader(object):
 def read_mtg(s):
     reader = Reader(s)
     g = reader.parse()
-    print "DEBUG"
-    print reader._features
     return g
 
 def read_mtg_file(fn):

@@ -20,18 +20,25 @@ Different utilities such as plot2D, plot3D, and so on...
 
 from openalea.mtg import *
 
-def plot2d( mtg, image_name, scale=None ):
+def plot2d( g, image_name, scale=None ):
     """
     Compute an image of the tree via graphviz.
     """
     import pydot
     if scale is None:
-        scale = max(mtg.scales())
-    label = mtg.property('label')
-    edges = mtg.iteredges(scale=scale)
+        scale = max(g.scales())
+    label = g.property('label')
+    edges = g.iteredges(scale=scale)
 
-    g= pydot.graph_from_edges(mtg.iteredges(scale=scale))
+    if label:
+        f = lambda id: label.get(id, str(id))
+    else:
+        f = str
+    pydot_graph= pydot.graph_from_edges(((f(x), f(y)) for x, y in g.iteredges(scale=scale)))
+
+    # Attributes
+    pydot_graph.set('orientation', 90.0)
 
     ext= os.path.splitext(image_name)[1].strip('.')
-    return g.write(image_name, prog='dot',format=ext)
+    return pydot_graph.write(image_name, prog='dot',format=ext)
 

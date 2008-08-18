@@ -19,6 +19,8 @@ This module provides an implementation of Multiscale Tree Graph.
 For interface definition, see openalea.core.graph.interface
 '''
 
+__docformat__ = "restructuredtext"
+
 import itertools
 
 class MTG(object):
@@ -26,7 +28,6 @@ class MTG(object):
     def __init__(self):
         '''
         MTG constructor.
-        TODO: add properties
         '''
         self._root = 0
         self._id = 0
@@ -48,11 +49,14 @@ class MTG(object):
         self.add_property('edge_type')
         self.add_property('label')
         
-    def scale(self, vsid):
+    def scale(self, vid):
         '''
-        Return the scale of a vertex_scale identifier.
+        Returns the scale of a vertex_scale identifier.
+
+        :param vid: vertex identifier
+        :rtype: int
         '''
-        return self._scale[vsid]
+        return self._scale[vid]
 
     def nb_scales(self):
         '''
