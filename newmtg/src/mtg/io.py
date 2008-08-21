@@ -386,25 +386,27 @@ def axialtree2mtg(tree, scale, scene):
     """
     def scene_id(scene):
         d = {}
-        for sh in scene:
-            d.setdefault(sh.id,[]).append(sh)
+        if scene:
+            for sh in scene:
+                d.setdefault(sh.id,[]).append(sh)
         return d
 
     def change_id(axial_id, mtg_id):
         """
         Change the id of the shape in the scene by the id of the mtg element.
         """
-
-        for shape in geoms[axial_id]:
-            shape.id = mtg_id
-        mtg.property('geometry')[mtg_id]=geoms[axial_id]
+        if geoms:
+            for shape in geoms[axial_id]:
+                shape.id = mtg_id
+            mtg.property('geometry')[mtg_id]=geoms[axial_id]
 
     # The string represented by the axial tree...
 
     geoms = scene_id(scene)
 
     mtg = MTG()
-    mtg.add_property('geometry')
+    if scene:
+        mtg.add_property('geometry')
 
     vid = mtg.root
     current_vertex = vid
@@ -479,7 +481,6 @@ def mtg2mss(name, mtg, scene, envelop_type = 'CvxHull'):
         for vid in mtg.vertices(scale=scale):
             d[vid] = list(mtg.components(vid))
         l.append(d)
-    print l
     return ssFromDict(name, scene, l, envelop_type)
     
 

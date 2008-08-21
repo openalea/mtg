@@ -15,7 +15,7 @@ def str2mtg(s):
 
 def str2mss(s, envelop):
     tree, mtg, scene = str2mtg(s)
-    return mtg2mss('test', mtg, scene, envelop), mtg, tree
+    return mtg2mss('test', mtg, scene, envelop), mtg, tree, s
 
 def check(tree, mtg, scene):
     s = str(tree)
@@ -28,11 +28,11 @@ def check(tree, mtg, scene):
     geom3 = set((sh.id for sh in scene))
     assert v3 == geom3, str(v3)+'!='+str(geom3)
         
-def check_mss(mss, mtg, tree):
+def check_mss(mss, mtg, tree, s=None):
     if not mss: print tree
-    assert mss.depth == mtg.nb_scales()-1
+    assert mss.depth == mtg.max_scale()
     for scale in range(1,mss.depth+1):
-        assert len(set(mss.get1Scale(scale))) == len(set(mtg.vertices(scale=scale))), str(set(mss.get1Scale(scale)))+' !='+ str(set(mtg.vertices(scale=scale)))
+        assert len(set(mss.get1Scale(scale))) == len(set(mtg.vertices(scale=scale))), (str(set(mss.get1Scale(scale)))+' !='+ str(set(mtg.vertices(scale=scale))),s)
     
 
 def test0():
@@ -74,6 +74,8 @@ PANNN[+ANNN[+ANNN[+ANNN][-ANNN]NNNANAN]][-ANNN[+ANNN[-ANNN]]NN]NANAN
 '''
     envelop = ['CvxHull', 'Box', 'Sphere']
     for s in trees.split():
+        print s
         for env in envelop:
+            print env
             check_mss( *str2mss(s, env) )
 

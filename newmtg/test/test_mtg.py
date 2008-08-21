@@ -89,6 +89,7 @@ def test_mtg_random():
     root = g.root
     
     root1 = g.add_component(root)
+    root1 = g.add_component(root1)
     vid = random_tree(g, root1, nb_vertices=18)
 
     v1, complex1 = g.add_child_and_complex(vid)
@@ -96,7 +97,7 @@ def test_mtg_random():
 
     v1, complex1 = g.add_child_and_complex(vid)
     vid = random_tree(g, v1, nb_vertices=18)
-    assert len(g)==60
+    assert len(g)==61
     
 def test_api3():
     ''' Test clear function. '''
@@ -117,6 +118,9 @@ def test_traversal():
     s2 = set(post_order(mtg, mtg.root))
     assert len(mtg) == len(s1) == len(s2)
     assert s1 == s2
+
+def test_mtg_traversal():
+    pass
 
 def test_properties():
     mtg = MTG()
@@ -153,3 +157,6 @@ def test_edition():
     assert len(set(mtg.vertices(scale=1))) == 4
     assert len(set(mtg.vertices(scale=2))) == 13
 
+def test_order():
+    s = '/A/a<b<c[+d[+e<f][+g]]<h<i[+j<k][+l<m]'
+    mtg = multiscale_edit(s)

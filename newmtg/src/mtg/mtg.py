@@ -22,6 +22,8 @@ For interface definition, see openalea.core.graph.interface
 __docformat__ = "restructuredtext"
 
 import itertools
+import traversal
+import random
 
 class MTG(object):
 
@@ -417,16 +419,9 @@ class MTG(object):
         # oops: search in the tree all the nodes which have not another
         # explicit complex.
 
-        # Be sure to copy the list beforez modifying it...
-        l = list(self._components.get(vid,[]))
-
-        while len(l) > 0:
-            vid = l.pop(0)
-            yield vid
-            for id in self.children(vid):
-                if id in self._complex:
-                    continue
-                l.insert(0,id)
+        for v in self._components.get(vid, []):
+            for vtx in traversal.pre_order(self, v, complex=vid):
+                yield vtx
 
     def nb_components(self, vid):
         '''
@@ -471,6 +466,10 @@ class MTG(object):
         :Return: (vid, vid)
         '''
 
+        if complex is None:
+            self._id += 1
+            complex = self._id
+
         if child is None:
             self._id += 1
             child = self._id
@@ -481,9 +480,6 @@ class MTG(object):
         self._parent[child] = parent
         self._scale[child] = self._scale[parent]
 
-        if complex is None:
-            self._id += 1
-            complex = self._id
 
         parent_complex = self.complex(parent)
 
@@ -556,73 +552,38 @@ class MTG(object):
             if name in self._properties:
                 self._properties[name][vid] = properties[name]
 
-################################################################################
-# Tree Traversals
-################################################################################
+    #########################################################################
+    # Specialised algorithms for aml compatibility.
+    #########################################################################
 
-def pre_order(tree, vtx_id):
-    ''' 
-    Traverse a tree in a prefix way.
-    (root then children)
+    def path(self, vid1, vid2):
+        """
+        Returns a list of vertices between `vid1` and `vid2`.
+        """
+        
+    def order(self, v1):
+        """
+        Order of a vertex in a graph.
 
-    This is a non recursive implementation.
-    '''
-    yield vtx_id
-    for vid in tree.children(vtx_id):
-        for node in pre_order(tree, vid):
-            yield node
-    
-def post_order(tree, vtx_id):
-    ''' 
-    Traverse a tree in a postfix way.
-    (from leaves to root)
-    '''
-    for vid in tree.children(vtx_id):
-        for node in post_order(tree, vid):
-            yield node
-    yield vtx_id
+        The order of a vertex in a graph is the number of '+' edges crossed 
+        when going from `v1`to `v2`.
 
-def traverse_tree(tree, vtx_id, visitor):
-  ''' 
-  Traverse a tree in a prefix or postfix way.
-  
-  We call a visitor for each vertex.
-  This is usefull for printing, cmputing or storing vertices 
-  in a specific order. 
-  
-  See boost.graph.
-  '''
+        If v2 is None, the order of v1 correspond to the order of v1 with 
+        respect to the root.
+        """
+        _order = 0
+        edge_type = self.property('edge_type')
+        if not edge_type:
+            return 0
 
-  yield visitor.pre_order(vtx_id)
+        vid = v1
+        while vid is not None:
+            if edge_type.get(vid) == '+':
+                _order += 1
+            vid = self.parent(vid)
 
-  for v in tree.children(vtx_id):
-     for res in traverse_tree(tree, v, visitor):
-        yield res
+        return _order
 
-  yield visitor.post_order(vtx_id)
-
-
-class Visitor(object):
-  ''' Used during a tree traversal. '''
-
-  def pre_order(self, vtx_id): 
-     pass
-
-  def post_order(self, vtx_id): 
-     pass
-
-def iter_mtg(mtg, vtx_id):
-    
-    for vid in pre_order(mtg, vtx_id): 
-        for node in iter_scale(mtg, vid):
-            yield node
-
-def iter_scale( mtg, vtx_id):
-    yield vtx_id
-    for vid in mtg.components(vtx_id):
-        for node in iter_scale(mtg, vid):
-            yield node
-    
 ################################################################################
 # Graph generators
 ################################################################################
@@ -656,6 +617,73 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
             l.append(v)
     return l[-1]
 
+def random_mtg(tree, nb_scales):
+    n = len(tree)
+    # colors contained the colored vertices at each scale
+    # based on the vertex of the initial tree
+    colors = {}
+    colors[nb_scales-1] = list(tree.vertices())
+    for s in range(nb_scales-2, 0, -1):
+        n = random.randint(1, n)
+        l = random.sample(colors[s+1], n)
+        l.sort()
+        if tree.root not in l:
+            l.insert(0, tree.root)
+        colors[s] = l
+
+   
+    return colored_tree(tree, colors)
+    
+
+def colored_tree(tree, colors):
+    """
+    Compute a mtg from a tree and the list of vertices to be quotiented.
+    """
+
+    nb_scales = max(colors.keys())+1
+
+    map_index = {}
+    g = MTG()
+    # scale 0: 1 vertex
+    count = 1
+
+    for scale in range(1, nb_scales):
+        map_index[scale] = {}
+        for id in colors[scale]:
+            map_index[scale][id] = count
+            count += 1
+    
+    # build the mtg
+    # 1. Add multiscale info
+    index_scale = map_index[1]
+    for id in colors[1]:
+        g.add_component(g.root,index_scale[id]) 
+    # Edit the graph with multiscale info
+    for scale in range(2, nb_scales):
+        prev_index_scale = index_scale
+        index_scale = map_index[scale]
+        for id in colors[scale]:
+            complex_id = prev_index_scale.get(id)
+            component_id = index_scale.get(id)
+            
+            if complex_id:
+                g.add_component(complex_id, index_scale[id])
+            elif component_id:
+                g._scale[component_id] = scale
+
+    # copy the tree information in the MTG
+    g._parent.update(dict(((index_scale[k], index_scale[v]) for k, v in tree._parent.iteritems())))
+    for parent, children in tree._children.iteritems():
+        g._children[index_scale[parent]] = [index_scale[id] for id in children]
+
+    # Copy the properties of the tree
+    for pname, prop in tree.properties().iteritems():
+        property = g._properties.setdefault(pname, {})
+        for id, v in prop.iteritems():
+            property[index_scale[id]] = v
+
+    return fat_mtg(g)
+
 ################################################################################
 # Utilities
 ################################################################################
@@ -684,7 +712,7 @@ def display_tree(tree, vid, tab = "", labels = {}, edge_type = {}):
 def display_mtg(mtg, vid):
     label = mtg.property('label')
     edge_type = mtg.property('edge_type')
-    for vtx in iter_mtg(mtg, vid):
+    for vtx in traversal.iter_mtg(mtg, vid):
         yield mtg.scale(vtx) * '  ' + edge_type.get(vtx, '/') + label.get(vtx, str(vtx))
 
 def fat_mtg(slim_mtg):
@@ -699,6 +727,7 @@ def fat_mtg(slim_mtg):
     for scale in range(max_scale-1,0,-1):
         compute_missing_edges(slim_mtg, scale)
     return slim_mtg
+
 
 def compute_missing_edges(mtg, scale):
     roots = mtg.roots(scale=scale)
