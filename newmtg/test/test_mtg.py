@@ -16,6 +16,7 @@
 
 from openalea.mtg.mtg import *
 from openalea.mtg.io import *
+from openalea.mtg.traversal import *
 
 def test_mtg_api():
     mtg = MTG()

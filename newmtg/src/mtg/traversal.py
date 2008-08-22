@@ -35,7 +35,7 @@ def pre_order(tree, vtx_id, complex=None):
         for node in pre_order(tree, vid, complex):
             yield node
     
-def post_order(tree, vtx_idcomplex=None):
+def post_order(tree, vtx_id, complex=None):
     ''' 
     Traverse a tree in a postfix way.
     (from leaves to root)
