@@ -1,6 +1,6 @@
 from openalea.mtg.io import axialtree2mtg, mtg2mss 
 from openalea.lpy import AxialTree, generateScene, Lsystem
-from openalea.plantgl.all import Scene, Viewer
+#from openalea.plantgl.all import Scene, Viewer
 
 def str2mtg(s):
     #s = s.replace('N', 'F')
@@ -64,7 +64,7 @@ PA(9)N
     for s in trees.split():
         check( *str2mtg(s) )
 
-def test_mss():
+def _test_mss():
     trees = '''
 PANNN[+ANNN][-ANNN]AN
 PANNN[+ANNN][-ANNN]NNNANAN

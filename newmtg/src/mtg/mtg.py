@@ -419,7 +419,8 @@ class MTG(object):
         # oops: search in the tree all the nodes which have not another
         # explicit complex.
 
-        for v in self._components.get(vid, []):
+        if vid in self._components:
+            v = self._components[vid][0]
             for vtx in traversal.pre_order(self, v, complex=vid):
                 yield vtx
 

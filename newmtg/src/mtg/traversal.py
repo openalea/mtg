@@ -28,10 +28,23 @@ def pre_order(tree, vtx_id, complex=None):
     if complex is not None and tree.complex(vtx_id) != complex:
         return
 
+    edge_type = tree.property('edge_type')
+
+    # 1. select first '+' edges
+    successor = []
     yield vtx_id
     for vid in tree.children(vtx_id):
         if complex is not None and tree.complex(vid) != complex:
             continue
+        if edge_type.get(vid) == '<':
+            successor.append(vid)
+            continue
+
+        for node in pre_order(tree, vid, complex):
+            yield node
+
+    # 2. select then '<' edges
+    for vid in successor:
         for node in pre_order(tree, vid, complex):
             yield node
     
@@ -79,12 +92,30 @@ class Visitor(object):
      pass
 
 
+# old implementation
+# Problem is the traversal traverse complex before components.
+# def iter_mtg(mtg, vtx_id):
+#     yield vtx_id
+#     for vid in mtg.components(vtx_id):
+#         for node in iter_mtg(mtg, vid):
+#             yield node
 
-def pre_order_scale(mtg, vtx_id):
-    yield vtx_id
-    for vid in mtg.components(vtx_id):
-        for node in pre_order_scale(mtg, vid):
+def iter_scale(g, vtx_id, visited):
+    if vtx_id is not None and vtx_id not in visited:
+        for v in iter_scale(g, g._complex.get(vtx_id), visited):
+            yield v
+        visited[vtx_id] = True
+        yield vtx_id
+
+def iter_mtg(mtg, vtx_id):
+    visited = {}
+    loc = vtx_id
+    while mtg._components.get(loc):
+        loc = mtg._components[loc][0]
+    vtx_id = loc
+
+    for vid in pre_order(mtg, vtx_id):
+        for node in iter_scale(mtg, vid, visited):
             yield node
-
-iter_mtg = pre_order_scale
-
+        
+    

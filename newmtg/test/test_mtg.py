@@ -120,8 +120,17 @@ def test_traversal():
     assert len(mtg) == len(s1) == len(s2)
     assert s1 == s2
 
-def test_mtg_traversal():
-    pass
+def test_components():
+    g = MTG() # root = 0
+    r1 = g.add_component(g.root) # scale= 1, v=1
+    r2 = g.add_component(r1) # scale= 1, v=2
+    v, c  = g.add_child_and_complex(r2, edge_type='+')
+    v, c  = g.add_child_and_complex(r2)
+    v1, c1  = g.add_child_and_complex(v, edge_type='+')
+    v = g.add_child(v)
+    v1, c1  = g.add_child_and_complex(v, edge_type='+')
+    v = g.add_child(v)
+    
 
 def test_properties():
     mtg = MTG()
@@ -157,6 +166,8 @@ def test_edition():
     assert len(set(mtg.vertices(scale=0))) == 1
     assert len(set(mtg.vertices(scale=1))) == 4
     assert len(set(mtg.vertices(scale=2))) == 13
+    
+    assert len(list(iter_mtg(mtg, mtg.root))) == len(mtg)
 
 def test_order():
     s = '/A/a<b<c[+d[+e<f][+g]]<h<i[+j<k][+l<m]'

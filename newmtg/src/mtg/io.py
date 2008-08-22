@@ -146,10 +146,12 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
                     pending_edge = tag
             elif tag == '<<':
                 index = args['index']
+                label = args['label']
                 previous_index = mtg.property('index')[current_vertex]
                 pending_edge = ''
                 for i in range(previous_index+1, index+1):
                     args['index'] = i
+                    args['label'] = label.replace(str(index), str(i))
                     current_vertex = vid = mtg.add_child(vid, edge_type='<', **args)
             elif tag == '/':
                 if mtg.scale(vid) == scale:
@@ -814,7 +816,7 @@ class Reader(object):
                 new_code.append(']')
 
         self._new_code = ''.join(new_code)
-        print self._new_code
+        #print self._new_code
 
     def build_mtg(self):
         """
@@ -832,3 +834,56 @@ def read_mtg_file(fn):
     f.close()
     return read_mtg(txt)
 
+
+def mtg_display(g, vtx_id, tab='  ', edge_type={}, label={}):
+    """
+    Test the traversal of an mtg.
+    A first step before writing it.
+    """
+    import traversal
+    if not edge_type:
+        edge_type = g.properties().get('edge_type', {})
+    if not label:
+        label= g.properties().get('label', {})
+
+    prev = vtx_id
+    prev_order = 0
+    prev_scale = g.scale(vtx_id)
+    for  vid in traversal.iter_mtg(g, vtx_id):
+        if prev == vid:
+            continue
+
+        name = label.get(vid, vid)
+
+        if vid in edge_type:
+            et = edge_type[vid]
+        elif prev == g.parent(vid):
+            et = '<'
+        else:
+            et = '?'
+
+        space = ''
+
+        scale = g.scale(vid)
+        order = g.order(vid)
+
+        if prev == g.complex(vid):
+            et = '/'
+            # add one blank line
+            space = '^'
+        elif prev_scale == scale and et == '<':
+            space = '^'
+        
+        if scale < prev_scale:
+            yield ''
+
+        order = g.order(vid)
+
+        prev = vid
+        prev_scale = scale
+        prev_order = order
+        if order != prev_order:
+            indent = 0
+
+        yield (order*tab) +space+et+ name
+        
