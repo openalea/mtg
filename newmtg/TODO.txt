@@ -2,7 +2,6 @@ TODO
 ====
 
 * implement a mtg with colors
-  * mtg = tree + [colors(scale)]
   * operations on mtg
     + add a scale
     + intersection, union on mtg
@@ -14,8 +13,7 @@ TODO
   + interpolation to obtain a mtg from others
 
 * standard
-  + Read a mtg from aml code (*.mtg file)
-  + Class acting as the old implementation/interface
+  + implement all the functions
   + Compare both implementation
     - result
     - performances
@@ -24,6 +22,7 @@ TODO
   + tulip
   + graphviz
   + L-system
+  + GroIMP
 
 * PlantFrame
   + write plantframe algorithm
@@ -36,13 +35,31 @@ TODO
     - bgl
     - NetworkX
 
+01/09/08
+========
+* iterators on mtg
+
+* Construction of a mtg with colors
+  * mtg = tree + [colors(scale)]
+  * random mtg
+
+* standard
+  + Read a mtg from aml code (*.mtg file)
+  + Class acting as the old implementation/interface
+  + documentation
+
+* layout
+  + use graphviz
+
+* generators
+  + random tree
+  + random MTG
 
 23/06/08
 ========
 * parse L-system: lsystem2mtg
 * parse mtg string
 * pre, post-order iterators on trees
-* iterators on mtg
 * mtg with properties
 * tests
 
