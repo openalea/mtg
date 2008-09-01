@@ -64,7 +64,6 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
         l = name.strip().split('(')
         label = l[0]
         index = get_index(label)
-        print label, index
         if index.isdigit():
             args['index'] = int(index)
         args['label'] = label
@@ -758,6 +757,9 @@ class Reader(object):
 
             diff_space = nb_spaces - indent[-1]
             
+            # DEBUG
+            if debug:
+                print 'line :%s, nb_spaces: %d, diff_space: %d, edge_type:%s, %s'%(l[:10], nb_spaces, diff_space, str(edge_type), str(indent)) 
             if diff_space == 0:
                 if s.startswith('^'):
                     s = s[1:]
@@ -793,9 +795,10 @@ class Reader(object):
                         brackets.append(']')
 
                 if nb_spaces - indent[-1] == 0:
-                    if edge_type and edge_type[-1] == '+':
-                        brackets.append(']')
-                        edge_type.pop()
+                    #if edge_type and edge_type[-1] == '+':
+                    #   print 'REMOVE edge_type and add ]'
+                    #   brackets.append(']')
+                    #   edge_type.pop()
 
                     if s.startswith('^'):
                         s = s[1:]
@@ -803,8 +806,9 @@ class Reader(object):
                             brackets.append('[')
                             edge_type.append('+')
                     elif s.startswith('+'):
-                        brackets.append('[')
-                        edge_type.append('+')
+                        brackets.append('][')
+                        print 'REPLACE %s by +'%(edge_type[-1])
+                        edge_type[-1] = '+'
                         
                 
                 s = ''.join(brackets+[s])

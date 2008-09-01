@@ -56,3 +56,11 @@ def test7():
     fn = r'data/test7.mtg'
     g = check(fn)
 
+def test8():
+    fn = r'data/test8_boutdenoylum2.mtg'
+    g = check(fn)
+
+def test9():
+    fn = r'data/test9_noylum2.mtg'
+    g = check(fn)
+

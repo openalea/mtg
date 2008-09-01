@@ -721,8 +721,9 @@ def fat_mtg(slim_mtg):
     Compute missing edges at each scales based on the explicit edges
     defines at finer scales and decomposition relationship.
     """ 
-    max_scale = max(slim_mtg.scales())
-    roots = slim_mtg.roots(scale=max_scale)
+    max_scale = slim_mtg.max_scale()
+    #print 'max_scale %d'%max_scale
+    #roots = slim_mtg.roots(scale=max_scale)
     #assert len(list(roots)) == 1
     
     for scale in range(max_scale-1,0,-1):
@@ -732,7 +733,7 @@ def fat_mtg(slim_mtg):
 
 def compute_missing_edges(mtg, scale):
     roots = mtg.roots(scale=scale)
-
+    #print 'roots: ', list(roots), scale
     for vid in roots:
         components = mtg._components[vid]
         #assert len(components) == 1
