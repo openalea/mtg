@@ -19,9 +19,9 @@ This module provides multiscale tree concepts to form MTG interface.
 """
 
 class MultiscaleTreeConcept(object):
-    """
-    Multiscale Tree Graph definition.
-    """
+  """
+  Multiscale Tree Graph definition.
+  """
 
     def set_root(self, vtx_id):
         '''
