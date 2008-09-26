@@ -713,8 +713,37 @@ def display_tree(tree, vid, tab = "", labels = {}, edge_type = {}):
 def display_mtg(mtg, vid):
     label = mtg.property('label')
     edge_type = mtg.property('edge_type')
+    current_vertex = vid
+    tab = 0
     for vtx in traversal.iter_mtg(mtg, vid):
-        yield mtg.scale(vtx) * '  ' + edge_type.get(vtx, '/') + label.get(vtx, str(vtx))
+        et = '/'
+        if vtx != current_vertex:
+            scale1 = mtg.scale(current_vertex)
+            scale2 = mtg.scale(vtx)
+            if scale1 >= scale2:
+                et = edge_type[vtx]
+                if scale1 == scale2:
+                    if mtg.parent(vtx) != current_vertex:
+                        tab = -1
+                        et = '^'+et
+                    else:
+                        et = '^'+et
+                elif scale1 > scale2:
+                    v = current_vertex
+                    for i in range(scale1-scale2):
+                        v = mtg.complex(v)
+                    if mtg.parent(vtx) == v:
+                        et = '^'+et
+                    else:
+                        tab -= 1
+                        et = '^'+et
+
+            else:
+                assert scale2 - scale1 == 1
+                tab += 1
+
+            yield tab* '\t' + et + label.get(vtx, str(vtx))
+        current_vertex = vtx
 
 def fat_mtg(slim_mtg):
     """

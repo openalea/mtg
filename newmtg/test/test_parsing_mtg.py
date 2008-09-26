@@ -8,7 +8,12 @@ def check(fn):
     assert list(g.vertices()) == VtxList()
     for scale in range(1,g.nb_scales()):
         assert list(g.vertices(scale=scale)) == VtxList(Scale=scale)
-
+    # TOD add this stuff to test really the code.
+    '''
+    l = VtxList(Scale=g.max_scale())
+    for vid in l:
+        assert g.parent(vid) == aml.Father(vid), 'vertex %d has not the same parent at scale %d'%(vid, g.max_scale())
+    '''
     return g
 
 def test1():

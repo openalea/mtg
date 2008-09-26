@@ -35,6 +35,10 @@ TODO
     - bgl
     - NetworkX
 
+22/09/08
+========
+* write a mtg in the MTG format
+
 01/09/08
 ========
 * iterators on mtg
