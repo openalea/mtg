@@ -7,13 +7,12 @@ def check(fn):
     
     assert list(g.vertices()) == VtxList()
     for scale in range(1,g.nb_scales()):
-        assert list(g.vertices(scale=scale)) == VtxList(Scale=scale)
-    # TOD add this stuff to test really the code.
-    '''
+        assert list(g.vertices(scale=scale)) == VtxList(Scale=scale), set(g.vertices(scale=scale)).difference(VtxList(Scale=scale))
+
     l = VtxList(Scale=g.max_scale())
     for vid in l:
         assert g.parent(vid) == aml.Father(vid), 'vertex %d has not the same parent at scale %d'%(vid, g.max_scale())
-    '''
+
     return g
 
 def test1():
@@ -44,7 +43,7 @@ def test4():
     assert g.nb_vertices(scale=3) == 39 
 
 def test5():
-    fn = r'data/mtg5.mtg'
+    fn = r'data/mtg51.mtg'
     g = check(fn)
 
 def test6():
@@ -67,5 +66,9 @@ def test8():
 
 def test9():
     fn = r'data/test9_noylum2.mtg'
+    g = check(fn)
+
+def test10():
+    fn = r'data/test10_agraf.mtg'
     g = check(fn)
 

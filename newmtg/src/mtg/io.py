@@ -753,6 +753,57 @@ class Reader(object):
         self.preprocess_code()
         self.build_mtg()
 
+
+
+    def preprocess_line(self, s, diff_space, indent, nb_spaces, edge_type):
+        """
+        Preprocess a line.
+        """
+        if (debug):
+            print 'line :%s, nb_spaces: %d, diff_space: %d, edge_type:%s, %s'%(s, 
+                                                                               nb_spaces, 
+                                                                               diff_space, 
+                                                                               str(edge_type), 
+                                                                               str(indent)) 
+        if diff_space == 0:
+            if s.startswith('^'):
+                s = s[1:]
+            elif edge_type:
+                s = '][' + s
+                edge_type[-1] = s[0]
+            else:
+                edge_type.append(s[0])
+
+        elif diff_space > 0:
+            # indent
+            if s.startswith('^'):
+                print 'ERROR %s'%s
+            indent.append(nb_spaces)
+            edge_type.append(s[0])
+            s = "[" + s
+        else:
+            # unindent
+            brackets = []
+            # Close the previous brackets
+            while nb_spaces - indent[-1] < 0:
+                indent.pop()
+                edge = edge_type.pop()
+                brackets.append(']')
+                
+            # Same case as diff_space == 0
+            assert nb_spaces - indent[-1] == 0
+            if s.startswith('^'):
+                s = s[1:]
+            else:
+                brackets.append('][')
+                edge_type[-1] = s[0]
+
+            s = ''.join(brackets+[s])
+
+
+        return s, edge_type
+
+
     def preprocess_code(self):
         code = [l for l in self.lines[self._no_line+1:] if l.strip() and not l.strip().startswith('#')]
 
@@ -776,66 +827,10 @@ class Reader(object):
             nb_spaces = len(l) - len(l.lstrip('\t'))
 
             diff_space = nb_spaces - indent[-1]
-            
-            # DEBUG
-            if debug:
-                print 'line :%s, nb_spaces: %d, diff_space: %d, edge_type:%s, %s'%(l[:10], 
-                                                                                   nb_spaces, 
-                                                                                   diff_space, 
-                                                                                   str(edge_type), 
-                                                                                   str(indent)) 
-            if diff_space == 0:
-                if s.startswith('^'):
-                    s = s[1:]
-                    if s.startswith('+'):
-                        s = '[' + s
-                        edge_type.append('+')
-                elif s.startswith('+'):
-                    if edge_type[-1] == '+':
-                        s = '][' + s
-                    else:
-                        #error
-                        print "ERROR ", edge_type[-1], s
 
-            elif diff_space > 0:
-                # indent
-                indent.append(nb_spaces)
-                edge_type.append(s[0])
-                if s[0] == '^':
-                    print 'ERROR'
-                    print 'diff_space ', diff_space
-                    print 's ', s
-                    print nb_spaces, indent[:-1]
-                #assert s[0] != '^'
-                if s.startswith('+'):
-                    s = "[" + s
-            else:
-                # unindent
-                brackets = []
-                while nb_spaces - indent[-1] < 0:
-                    indent.pop()
-                    edge = edge_type.pop()
-                    if edge == '+':
-                        brackets.append(']')
+            #s = self.preprocess_line(s, diff_space, indent, nb_spaces, edge_type)
+            s, edge_type = self.preprocess_line(s, diff_space, indent, nb_spaces, edge_type)
 
-                if nb_spaces - indent[-1] == 0:
-                    #if edge_type and edge_type[-1] == '+':
-                    #   print 'REMOVE edge_type and add ]'
-                    #   brackets.append(']')
-                    #   edge_type.pop()
-
-                    if s.startswith('^'):
-                        s = s[1:]
-                        if s.startswith('+'):
-                            brackets.append('[')
-                            edge_type.append('+')
-                    elif s.startswith('+'):
-                        brackets.append('][')
-                        print 'REPLACE %s by +'%(edge_type[-1])
-                        edge_type[-1] = '+'
-                        
-                
-                s = ''.join(brackets+[s])
             new_code.append(s)
             
         while edge_type:

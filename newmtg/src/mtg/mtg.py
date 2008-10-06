@@ -764,7 +764,10 @@ def compute_missing_edges(mtg, scale):
     roots = mtg.roots(scale=scale)
     #print 'roots: ', list(roots), scale
     for vid in roots:
-        components = mtg._components[vid]
+        components = mtg._components.get(vid)
+        if components is None:
+            print 'ERROR: Missing component for vertex %d'%vid
+            continue
         #assert len(components) == 1
         cid = components[0]
         if mtg.parent(cid) is None:
