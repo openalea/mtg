@@ -945,7 +945,7 @@ class Writer(object):
         desc = self.description()
         features = self.features()
 
-    def code(self, property_names, nb_tab=8):
+    def code(self, property_names, nb_tab=12):
         """
         Traverse the MTG and write the code.
         """
@@ -966,42 +966,53 @@ class Writer(object):
         tab = 0
         prev_scale = 0
 
+        sym_at_col = []
         for vtx in traversal.iter_mtg(self.g, self.g.root):
             
+            if tab > nb_tab:
+                msg = """There is not enough tabs to store the MTG code.
+                Increase the nb_tab variable to at least %d"""
+                raise Exception(msg%(nb_tab+2))
+
             cur_scale = self.g.scale(vtx)
             if vtx == current_vertex:
                 current_vertex = vtx
                 prev_scale = cur_scale
+                sym_at_col.append(vtx)
                 continue
 
-            # The previous vertex was not a complex of the current one.
-            if prev_scale >= cur_scale:
-                et = edge_type[vtx]
-                if prev_scale == cur_scale:
-                    et = '^'+et
-                    if self.g.parent(vtx) != current_vertex:
-                        tab -= 1
-                        if tab <0:
-                            tab = 0
-                            et = et[1:]
-                elif prev_scale > cur_scale:
-                    v = current_vertex
-                    for i in range(prev_scale-cur_scale):
-                        v = self.g.complex(v)
-                    et = '^'+et
-                    if self.g.parent(vtx) != v:
-                        tab -= 1
-                        if tab < 0:
-                            tab = 0
-                            et = et[1:]
-
-            else:
+            # Algorithm description:
+            # prev_scale >= cur_scale: 
+            #   1. search the parent
+            #   2. if < same column elif + : tab = col+1
+            complex = self.g.complex(vtx)
+            if current_vertex == complex:
                 et = '/'
                 if current_vertex != self.g.root:
-                    if tab+1 < nb_tab: 
-                        tab += 1
-                    else:
-                        et = '^'+et
+                    et = '^'+et
+
+            else:
+                et = edge_type[vtx]
+                parent = self.g.parent(vtx)
+
+                for i in range(tab, -1, -1):
+                    v = sym_at_col[i]
+                    vscale = self.g.scale(v)
+                    if vscale > cur_scale:
+                        for j in range(vscale-cur_scale):
+                            v = self.g.complex(v)
+
+                    if v == parent:
+                        if et == '<':
+                            et = '^'+et
+                            tab = i
+                        else:
+                            tab = i+1
+                        break
+                else:
+                    print sy
+                    raise Exception("Error in the MTG for vertex %d"%vtx)
+
 
             # Create a valid line with properties.
             label = labels.get(vtx, str(vtx))
@@ -1017,6 +1028,13 @@ class Writer(object):
 
             current_vertex = vtx
             prev_scale = cur_scale
+
+            if len(sym_at_col)==tab:
+                sym_at_col.append(vtx)
+            else:
+                assert len(sym_at_col) > tab
+                sym_at_col = sym_at_col[:tab+1]
+                sym_at_col[tab] = vtx
 
         return head
 

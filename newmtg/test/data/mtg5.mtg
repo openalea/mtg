@@ -34,19 +34,19 @@ ENTITY-CODE					nbEl			diam
 	/E1
 	^<E1
 	^<E1
-	^+A2
-		/E1
+		+A2
+		^/E1
 		^<E1
 	^<E1
 	^<E1
-	^+A2
-		/E1
+		+A2
+		^/E1
 		^<E1
 		^<E1
 		^<E1
-	^+A2
-		/E1
-		^<E1
+			+A2
+			^/E1
+			^<E1
 
 
 
