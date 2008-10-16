@@ -424,6 +424,26 @@ class MTG(object):
             for vtx in traversal.pre_order(self, v, complex=vid):
                 yield vtx
 
+    def components_at_scale(self, vid, scale):
+        '''
+        Return a vertex iterator
+
+        :Parameters:
+        - `vid`: The vertex identifier.
+
+        :Return: iter of vertex identifier
+        '''
+        # oops: search in the tree all the nodes which have not another
+        # explicit complex.
+
+        cur_scale = self.scale(vid)
+
+        gen = (vid,)
+        for i in range(cur_scale, scale):
+            gen = (vid for vtx in gen for vid in self.components(vtx) ) 
+
+        return gen
+
     def nb_components(self, vid):
         '''
         Return the number of components
