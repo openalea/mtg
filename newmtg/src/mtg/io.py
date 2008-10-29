@@ -414,9 +414,10 @@ def axialtree2mtg(tree, scale, scene):
         Change the id of the shape in the scene by the id of the mtg element.
         """
         if geoms:
-            for shape in geoms[axial_id]:
-                shape.id = mtg_id
-            mtg.property('geometry')[mtg_id]=geoms[axial_id]
+            if geoms.has_key(axial_id):
+                for shape in geoms[axial_id]:
+                    shape.id = mtg_id
+                mtg.property('geometry')[mtg_id]=geoms[axial_id]
 
     # The string represented by the axial tree...
 
@@ -1021,8 +1022,11 @@ class Writer(object):
             line[tab] = name
 
             for pname in property_names:
-                p = properties[pname].get(vtx,'') 
-                line.append(str(p))
+                if properties[pname].has_key(vtx):
+                    p = properties[pname].get(vtx,'') 
+                    line.append(str(p))
+                else:
+                    line.append('')
 
             head.append('\t'.join(line))
 
