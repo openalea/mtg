@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 name = 'OpenAlea.Mtg'
 namespace = 'openalea'
 pkg_name = 'openalea.mtg'
-version = '0.0.2' 
+version = '0.6.0' 
 description = 'Multiscale Tree Graph datastructure and interfaces.' 
 
 author = 'Christophe Pradal'
