@@ -2,17 +2,17 @@
 #
 #       OpenAlea.mtg
 #
-#       Copyright 2008 INRIA - CIRAD - INRA  
+#       Copyright 2008 INRIA - CIRAD - INRA
 #
 #       File author(s): Christophe Pradal <christophe.pradal.at.cirad.fr>
 #
 #       Distributed under the Cecill-C License.
 #       See accompanying file LICENSE.txt or copy at
 #           http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-# 
+#
 #       OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
-################################################################################
+###############################################################################
 
 '''
 This module provides an implementation of Multiscale Tree Graph.
@@ -24,6 +24,7 @@ __docformat__ = "restructuredtext"
 import itertools
 import traversal
 import random
+
 
 class MTG(object):
 
@@ -50,7 +51,7 @@ class MTG(object):
         # add default properties
         self.add_property('edge_type')
         self.add_property('label')
-        
+
     def scale(self, vid):
         '''
         Returns the scale of a vertex_scale identifier.
@@ -62,33 +63,34 @@ class MTG(object):
 
     def nb_scales(self):
         '''
-        Return the number of scales.
+        :returns: the number of scales.
         '''
         return len(set(self._scale.itervalues()))
 
     def scales(self):
         '''
-        :Return: iter of scale_id
+        :returns: iter of scale_id
         '''
         return iter(set(self._scale.itervalues()))
 
     def max_scale(self):
         '''
-        Return the max scale identifier.
+        :returns: the max scale identifier.
         '''
         return max(self._scale.itervalues())
 
     #########################################################################
     # Some Vertex List Graph Concept methods.
     #########################################################################
-    def __len__(self): 
+
+    def __len__(self):
         return self.nb_vertices()
 
     def nb_vertices(self, scale = -1):
         '''
-        Return the number of vertices.
+        returns the number of vertices.
 
-        :Return: int
+        :returns: int
         '''
         if scale < 0:
             return len(self._scale)
@@ -97,7 +99,7 @@ class MTG(object):
 
     def vertices(self, scale = -1):
         '''
-        :Return: iter of vertex_id
+        :returns: iter of vertex_id
         '''
         if scale < 0:
             return self._scale.iterkeys()
@@ -145,6 +147,7 @@ class MTG(object):
     #########################################################################
     # MutableVertexGraphConcept methods.
     #########################################################################
+
     def add_element(self, parent_id, edge_type = '/', scale_id=None):
         """
         add an element to the graph, if vid is not provided create a new vid
@@ -202,17 +205,16 @@ class MTG(object):
     def set_root(self, vtx_id):
         '''
         Set the tree root.
-        
-        :Parameters:
-         - `vtx_id`: The vertex identifier.
+
+        :param vtx_id: The vertex identifier.
          '''
         self._root = vtx_id
 
-    def get_root(self): 
+    def get_root(self):
         '''
-        Return the tree root.
+        returns the tree root.
 
-        :Return: vertex identifier
+        :return: vertex identifier
         '''
         return self._root
 
@@ -220,47 +222,46 @@ class MTG(object):
 
     def parent(self, vtx_id):
         '''
-        Return the parent of `vtx_id`.
+        returns the parent of `vtx_id`.
 
         :Parameters:
-        - `vtx_id`: The vertex identifier.
+         - `vtx_id`: The vertex identifier.
 
-        :Return: vertex identifier
+        :returns: vertex identifier
         '''
         #assert vtx_id in self._children[self._parent[vtx_id]]
         return self._parent.get(vtx_id)
 
     def children(self, vtx_id):
         '''
-        Return a vertex iterator
+        returns a vertex iterator
 
-        :Parameters:
-        - `vtx_id`: The vertex identifier.
+        :param vtx_id: The vertex identifier.
 
-        :Return: iter of vertex identifier
+        :returns: iter of vertex identifier
         '''
         return iter(self._children.get(vtx_id,[]))
 
     def nb_children(self, vtx_id):
         '''
-        Return the number of children
+        returns the number of children
 
         :Parameters:
-        - `vtx_id`: The vertex identifier.
+         - `vtx_id`: The vertex identifier.
 
-        :Return: int
+        :returns: int
         '''
         return len(self._children.get(vtx_id,[]))
 
     def siblings(self, vtx_id):
         '''
-        Return an iterator of vtx_id siblings.
+        returns an iterator of vtx_id siblings.
         vtx_id is not include in siblings.
 
         :Parameters:
-        - `vtx_id`: The vertex identifier.
+         - `vtx_id`: The vertex identifier.
 
-        :Return: iter of vertex identifier
+        :returns: iter of vertex identifier
         '''
         parent = self.parent(vtx_id)
         return (vid for vid in self._children[parent] if vid != vtx_id)
@@ -268,9 +269,9 @@ class MTG(object):
 
     def nb_siblings(self, vtx_id):
         '''
-        Return the number of siblings
+        returns the number of siblings
 
-        :Return: int
+        :returns: int
         '''
         parent = self.parent(vtx_id)
         return self.nb_children(parent)-1
@@ -280,15 +281,15 @@ class MTG(object):
         '''
         Test if `vtx_id` is a leaf.
 
-        :Return: bool
+        :returns: bool
         '''
         return self.nb_children(vtx_id) == 0
 
     def roots(self, scale=0):
         '''
-        Return an iterator of the vtx_id roots at a given `scale`.
+        returns an iterator of the vtx_id roots at a given `scale`.
 
-        :Return: iter of vertex identifier
+        :returns: iter of vertex identifier
         '''
         return (vid for vid in self.vertices(scale=scale) if self.parent(vid) is None)
 
@@ -302,11 +303,10 @@ class MTG(object):
         '''
         Add a child at the end of children
 
-        :Parameters:
-         - `parent`: The parent identifier.
-         - `child`: The child identifier.
+        :param parent: The parent identifier.
+        :param child: The child identifier.
 
-        :Return: vertex id
+        :returns: vertex id
         '''
 
 
@@ -345,14 +345,14 @@ class MTG(object):
         self._scale[vtx_id2] = self._scale[vtx_id1]
         return vtx_id2
 
-    def insert_parent(self, vtx_id, parent_id=None, **properties): 
+    def insert_parent(self, vtx_id, parent_id=None, **properties):
         '''
         Insert parent_id between vtx_id and its actual parent.
         Inherit of the complex of the parent of vtx_id.
 
         :Parameters:
-        - `vtx_id`: a vertex identifier
-        - `parent_id`: a vertex identifier
+         - `vtx_id`: a vertex identifier
+         - `parent_id`: a vertex identifier
         '''
 
         if parent_id is None:
@@ -376,12 +376,12 @@ class MTG(object):
 
     def complex(self, vtx_id):
         '''
-        Return the complex of `vtx_id`.
+        returns the complex of `vtx_id`.
 
         :Parameters:
-        - `vtx_id`: The vertex identifier.
+         - `vtx_id`: The vertex identifier.
 
-        :Return: vertex identifier
+        :returns: vertex identifier
         '''
         complex_id = self._complex.get(vtx_id)
         while complex_id is None:
@@ -393,13 +393,13 @@ class MTG(object):
 
     def complex_at_scale(self, vtx_id, scale):
         '''
-        Return the complex of `vtx_id` at scale `scale`.
+        returns the complex of `vtx_id` at scale `scale`.
 
         :Parameters:
-        - `vtx_id`: The vertex identifier.
-        - `scale`: The scale identifier.
+         - `vtx_id`: The vertex identifier.
+         - `scale`: The scale identifier.
 
-        :Return: vertex identifier
+        :returns: vertex identifier
         '''
         complex_id = vtx_id
         current_scale = self.scale(complex_id)
@@ -409,12 +409,11 @@ class MTG(object):
 
     def components(self, vid):
         '''
-        Return a vertex iterator
+        returns a vertex iterator
 
-        :Parameters:
-        - `vid`: The vertex identifier.
+        :param vid: The vertex identifier.
 
-        :Return: iter of vertex identifier
+        :returns: iter of vertex identifier
         '''
         # oops: search in the tree all the nodes which have not another
         # explicit complex.
@@ -426,19 +425,19 @@ class MTG(object):
 
     def components_at_scale(self, vid, scale):
         '''
-        Return a vertex iterator
+        returns a vertex iterator
 
         :Parameters:
-        - `vid`: The vertex identifier.
+         - `vid`: The vertex identifier.
 
-        :Return: iter of vertex identifier
+        :returns: iter of vertex identifier
         '''
         # oops: search in the tree all the nodes which have not another
         # explicit complex.
 
         cur_scale = self.scale(vid)
 
-        gen = (vid,)
+        gen = (vid, )
         for i in range(cur_scale, scale):
             gen = (vid for vtx in gen for vid in self.components(vtx) ) 
 
@@ -446,12 +445,12 @@ class MTG(object):
 
     def nb_components(self, vid):
         '''
-        Return the number of components
+        returns the number of components
 
         :Parameters:
-        - `vid`: The vertex identifier.
+         - `vid`: The vertex identifier.
 
-        :Return: int
+        :returns: int
         '''
         return len(list(self.components(vid)))
 
@@ -484,7 +483,7 @@ class MTG(object):
          - `parent`: The parent identifier.
          - `child`: Set the child identifier to this value if defined.
          - `complex`: Set the complex identifier to this value if defined.
-        :Return: (vid, vid)
+        :returns: (vid, vid)
         '''
 
         if complex is None:
@@ -542,7 +541,7 @@ class MTG(object):
     def property(self, name):
         '''
         Returns the property map between the vid and the data.
-        :Return:  dict of {vid:data}
+        :returns:  dict of {vid:data}
         '''
         return self._properties.get(name, {})
 
