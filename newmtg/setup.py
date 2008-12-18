@@ -8,11 +8,11 @@ from setuptools import setup, find_packages
 name = 'OpenAlea.Mtg'
 namespace = 'openalea'
 pkg_name = 'openalea.mtg'
-version = '0.6.0' 
+version = '0.6.1' 
 description = 'Multiscale Tree Graph datastructure and interfaces.' 
 
 author = 'Christophe Pradal'
-author_email = 'christophe pradal at cirad fr'
+author_email = 'christophe pradal at cirad fr, christophe godin at sophia inria fr'
 
 url = 'http://openalea.gforge.inria.fr'
 license = 'Cecill-C' 
@@ -35,7 +35,6 @@ setup(
 
     packages = packages,
     package_dir={ pkg_name : pj('src','mtg'), '' : 'src' },
-    zip_safe = True,
 
     # Dependencies
     install_requires = ['openalea.deploy'],
