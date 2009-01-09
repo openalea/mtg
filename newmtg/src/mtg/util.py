@@ -19,6 +19,7 @@ Different utilities such as plot2D, plot3D, and so on...
 '''
 
 from openalea.mtg import *
+from openalea.mtg.traversal import *
 
 def plot2d( g, image_name, scale=None ):
     """
@@ -42,3 +43,28 @@ def plot2d( g, image_name, scale=None ):
     ext= os.path.splitext(image_name)[1].strip('.')
     return pydot_graph.write(image_name, prog='dot',format=ext)
 
+
+def plot3d( g, scale=None ):
+    """
+    Compute a 3d view of the MTG in a simple way:
+      * sphere for the nodes and thin cylinder for the edges.
+    """
+    import openalea.plantgl.all as pgl
+
+    if scale is None:
+        scale = max(g.scales())
+    
+    # Vertex are sphere of radius 1/2
+    # edge are cylinder of radius 1/6 and length 3
+    points = {}
+    edges = {}
+    edge_type = g.property('edge_type')
+
+    root_id = g.roots(scale=scale).next()
+    for vid in pre_order(g, root_id):
+        parent = g.parent(vid)
+        if parent is None:
+            points[vid] = (0,0,0)
+            edges = (0,0,3)
+        else:
+            et = edge_type[vid]

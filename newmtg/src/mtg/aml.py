@@ -1,4 +1,5 @@
 # -*- python -*-
+# -*- coding: utf-8 -*-
 #
 #       OpenAlea.mtg
 #
@@ -70,7 +71,7 @@ def Activate(g):
     Activate a MTG already loaded into memory
 
     All the functions of the MTG module use an implicit MTG argument 
-    which is defined as the "active MTG". 
+    which is defined as the active MTG. 
 
     This function activates a MTG already loaded into memory which thus becomes 
     the implicit argument of all functions of module MTG.
@@ -351,8 +352,8 @@ def ClassScale(c):
     """
     Scale at which appears a given class of vertex
 
-    Every vertex is associated with a unique class. 
-    Vertices from a given class only appear at a given scale 
+    Every vertex is associated with a unique class.
+    Vertices from a given class only appear at a given scale
     which can be retrieved using this function.
 
     Usage
