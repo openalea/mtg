@@ -231,7 +231,7 @@ def read_lsystem_string( string,
     pending_edge = '' # edge type for the next edge to be created
     scale = 0
 
-    lsys_symbols = ['[', ']', '/', '+', 'f']
+    lsys_symbols = ['[', ']', '/', '+', '^', 'f']
     modules = symbol_at_scale.keys()
     symbols = lsys_symbols + modules
 
@@ -282,6 +282,13 @@ def read_lsystem_string( string,
                 turtle.left(angle)
             else:
                 turtle.left()
+        elif tag == '^':
+            args = get_args(node[1:])
+            if args:
+                angle = get_float(args[1:-1])
+                turtle.up(angle)
+            else:
+                turtle.up()
         elif tag == 'f' and node[1] == '(':
             args = get_args(node[1:])
             if args:
