@@ -3,7 +3,7 @@
 #
 #       OpenAlea.mtg
 #
-#       Copyright 2008 INRIA - CIRAD - INRA  
+#       Copyright 2008-2009 INRIA - CIRAD - INRA  
 #
 #       File author(s): Christophe Pradal <christophe.pradal.at.cirad.fr>
 #
