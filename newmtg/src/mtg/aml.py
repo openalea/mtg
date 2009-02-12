@@ -22,6 +22,7 @@ __docformat__ = "restructuredtext"
 
 import openalea.mtg.mtg as mtg
 from openalea.mtg.io import read_mtg_file
+import openalea.mtg.algo as algo
 
 # Current graph which is a global variable.
 _g = None
@@ -478,7 +479,7 @@ def Order(v1, v2=None):
     """
     # TODO
     global _g
-    pass
+    return algo.order(_g,v1,v2)
 
 def Rank(v1, v2=None):
     """
@@ -513,7 +514,7 @@ def Rank(v1, v2=None):
     """
     # TODO
     global _g
-    return 
+    return algo.rank(_g,v1,v2)
 
 def Height(v1, v2=None):
     """
@@ -555,7 +556,7 @@ def Height(v1, v2=None):
     """
     # TODO
     global _g
-    return 
+    return algo.height(_g, v1, v2)
 
 
 def AlgOrder(v1, v2):
@@ -592,7 +593,7 @@ def AlgOrder(v1, v2):
         `MTG`, `Rank`, `Order`, `Height`, `EdgeType`, `AlgHeight`, `AlgRank`.
     """
     global _g
-    return
+    return algo.alg_order(_g, v1, v2)
 
 def AlgRank(v1, v2):
     """
@@ -628,7 +629,7 @@ def AlgRank(v1, v2):
 
     """
     global _g
-    pass
+    return algo.alg_rank(_g, v1, v2)
 
 def AlgHeight(v1, v2):
     """
@@ -664,14 +665,14 @@ def AlgHeight(v1, v2):
 
     """
     global _g
-    pass
+    return algo.alg_height(_g, v1, v2)
 
 
 ################################################################################
 # Functions for moving in MTGs
 ################################################################################
 
-def Father(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
+def Father(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None, Scale = -1):
     """
     Topological father of a given vertex.
     
@@ -716,7 +717,7 @@ def Father(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
           have the same complex.
 
         - ContainedIn (vtx_id) : filter defining a subpart of the MTG where the father 
-          must be considered. If the father is actuallyoutside this subpart, 
+          must be considered. If the father is actually outside this subpart, 
           the result is `None`. 
     
           In this case, the subpart of the MTG is made of the vertices 
@@ -738,8 +739,16 @@ def Father(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
         `MTG`, `Defined`, `Sons`, `EdgeType`, `Complex`, `Components`.
 
     """
+
     global _g
-    pass
+
+    if EdgeType not in ['+', '<', '*']:
+        raise Exception('Invalid argument %s. Value of EdgeType is "<", "+" or "*".'%EdgeType)
+
+    if RestrictedTo not in ['SameComplex', 'SameAxis', 'NoRestriction']:
+        raise Exception('Invalid argument %s. Value of RestrictedTo is SameComplex, SameAxis, NoRestriction .'%RestrictedTo)
+
+    return algo.father(_g, v, scale=Scale, EdgeType=EdgeType, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
 
 def Successor(v, RestrictedTo='NoRestriction', ContainedIn=None):
     """
@@ -785,7 +794,8 @@ def Successor(v, RestrictedTo='NoRestriction', ContainedIn=None):
         78
     """
     global _g
-    pass
+    return algo.successors(_g, vid, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
+
 
 def Predecessor(v, **kwds):
     """
@@ -871,7 +881,7 @@ def Root(v, RestrictedTo='*', ContainedIn=None):
     global _g
     pass
 
-def Complex(v, Scale=0):
+def Complex(v, Scale=-1):
     """
     Complex of a vertex.
     
@@ -908,7 +918,7 @@ def Complex(v, Scale=0):
         `MTG`, `Components`.
     """
     global _g
-    pass
+    return _g.complex_at_scale(v, Scale)
 
 def Location(v, Scale=0, ContainedIn=None):
     """
@@ -963,7 +973,7 @@ def Location(v, Scale=0, ContainedIn=None):
     global _g
     pass
 
-def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=0, ContainedIn= None):
+def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= None):
     """
     Set of vertices borne or preceded by a vertex
 
@@ -1159,7 +1169,7 @@ def Extremities(v, RestrictedTo='NoRestriction', ContainedIn=None):
     global _g
     pass
 
-def Components(v, Scale=0):
+def Components(v, Scale=-1):
     """
     Set of components of a vertex.
 

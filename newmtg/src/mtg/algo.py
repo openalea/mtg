@@ -30,45 +30,106 @@ def ancestors(g, v1):
         v = g.parent(v)
 
 def path(g, v1, v2=None):
+    """
+    Compute the vertices between v1 and v2.
+    If v2 is None, return the path between v1 and the root.
+    Otherelse, return the path between v1 and v2.
+    If the graph is oriented from v1 to v2, sign is positive.
+    Else, sign is negative.
+    """
     sign = 1
     if v2 is None:
         return ancestors(g,v1), sign
 
-    l1= list(ancestors(g,v1))
-    l2 = list(ancestors(g,v2))
-    s1 = set(l1)
-    s2 = set(l2)
+    l= list(ancestors(g,v2))
+    try: 
+        index = l.index(v1)
+    except ValueError:
+        l = list(ancestors(g,v1))
+        try:
+            index = l.index(v2)
+            sign = -1
+        except ValueError:
+            return iter([]), 0
 
-    if s1 < s2:
-        l1, l2 = l2, l1
-        s1, s2 = s2, s1
-        v1, v2 = v2, v1
-        sign = -1
-    elif not s1 > s2:
-        # v1 is not an ancestor of v2 (resp v2, v1)
-        return iter([]), 0
-    
-    return iter(l1[:l1.index(v2)]), sign
+    return reversed(l[index:]), sign
 
 def edge_type(g,v):
     return g.property('edge_type').get(v)
 
-def topological_path(g,v1, v2=None, edge_type=None):
+def topological_path(g,v1, v2=None, edge=None):
     p, sign = path(g,v1,v2)
     if sign == 0:
         return None
 
-    if edge_type is None:
-        return sum(1 for v in p)
+    if edge is None:
+        return sum(1 for v in p), sign
     else: 
-        return sum(1 for v in p if edge_type(g,v)==edge_type)
+        return sum(1 for v in p if edge_type(g,v)==edge), sign
         
 def order(g, v1, v2=None):
-    return topological_path(g, v1, v2, '+')
+    return topological_path(g, v1, v2, '+')[0]
 
 def rank(g, v1, v2=None):
-    return topological_path(g, v1, v2, '<')
+    return topological_path(g, v1, v2, '<')[0]
 
 def height(g, v1, v2=None):
-    return topological_path(g, v1, v2 )
+    return topological_path(g, v1, v2 )[0]
+
+def alg_order(g, v1, v2=None):
+    p, s = topological_path(g, v1, v2, '+')
+    if p is not None:
+        return p*s
+
+def alg_rank(g, v1, v2=None):
+    p, s = topological_path(g, v1, v2, '<')
+    if p is not None:
+        return p*s
+
+def alg_height(g, v1, v2=None):
+    p, s = topological_path(g, v1, v2)
+    if p is not None:
+        return p*s
+
+def father(g, vid, scale= -1, **kwds):
+    """
+    See aml.Father function.
+    """
+    edge_type = g.property('edge_type')
+
+    et = kwds.get('EdgeType','*')
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+
+    p = g.parent(vid)
+
+    if et != '*':
+        if edge_type[vid] != et:
+            return None
+
+
+    if rt != 'NoRestriction':
+        if rt == 'SameComplex':
+            if g.complex(p) != g.complex(vid):
+                return None
+        elif rt == 'SameAxis':
+            if edge_type[vid] == '+':
+                return None
+
+    if ci is not None:
+        c_scale = g.scale(ci)
+        if g.complex_at_scale(vid, scale=c_scale) != g.complex_at_scale(p, scale=c_scale) != ci:
+            return None
+        
+    if scale != -1:
+        p = g.complex_at_scale(p,scale)
+
+    return p
+
+def successor(g, vid, **kwds):
+    raise NotImplementedError
+
+def predecessor(g, vid, **kwds):
+    raise NotImplementedError
+
 
