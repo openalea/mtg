@@ -312,7 +312,8 @@ def Feature(vid, fname, date=None):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Feature(vid, fname)
         Feature(vid, fname, date)
 
@@ -356,7 +357,8 @@ def ClassScale(c):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         ClassScale(c)
 
     Parameters
@@ -384,7 +386,8 @@ def EdgeType(v1, v2):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         EdgeType(v1, v2)
 
     Parameters
@@ -413,7 +416,8 @@ def Defined(v):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Defined(v)
 
     Parameters
@@ -446,7 +450,8 @@ def Order(v1, v2=None):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Order(v1)
         Order(v1, v2)
 
@@ -488,7 +493,8 @@ def Rank(v1, v2=None):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Rank(v1)
         Rank(v1, v2)
 
@@ -527,7 +533,8 @@ def Height(v1, v2=None):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Height(v1)
         Height(v1, v2)
 
@@ -569,7 +576,8 @@ def AlgOrder(v1, v2):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         AlgOrder(v1, v2)
     
     Parameters
@@ -605,7 +613,8 @@ def AlgRank(v1, v2):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         AlgRank(v1, v2)
 
     Parameters
@@ -641,7 +650,8 @@ def AlgHeight(v1, v2):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         AlgHeight(v1, v2)
     
     Parameters
@@ -678,7 +688,8 @@ def Father(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None, Scal
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Father(v)
         Father(v, EdgeType='<')
         Father(v, RestrictedTo='SameComplex')
@@ -759,7 +770,8 @@ def Successor(v, RestrictedTo='NoRestriction', ContainedIn=None):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Successor(v)
 
     Parameters
@@ -805,7 +817,8 @@ def Predecessor(v, **kwds):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Predecessor(v)
 
     Parameters
@@ -827,7 +840,8 @@ def Predecessor(v, **kwds):
 
     Examples
     --------
-    .. python ::
+    .. code-block:: python
+
         >>> Predecessor(v)
         7
         >>> Father(v, EdgeType='+')
@@ -847,7 +861,8 @@ def Root(v, RestrictedTo='*', ContainedIn=None):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Root(v)
 
     Parameters
@@ -869,7 +884,8 @@ def Root(v, RestrictedTo='*', ContainedIn=None):
 
     Examples
     --------
-    .. python ::
+    .. code-block:: python
+
         >>> Ancestors(v) # set of ancestors of v
         [102,78,35,33,24,12]
         >>> Root(v) # root of the branching system containing v
@@ -889,7 +905,8 @@ def Complex(v, Scale=-1):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Complex(v)
         Complex(v, Scale=2)
 
@@ -927,7 +944,8 @@ def Location(v, Scale=0, ContainedIn=None):
 
     :Usage:
     
-    .. python ::
+    .. code-block:: python
+
         Location(v)
         Location(v, Scale=s)
         Location(v, ContainedIn=complex_id)
@@ -1039,7 +1057,8 @@ def Ancestors(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Ancestors(v)
 
     Parameters
@@ -1062,7 +1081,8 @@ def Ancestors(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
 
     Examples
     --------
-    .. python ::
+    .. code-block:: python
+
         >>> v # prints vertex v
         78
         >>> Ancestors(v) # set of ancestors of v at the same scale
@@ -1087,7 +1107,8 @@ def Descendants(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None)
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Descendants(v)
 
     Parameters
@@ -1110,7 +1131,8 @@ def Descendants(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None)
 
     Examples
     --------
-    .. python ::
+    .. code-block:: python
+
         >>> v 
         78
         >>> Sons(v) # set of sons of v
@@ -1132,7 +1154,8 @@ def Extremities(v, RestrictedTo='NoRestriction', ContainedIn=None):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Extremities(v)
 
     Properties
@@ -1154,7 +1177,8 @@ def Extremities(v, RestrictedTo='NoRestriction', ContainedIn=None):
     
     Examples
     --------
-    .. python ::
+    .. code-block:: python
+
         >>> Descendants(v)
         [3, 45, 47, 78, 102]
         >>> Extremities(v)
@@ -1177,7 +1201,8 @@ def Components(v, Scale=-1):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Components(v)
         Components(v, Scale=2)
 
@@ -1218,7 +1243,8 @@ def Componentroots(e1):
     
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         ComponentRoots(v)
         ComponentRoots(v, Scale=s)
 
@@ -1240,7 +1266,8 @@ def Componentroots(e1):
 
     Examples
     --------
-    .. python ::
+    .. code-block:: python
+
         >>> v=MTGRoot() # global MTG root
         0
         >>> ComponentRoots(v) # set of first vertices at scale 1
@@ -1266,7 +1293,8 @@ def Path(v1, v2):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Path(v1, v2)
 
     Parameters
@@ -1284,7 +1312,8 @@ def Path(v1, v2):
 
     Examples
     --------
-    .. python ::
+    .. code-block:: python
+
         >>> v # print the value of v
         78
         >>> Ancestors(v)
@@ -1307,7 +1336,8 @@ def Axis(v, Scale=0):
     
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Axis(v)
         Axis(v, Scale=s)
 
@@ -1340,7 +1370,8 @@ def Trunk(v, Scale=0):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         Trunk(v)
         Trunk(v, Scale= s)
 
@@ -1378,7 +1409,8 @@ def DateSample(e1):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         - DateSample(v)
         - DateSample(v, MinDate=d1, MaxDate=d2)
 
@@ -1413,7 +1445,8 @@ def FirstDefinedFeature(e1, e2):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         FirstDefinedFeature(v, fname)
         FirstDefinedFeature(v, fname, MinDate=d1, MaxDate=d2)
 
@@ -1450,7 +1483,8 @@ def LastDefinedFeature(e1, e2):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         FirstDefinedFeature(v, fname)
         FirstDefinedFeature(v, fname, MinDate=d1, MaxDate=d2)
 
@@ -1485,7 +1519,8 @@ def NextDate(e1):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         NextDate(v, d)
 
     Parameters
@@ -1514,7 +1549,8 @@ def PreviousDate(e1):
 
     Usage
     -----
-    .. python ::
+    .. code-block:: python
+
         PreviousDate(v, d)
 
     Parameters
