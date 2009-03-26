@@ -33,37 +33,34 @@ def MTG(filename):
 
     Builds a MTG from a coding file (text file) containing the description of one or several plants.
 
-    Usage
-    -----
-    .. python ::
-        MTG(filename)
+    :Usage:
+        
+        >>> MTG(filename)
 
-    Parameters
-    ----------
+    :Parameters:
+    
         - `filename` (str): name of the coding file describing the mtg
 
-    Returns
-    -------
+    :Returns:
+    
         If the parsing process succeeds, returns an object of type `MTG`.
         Otherwise, an error is generated, and the formerly active `MTG` remains active.
 
-    Side Effect
-    -----------
+    :Side Effect:
+    
         If the `MTG` is built, the new `MTG` becomes the active `MTG` (i.e. the `MTG` implicitly 
         used by other functions such as `Father()`, `Sons()`, `VtxList()`, ...).
 
-    Details
-    -------
+    :Details:
+    
         The parsing process is approximatively proportional to the number of components 
         defined in the coding file.
 
-    Background
-    ----------
+    :Background:
+    
         MTG is an acronyme for Multiscale Tree Graph.
 
-    See also
-    --------
-        `Sons`, `Father`, ...
+    .. seealso:: :class:`Sons`, :class:`Father`, ...
     """
     return read_mtg_file(filename)
 
@@ -79,8 +76,8 @@ def Activate(g):
 
     Usage
     -----
-    .. python ::
-        Activate(g)
+        
+        >>> Activate(g)
 
     Parameters
     ----------
@@ -142,8 +139,8 @@ def MTGRoot():
 
     Usage
     -----
-    .. python ::
-        MTGRoot()
+       
+        >>> MTGRoot()
 
     Returns
     -------
@@ -173,9 +170,9 @@ def VtxList(Scale=0):
 
     Usage
     -----
-    .. python ::
-        VtxList()
-        VtxList(Scale=2)
+    
+      >>> VtxList()
+      >>> VtxList(Scale=2)
 
     Optional Parameters
     -------------------
@@ -215,8 +212,8 @@ def Class(vid):
 
     Usage
     -----
-    .. python ::
-        Class(v)
+        
+        >>> Class(v)
 
     Parameters
     ----------
@@ -253,8 +250,8 @@ def Index(vid):
 
     Usage
     -----
-    .. python ::
-        Index(v)
+        
+        >>> Index(v)
 
     Parameters 
     ----------
@@ -284,8 +281,8 @@ def Scale(vid):
 
     Usage
     -----
-    .. python ::
-        Scale(vid)
+        
+        >>> Scale(vid)
 
     Parameters
     ----------
@@ -928,33 +925,29 @@ def Location(v, Scale=0, ContainedIn=None):
     with maximum scale (cf. `Father`). If it does not exist, None is returned.
     If a scale is specified, the function is equivalent to `Father(v, Scale=s)`.
 
-    Usage
-    -----
+    :Usage:
+    
     .. python ::
         Location(v)
         Location(v, Scale=s)
         Location(v, ContainedIn=complex_id)
 
-    Parameters
-    ----------
+    :Parameters:
+    
         - v (vtx_id) : vertex of the active MTG.
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+    
         - Scale (int) : scale at which the location is required.
         - ContainedIn (vtx_id) : cf. `Father`
 
-    Returns
-    -------
+    :Returns:
         vtx_id
 
-    See Also
-    --------
-        `MTG`, `Father`.
+    .. seealso::        `MTG`, `Father`.
 
-    Examples
-    --------
-    .. python ::
+    :Examples:
+        
         >>> Father(v, EdgeType='+')
         7
         >>> Complex(v)
@@ -983,10 +976,10 @@ def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= N
 
     Usage
     -----
-    .. python ::
-        Sons(v)
-        Sons(v, EdgeType= '+')
-        Sons(v, Scale= 3)
+        
+        >>> Sons(v)
+        >>> Sons(v, EdgeType= '+')
+        >>> Sons(v, Scale= 3)
 
     Parameters
     ----------
@@ -994,14 +987,15 @@ def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= N
 
     Optional Parameters
     -------------------
-        - RestrictedTo (str): cf. `Father`
-        - ContainedIn (vtx_id): cf. `Father`
+        - RestrictedTo (str) : cf. `Father`
+        - ContainedIn (vtx_id) : cf. `Father`
         - EdgeType (str) : filter on the type of sons.
         - Scale (int) : set the scale at which sons are considered.
 
     Returns
     -------
-        list(vid)
+        
+    list(vid)
 
     Details
     -------
@@ -1020,7 +1014,7 @@ def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= N
 
     Examples
     --------
-    .. python ::
+        
         >>> Sons(v) 
         [3,45,47,78,102]
         >>>  Sons(v, EdgeType= '+') # set of vertices borne by v 

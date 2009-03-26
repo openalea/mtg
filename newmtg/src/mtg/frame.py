@@ -18,7 +18,7 @@ class Frame(object):
     pass
 
 def PlantFrame(g, Vertex=0, **kwds):
-    
+    pass    
 
  
 #self.add_input( name = "MTG", interface = None) 
@@ -45,4 +45,3 @@ def PlantFrame(g, Vertex=0, **kwds):
 #        self.add_input( name = "Translate", interface = ISequence, value=None,hide=True)
 #        self.add_input( name = "Origin", interface = ISequence, value=None,hide=True)
 #        self.add_input( name = "DressingData",hide=True)
-
