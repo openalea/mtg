@@ -12,8 +12,8 @@ dreload(util)
 
 #io.debug = 1
 fn = r'data/mtg5.mtg'
-fn = r'data/test9_noylum2.mtg'
 fn = r'data/reconstructed_appletree.mtg'
+fn = r'data/test9_noylum2.mtg'
 
 g = read_mtg_file(fn)
 
@@ -25,8 +25,8 @@ zz = g.property('ZZ')
 scale = 3
 points = {}
 
-factor = 1
 factor = 100
+factor = 1
 for vid in g.vertices(scale=scale):
     try:
         points[vid] = xx[vid]*factor, yy[vid]*factor, zz[vid]*factor
@@ -97,6 +97,7 @@ sf = 0.01
 p= [Vector2(0.5,0), Vector2( 0,0.5), Vector2(-0.05,0), Vector2(0,-0.5), Vector2(0.5,0)]
 #p= map(lambda x: x*sf, p)
 section= Polyline2D(p)
+section = Polyline2D.Circle(0.5,10)
 scene.clear()
 for axe, radius in polylines:
     radius[0] = radius[1]
