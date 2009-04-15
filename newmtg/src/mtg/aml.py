@@ -62,7 +62,9 @@ def MTG(filename):
 
     .. seealso:: :class:`Sons`, :class:`Father`, ...
     """
-    return read_mtg_file(filename)
+    global _g
+    _g = read_mtg_file(filename)
+    return _g
 
 def Activate(g):
     """
@@ -410,7 +412,7 @@ def EdgeType(v1, v2):
 
     return _g.property('edge_type').get(v2)
 
-def Defined(v):
+def Defined(vid):
     """
     Test whether a given vertex belongs to the active MTG.
 
@@ -479,7 +481,6 @@ def Order(v1, v2=None):
         `MTG`, `Rank`, `Height`, `EdgeType`, `AlgOrder`, `AlgRank`, `AlgHeight`.
 
     """
-    # TODO
     global _g
     return algo.order(_g,v1,v2)
 
@@ -515,7 +516,6 @@ def Rank(v1, v2=None):
         `MTG`, `Order`, `Height`, `EdgeType`, `AlgRank`, `AlgHeight`, `AlgOrder`.
 
     """
-    # TODO
     global _g
     return algo.rank(_g,v1,v2)
 
@@ -558,7 +558,6 @@ def Height(v1, v2=None):
         `MTG`, `Order`, `Rank`, `EdgeType`, `AlgHeight`, `AlgHeight`, `AlgOrder`.
 
     """
-    # TODO
     global _g
     return algo.height(_g, v1, v2)
 
