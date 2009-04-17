@@ -34,6 +34,7 @@ def MTG(filename):
     Builds a MTG from a coding file (text file) containing the description of one or several plants.
 
     :Usage:
+    .. code-block:: python
         
         >>> MTG(filename)
 
@@ -43,13 +44,13 @@ def MTG(filename):
 
     :Returns:
     
-        If the parsing process succeeds, returns an object of type `MTG`.
+        If the parsing process succeeds, returns an object of type :class:`MTG`.
         Otherwise, an error is generated, and the formerly active `MTG` remains active.
 
     :Side Effect:
     
-        If the `MTG` is built, the new `MTG` becomes the active `MTG` (i.e. the `MTG` implicitly 
-        used by other functions such as `Father()`, `Sons()`, `VtxList()`, ...).
+        If the :class:`MTG` is built, the new :class:`MTG` becomes the active :class:`MTG` (i.e. the :class:`MTG` implicitly 
+        used by other functions such as :class:`Father()`, :class:`Sons()`, :class:`VtxList()`, ...).
 
     :Details:
     
@@ -76,88 +77,82 @@ def Activate(g):
     This function activates a MTG already loaded into memory which thus becomes 
     the implicit argument of all functions of module MTG.
 
-    Usage
-    -----
-        
+    :Usage:
+
+    .. code-block:: python
+
         >>> Activate(g)
 
-    Parameters
-    ----------
+    :Parameters:
+
         - `g`: MTG to be activated
 
-    Details
-    -------
+    :Details:
+
         When several MTGs are loaded into memory, only one is active at a time. 
         By default, the active MTG is the last MTG loaded using function MTG(). 
 
         However, it is possible to activate an MTG already loaded using function Activate(). 
         The current active MTG can be identified using function Active().
 
-    Background
-    ----------
-        MTGs
+    :Background:
 
-    See Also
-    --------
-        `MTG`, `Active()`.
+        :class:`MTG`
+
+    .. seealso:: :class:`MTG`, :class:`Father`, ...
+
     """
     global _g
     _g = g
     return _g
 
 def Active():
-    """
-    Returns the active MTG.
+    """Returns the active MTG.
     
     If no MTG is loaded into memory, None is returned.
 
-    Usage
-    -----
-      - `Active()`
+    :Usage:
 
-    Returns
-    -------
-      - `MTG`
+    .. code-block:: python
 
-    Details
-    -------
+        >>> Active()
+
+    :Returns:
+
+        - :class:`MTG`
+
+    :Details:
+
         When several MTGs are loaded into memory, only one is active at a time. 
-        By default, the active MTG is the last MTG loaded using function `MTG()`. 
-        However, it is possible to activate an MTG already loaded using function `Activate()`. 
-        The current active MTG can be identified using function `Active()`.
+        By default, the active MTG is the last MTG loaded using function :class:`MTG`. 
+        However, it is possible to activate an MTG already loaded using function :class:`Activate`. 
+        The current active MTG can be identified using function :class:`Active`.
 
-    See Also
-    --------
-        - `MTG`, `Activate()`.
+    .. seealso:: :class:`MTG`, :class:`Activate()`.
     """
     global _g
     return _g
 
 def MTGRoot():
-    """
-    Returns the root vertex of the MTG.
+    """Returns the root vertex of the MTG.
 
     It is the only vertex at scale 0 (the coarsest scale).
 
-    Usage
-    -----
+    :Usage:
+    .. code-block:: python
        
         >>> MTGRoot()
 
-    Returns
-    -------
-        vtx identifier
+    :Returns:
+    
+        - vtx identifier
 
-    Details
-    -------
+    :Details:
+
         This vertex is the complex of all vertices from scale 1. It is a mean to refer to the entire database.
 
-    Background
-    ----------
-        MTGs
-    See Also
-    --------
-        `MTG`, `Complex`, `Components`, `Scale`.
+
+    .. seealso:: :class:`MTG`, :class:`Complex`, :class:`Components`, :class:`Scale`.
     """
     global _g
     return _g.root
@@ -166,31 +161,30 @@ def VtxList(Scale=0):
     """	
     Array of vertices contained in a MTG
 
-    The set of all vertices in the MTG is returned as an array. 
+    The set of all vertices in the :class:`MTG` is returned as an array. 
     Vertices from all scales are returned if no option is used. 
     The order of the elements in this array is not significant. 
 
-    Usage
-    -----
-    
-      >>> VtxList()
-      >>> VtxList(Scale=2)
+    :Usage:
 
-    Optional Parameters
-    -------------------
-        Scale (INT) : used to select components at a particular scale.
+    .. code-block:: python
 
-    Returns
-    -------
-        list of vid
+        >>> VtxList()
+        >>> VtxList(Scale=2)
 
-    Background
-    ----------
-        MTGs
+    :Optional Parameters:
 
-    See Also
-    --------
-        `MTG`, `Scale`, `Class`, `Index`.
+        - `Scale` (int): used to select components at a particular scale.
+
+    :Returns:
+
+        - list of vid
+
+    :Background:
+
+        :class:`MTGs`
+
+    .. seealso:: :class:`MTG`, :class:`Scale`, :class:`Class`, :class:`Index`.
     """
     global _g
     return list(_g.vertices(scale=Scale))
@@ -203,7 +197,7 @@ def Class(vid):
     """
     Class of a vertex
 
-    The `Class` of a vertex is a feature always defined and independent of time 
+    The :class:`Class` of a vertex is a feature always defined and independent of time 
     (like the index). 
     It is represented by an alphabetic character in upper or lower case 
     (lower cases characters are considered different from upper cases). 
@@ -212,22 +206,19 @@ def Class(vid):
     The label thus provides general information about a vertex and 
     enables us to encode the plant components.
 
-    Usage
-    -----
+    :Usage:
         
         >>> Class(v)
 
-    Parameters
-    ----------
+    :Parameters:
+
         - v (vtx_id) : vertex of the active MTG
 
-    Returns
-    -------
-        str
+    :Returns:
 
-    See Also
-    --------
-        `MTG`, `Index`.
+        The class of the vertex.
+
+    .. seealso:: :class:`MTG`, :class:`Index`.
     """
     global _g
     labels = _g.property('label')
@@ -242,7 +233,7 @@ def Index(vid):
     """
     Index of a vertex
 
-    The `Index` of a vertex is a feature always defined and independent of time 
+    The :class:`Index` of a vertex is a feature always defined and independent of time 
     (like the index). 
     It is represented by an by a non negative integer. 
     The label of a vertex is the string defined by the concatenation 
@@ -250,22 +241,19 @@ def Index(vid):
     The label thus provides general information about a vertex and 
     enables us to encode the plant components.
 
-    Usage
-    -----
+    :Usage:
         
         >>> Index(v)
 
-    Parameters 
-    ----------
+    :Parameters:
+
         - v (vtx_id) : vertex of the active MTG
 
-    Returns
-    -------
+    :Returns:
+
         int
 
-    See Also
-    --------	
-	`MTG`, `Class`.
+    .. seealso:: :class:`MTG`, :class:`Class`.
     """
     global _g
     labels = _g.property('label')
@@ -281,24 +269,21 @@ def Scale(vid):
 
     Returns the scale at which is defined the argument.
 
-    Usage
-    -----
+    :Usage:
         
         >>> Scale(vid)
 
-    Parameters
-    ----------
+    :Parameters:
+
         - `vid` (vtx identifier) : vertex of the active MTG
         - `vid` (PLANTFRAME) : PlantFrame computed on the active MTG
         - `vid` (LINETREE) : LineTree computed on a PlantFrame representing the active MTG
 
-    Returns
-    -------
+    :Returns:
+
         int
 
-    See Also
-    --------
-        `MTG`, `ClassScale`, `Class`, `Index`.
+    .. seealso:: :class:`MTG`, :class:`ClassScale`, :class:`Class`, :class:`Index`.
 
     """
     global _g
@@ -312,38 +297,36 @@ def Feature(vid, fname, date=None):
 
     If the value of an attribute is not defined in the coding file, the value None is returned.
 
-    Usage
-    -----
+    :Usage:
+
     .. code-block:: python
 
         Feature(vid, fname)
         Feature(vid, fname, date)
 
-    Parameters 
-    ----------
+    :Parameters: 
+
         - vid (vtx_id) : vertex of the active MTG.
         - fname (str) : name of the attribute (as specified in the coding file).
         - date (date) : (for a dynamic `MTG`) date at which the attribute of the vertex is considered.
 
-    Returns
-    -------
+    :Returns:
+
         int, str, date or float
 
-    Details
-    -------
+    :Details:
+
         If for a given attribute, several values are available(corresponding to different dates), 
         the date of interest must be specified as a third attribute.
 
         This date must be a valid date appearing in the coding file for a considered vertex.
         Otherwise `None` is returned.
 
-    Background
-    ----------
+    :Background:
+
         MTGs and Dynamic MTGs.
 
-    See Also
-    --------	
-        `MTG`, `Class`, `Index`, `Scale`.
+    .. seealso:: `MTG`, `Class`, `Index`, `Scale`.
 
     """
     global _g
@@ -357,23 +340,21 @@ def ClassScale(c):
     Vertices from a given class only appear at a given scale
     which can be retrieved using this function.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         ClassScale(c)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - `c` (str) : symbol of the considered class
 
-    Returns
-    -------
+    :Returns:
+      
         int
 
-    See Also
-    --------
-        `MTG`, `Class`, `Scale`, `Index`.
+    .. seealso:: :class:`MTG`, :class:`Class`, :class:`Scale`, :class:`Index`.
 
     """
     # TODO
@@ -386,24 +367,22 @@ def EdgeType(v1, v2):
     Returns the symbol of the type of connection between two vertices (either `<` or `+`). 
     If the vertices are not connected, None is returned.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         EdgeType(v1, v2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v1 (vid) : vertex of the active MTG
         - v2 (vid) : vertex of the active MTG
 
-    Returns
-    -------
+    :Returns:
+      
         '<' (successor), '+' (branching) or `None`
 
-    See Also
-    --------
-        `MTG`, `Sons`, `Father`.
+    .. seealso:: :class:`MTG`, :class:`Sons`, :class:`Father`.
 
     """
     global _g
@@ -416,23 +395,21 @@ def Defined(vid):
     """
     Test whether a given vertex belongs to the active MTG.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Defined(v)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG
 
-    Returns
-    -------
+    :Returns:
+      
         bool
 
-    See Also
-    --------
-        `MTG`.
+    .. seealso:: :class:`MTG`.
     """
     global _g
     return vid in _g
@@ -450,24 +427,24 @@ def Order(v1, v2=None):
     When the function only has one argument `v1`, the order of `v1` correspond 
     to the order of `v1` with respect to the root of the branching system containing `v1`.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Order(v1)
         Order(v1, v2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v1 (vtx_id) : vertex of the active MTG
         - v2 (vtx_id) : vertex of the active MTG
 
-    Returns
-    -------
+    :Returns:
+      
         int
     
-    Note
-    ----
+    :Note:
+      
         When the function takes two arguments, the order of the arguments is not important 
         provided that one is an ancestor of the other. 
         When the order is relevant, use function AlgOrder().
@@ -476,9 +453,7 @@ def Order(v1, v2=None):
         This might be different with some botanical conventions where 1 is the order of the 
         trunk, 2 the order of branches, etc.
     
-    See Also
-    --------
-        `MTG`, `Rank`, `Height`, `EdgeType`, `AlgOrder`, `AlgRank`, `AlgHeight`.
+    .. seealso:: :class:`MTG`, :class:`Rank`, :class:`Height`, :class:`EdgeType`, :class:`AlgOrder`, :class:`AlgRank`, :class:`AlgHeight`.
 
     """
     global _g
@@ -492,28 +467,26 @@ def Rank(v1, v2=None):
     at the same scale, and does not take into account the order of vertices v1 and v2. 
     The result is a non negative integer. 
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Rank(v1)
         Rank(v1, v2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v1 (vtx_id) : vertex of the active MTG
         - v2 (vtx_id) : vertex of the active MTG
 
-    Returns
-    -------
+    :Returns:
+      
         `int`
 
         If v1 is not an ancestor of v2 (or vise versa) within the same botanical axis, 
         or if v1 and v2 are not defined at the same scale, an error value Undef id returned.
 
-    See Also
-    --------
-        `MTG`, `Order`, `Height`, `EdgeType`, `AlgRank`, `AlgHeight`, `AlgOrder`.
+    .. seealso:: :class:`MTG`, :class:`Order`, :class:`Height`, :class:`EdgeType`, :class:`AlgRank`, :class:`AlgHeight`, :class:`AlgOrder`.
 
     """
     global _g
@@ -531,31 +504,29 @@ def Height(v1, v2=None):
     the height of `v1` correspond to the height of `v1`with respect 
     to the root of the branching system containing `v1`.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Height(v1)
         Height(v1, v2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v1 (vtx_id) : vertex of the active MTG
         - v2 (vtx_id) : vertex of the active MTG
 
-    Returns
-    -------
+    :Returns:
+      
         int
 
-    Note
-    ----
+    :Note:
+      
         When the function takes two arguments, the order of the arguments is not important
         provided that one is an ancestor of the other. When the order is relevant, use
         function `AlgHeight`.
 
-    See Also
-    --------
-        `MTG`, `Order`, `Rank`, `EdgeType`, `AlgHeight`, `AlgHeight`, `AlgOrder`.
+    .. seealso:: :class:`MTG`, :class:`Order`, :class:`Rank`, :class:`EdgeType`, :class:`AlgHeight`, :class:`AlgHeight`, :class:`AlgOrder`.
 
     """
     global _g
@@ -573,28 +544,26 @@ def AlgOrder(v1, v2):
     The result is positive if `v1` is an ancestor of `v2`, 
     and negative if `v2` is an ancestor of `v1`.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         AlgOrder(v1, v2)
     
-    Parameters
-    ----------
+    :Parameters:
+      
         - v1 (vtx_id) : vertex of the active MTG.
         - v2 (vtx_id) : vertex of the active MTG.
 
-    Returns
-    -------
+    :Returns:
+      
         int
 
         If `v1` is not an ancestor of `v2` (or vise versa), or if `v1` and `v2` are not defined 
         at the same scale, an error value None is returned.
 
 
-    See Also
-    --------
-        `MTG`, `Rank`, `Order`, `Height`, `EdgeType`, `AlgHeight`, `AlgRank`.
+    .. seealso:: :class:`MTG`, :class:`Rank`, :class:`Order`, :class:`Height`, :class:`EdgeType`, :class:`AlgHeight`, :class:`AlgRank`.
     """
     global _g
     return algo.alg_order(_g, v1, v2)
@@ -610,27 +579,25 @@ def AlgRank(v1, v2):
     The result is positive if `v1` is an ancestor of `v2`, 
     and negative if `v2` is an ancestor of `v1`.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         AlgRank(v1, v2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v1 (vtx_id) : vertex of the active MTG.
         - v2 (vtx_id) : vertex of the active MTG.
 
-    Returns
-    -------
+    :Returns:
+      
         int
 
         If `v1` is not an ancestor of `v2` (or vise versa), or if `v1` and `v2` are not defined 
         at the same scale, an error value None is returned.
 
-    See Also
-    --------
-        `MTG`, `Rank`, `Order`, `Height`, `EdgeType`, `AlgHeight`, `AlgOrder`.
+    .. seealso:: :class:`MTG`, :class:`Rank`, :class:`Order`, :class:`Height`, :class:`EdgeType`, :class:`AlgHeight`, :class:`AlgOrder`.
 
     """
     global _g
@@ -647,27 +614,25 @@ def AlgHeight(v1, v2):
     The result is positive if `v1` is an ancestor of `v2`, 
     and negative if `v2` is an ancestor of `v1`.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         AlgHeight(v1, v2)
     
-    Parameters
-    ----------
+    :Parameters:
+      
         - v1 (vtx_id) : vertex of the active MTG.
         - v2 (vtx_id) : vertex of the active MTG.
 
-    Returns
-    -------
+    :Returns:
+      
         int
 
         If `v1` is not an ancestor of `v2` (or vise versa), or if `v1` and `v2` are not defined 
         at the same scale, an error value None is returned.
 
-    See Also
-    --------
-        `MTG`, `Rank`, `Order`, `Height`, `EdgeType`, `AlgOrder`, `AlgRank`.
+    .. seealso:: :class:`MTG`, :class:`Rank`, :class:`Order`, :class:`Height`, :class:`EdgeType`, :class:`AlgOrder`, :class:`AlgRank`.
 
     """
     global _g
@@ -685,8 +650,8 @@ def Father(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None, Scal
     Returns the topological father of a given vertex. And `None` if the father does not exist.
     If the argument is not a valid vertex, `None` is returned.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Father(v)
@@ -695,12 +660,12 @@ def Father(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None, Scal
         Father(v, ContainedIn=complex_id)
         Father(v, Scale=s)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         If no optional argument is specified,  the function returns the topological father 
         of the argument (vertex that bears or precedes to the vertex passed as an argument).
 
@@ -737,13 +702,11 @@ def Father(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None, Scal
           'which axis bears the internode?') or greater 
           (e.g. 'which internodes bears this annual shoot?').
 
-    Returns
-    -------
+    :Returns:
+      
         vtx_id
 
-    See Also
-    --------
-        `MTG`, `Defined`, `Sons`, `EdgeType`, `Complex`, `Components`.
+    .. seealso:: :class:`MTG`, :class:`Defined`, :class:`Sons`, :class:`EdgeType`, :class:`Complex`, :class:`Components`.
 
     """
 
@@ -767,31 +730,29 @@ def Successor(v, RestrictedTo='NoRestriction', ContainedIn=None):
     If many such vertices exist, an arbitrary one is returned by the function. 
     If no such vertex exists, None is returned.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Successor(v)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v1 (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - RestrictedTo (str): cf. Father
         - ContainedIn (vtx_id): cf. Father
 
-    Returns
-    -------
+    :Returns:
+      
         vtx_id
 
-    See Also
-    --------
-        `MTG`, `Sons`, `Predecessor`.
 
-    Examples
-    --------
+    :Examples:
+    .. code-block:: python
+      
         >>> Sons(v) 
         [3,45,47,78,102]
         >>> Sons(v, EdgeType='+') # set of vertices borne by v
@@ -800,6 +761,8 @@ def Successor(v, RestrictedTo='NoRestriction', ContainedIn=None):
         [78]
         >>> Successor(v)
         78
+
+    .. seealso:: :class:`MTG`, :class:`Sons`, :class:`Predecessor`.
     """
     global _g
     return algo.successors(_g, vid, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
@@ -814,31 +777,29 @@ def Predecessor(v, **kwds):
     if it is located in the same botanical. 
     If it does not exist, None is returned.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Predecessor(v)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - RestrictedTo (str): cf. `Father`
         - ContainedIn (vtx_id): cf. `Father`
 
-    Returns
-    -------
+    :Returns:
+      
         vtx_id
 
-    See Also
-    --------
-        `MTG`, `Father`, `Successor`.
+    .. seealso:: :class:`MTG`, :class:`Father`, :class:`Successor`.
 
-    Examples
-    --------
+    :Examples:
+      
     .. code-block:: python
 
         >>> Predecessor(v)
@@ -858,37 +819,36 @@ def Root(v, RestrictedTo='*', ContainedIn=None):
     It thus returns the root of the branching system containing the argument. 
     This function never returns None.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Root(v)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - RestrictedTo (str): cf. Father
         - ContainedIn (vtx_id): cf. Father
 
-    Returns
-    -------
+    :Returns:
+      
        vtx_id 
 
-    See Also
-    --------
-        `MTG`, `Extremities`.
 
-    Examples
-    --------
+    :Examples:
+      
     .. code-block:: python
 
         >>> Ancestors(v) # set of ancestors of v
         [102,78,35,33,24,12]
         >>> Root(v) # root of the branching system containing v
         12
+
+    .. seealso:: :class:`MTG`, :class:`Extremities`.
     """
     global _g
     pass
@@ -902,33 +862,31 @@ def Complex(v, Scale=-1):
     has a uniq complex. None is returned if the argument is the MTG Root 
     or if the vertex is undefined.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Complex(v)
         Complex(v, Scale=2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - Scale (int) : scale of the complex
 
-    Returns
-    -------
+    :Returns:
+      
         vtx_id
 
-    Details
-    -------
+    :Details:
+      
         When a scale different form Scale(v)-1 is specified using the optional parameter
         `Scale`, this scale must be lower than that of the vertex argument.
 
-    See Also
-    --------
-        `MTG`, `Components`.
+    .. seealso:: :class:`MTG`, :class:`Components`.
     """
     global _g
     return _g.complex_at_scale(v, Scale)
@@ -961,7 +919,6 @@ def Location(v, Scale=0, ContainedIn=None):
     :Returns:
         vtx_id
 
-    .. seealso::        `MTG`, `Father`.
 
     :Examples:
         
@@ -979,6 +936,8 @@ def Location(v, Scale=0, ContainedIn=None):
         7
         >>> Location(v, Scale= Scale(v)-1)
         4
+
+    .. seealso::        :class:`MTG`, :class:`Father`.
     """
     global _g
     pass
@@ -991,46 +950,42 @@ def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= N
     The order of the vertices in the array is not significant. 
     The array can be empty if there are no son vertices.
 
-    Usage
-    -----
+    :Usage:
+      
         
         >>> Sons(v)
         >>> Sons(v, EdgeType= '+')
         >>> Sons(v, Scale= 3)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - RestrictedTo (str) : cf. `Father`
         - ContainedIn (vtx_id) : cf. `Father`
         - EdgeType (str) : filter on the type of sons.
         - Scale (int) : set the scale at which sons are considered.
 
-    Returns
-    -------
+    :Returns:
         
-    list(vid)
+        list(vid)
 
-    Details
-    -------
+    :Details:
+      
         When the option EdgeType is applied, the function returns the set of sons 
         that are connected to the argument with the specified type of relation. 
-        Note that `Sons(v, EdgeType= '<')` is not equivalent to `Successor(v)`. 
+        :Note: that `Sons(v, EdgeType= '<')` is not equivalent to `Successor(v)`. 
         The first function returns an array of vertices while the second function returns a vertex.
         
         The returned vertices have the same scale as the argument. 
         However, coarser or finer vertices can be obtained by specifying 
         the optional argument `Scale` at which the sons are considered.
 
-    See Also
-    --------
-        `MTG`, `Father`, `Successor`, `Descendants`.
 
-    Examples
-    --------
+    :Examples:
+    .. code-block:: python
         
         >>> Sons(v) 
         [3,45,47,78,102]
@@ -1038,6 +993,8 @@ def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= N
         [3,45,47,102]
         >>>  Sons(v, EdgeType= '<') # set of successors of v on the same axis
         [78]
+
+    .. seealso:: :class:`MTG`, :class:`Father`, :class:`Successor`, :class:`Descendants`.
     """
     global _g
     pass
@@ -1052,34 +1009,31 @@ def Ancestors(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
     then contains the vertices on the path from `v` back to the root (in this order) 
     and finishes by the tree root.
 
-    Note : The anscestor array always contains at least the argument vertex `v`.
+    :Note: : The anscestor array always contains at least the argument vertex `v`.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Ancestors(v)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - RestrictedTo (str): cf. `Father`
         - ContainedIn (vtx_id): cf. `Father`
         - EdgeType (str): cf. `Father`
 
-    Returns
-    -------
+    :Returns:
+      
         list of vtx_id.
 
-    See Also
-    --------
-        `MTG`, `Descendants`.
 
-    Examples
-    --------
+    :Examples:
+      
     .. code-block:: python
 
         >>> v # prints vertex v
@@ -1089,6 +1043,8 @@ def Ancestors(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
         >>> list(reversed(Ancestors(v))) # To get the vertices in the order from the root to the vertex v
         [4,10,32,45,78]
 
+
+    .. seealso:: :class:`MTG`, :class:`Descendants`.
     """
     global _g
     pass
@@ -1102,34 +1058,31 @@ def Descendants(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None)
     that belong to the branching system starting at `v`. 
     The order of the vertices in the array is not significant. 
   
-    Note : The argument always belongs to the set of its descendants.
+    :Note: : The argument always belongs to the set of its descendants.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Descendants(v)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - RestrictedTo (str): cf. `Father`
         - ContainedIn (vtx_id): cf. `Father`
         - EdgeType (str): cf. `Father`
 
-    Returns
-    -------
+    :Returns:
+      
         list of vtx_id.
 
-    See Also
-    --------
-        `MTG`, `Ancestors`.
 
-    Examples
-    --------
+    :Examples:
+      
     .. code-block:: python
 
         >>> v 
@@ -1138,6 +1091,8 @@ def Descendants(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None)
         [78,99,101]
         >>> Descendants(v) # set of descendants of v
         [78,99,101,121,133,135,156,171,190]
+
+    .. seealso:: :class:`MTG`, :class:`Ancestors`.
     """
     global _g
     pass
@@ -1151,37 +1106,36 @@ def Extremities(v, RestrictedTo='NoRestriction', ContainedIn=None):
     as a list of vertices. These vertices have the same scale as `v` and their order in 
     the list is not signifiant. The result is always a non empty array.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Extremities(v)
 
-    Properties
-    ----------
+    :Properties:
+      
         -  v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - RestrictedTo (str): cf. `Father`
         - ContainedIn (vtx_id): cf. `Father`
 
-    Returns
-    -------
+    :Returns:
+      
         list of vtx_id
 
-    See Also
-    --------
-        `MTG`, `Descendants`, `Root`, `MTGRoot`.
     
-    Examples
-    --------
+    :Examples:
+      
     .. code-block:: python
 
         >>> Descendants(v)
         [3, 45, 47, 78, 102]
         >>> Extremities(v)
         [47, 102]
+
+    .. seealso:: :class:`MTG`, :class:`Descendants`, :class:`Root`, :class:`MTGRoot`.
     """
     global _g
     pass
@@ -1191,40 +1145,38 @@ def Components(v, Scale=-1):
     Set of components of a vertex.
 
     The set of components of a vertex is returned as a list of vertices. 
-    If `s` defines the scale of `v`, components are defined at scale `s` + 1. 
+    If **s** defines the scale of **v**, components are defined at scale **s** + 1. 
     The array is empty if the vertex has no components. 
     The order of the components in the array is not significant.
     
-    When a scale is specified using optional argument `Scale`, 
+    When a scale is specified using optional argument :arg:Scale, 
     it must be necessarily greater than the scale of the argument.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Components(v)
         Components(v, Scale=2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - Scale (int) : scale of the components.
 
-    Returns
-    -------
+    :Returns:
+      
         list of vtx_id
 
-    See Also
-    --------
-        `MTG`, `Complex`.
+    .. seealso:: :class:`MTG`, :class:`Complex`.
     """
     global _g
     pass
 
-def Componentroots(e1):
+def ComponentRoots(e1):
     """
     Set of roots of the tree graphs that compose a vertex
 
@@ -1234,37 +1186,34 @@ def Componentroots(e1):
     This is for example the case of a MTG containing the description of several plants: 
     the MTG root vertex can be decomposed into tree graphs (not connected) 
     that represent the different plants. 
-    This function returns the set of roots of these tree graphs at scale `Scale(v)`+1. 
+    This function returns the set of roots of these tree graphs at scale *Scale(v)+1*. 
     The order of these roots is not significant.
 
-    When a scale different from `Scale(v)+1` is specified using the optional argument `Scale`, 
+    When a scale different from *Scale(v)+1* is specified using the optional argument :arg:Scale, 
     this scale must be greater than that of the vertex argument.
     
-    Usage
-    -----
+    :Usage:
+
     .. code-block:: python
 
         ComponentRoots(v)
         ComponentRoots(v, Scale=s)
 
-    Parameters
-    ----------
+    :Parameters:
+
         - v (vtx_id) : vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+
         - Scale (str): scale of the component roots.
 
-    Returns
-    -------
+    :Returns:
+
         list of vtx_id
 
-    See Also
-    --------
-        `MTG`, `Components`, `Trunk`.
 
-    Examples
-    --------
+    :Examples:
+
     .. code-block:: python
 
         >>> v=MTGRoot() # global MTG root
@@ -1273,6 +1222,8 @@ def Componentroots(e1):
         [1,34,76,100,199,255]
         >>> ComponentRoots(v, Scale=2) # set of first vertices at scale 2
         [2,35,77,101,200,256]
+
+    .. seealso:: :class:`MTG`, :class:`Components`, :class:`Trunk`.
     """
     global _g
     pass
@@ -1288,29 +1239,26 @@ def Path(v1, v2):
     and if at least one vertex is undefined, None is returned.
 
 
-    Note : `v1` can be equal to `v2`.
+    :Note: : `v1` can be equal to `v2`.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Path(v1, v2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - `v1` (VTX) : vertex of the active MTG
         - `v2` (VTX) : vertex of the active MTG
 
-    Returns
-    -------
+    :Returns:
+      
         list of vtx_id
 
-    See Also
-    --------
-        `MTG`, `Axis`, `Ancestors`.
 
-    Examples
-    --------
+    :Examples:
+      
     .. code-block:: python
 
         >>> v # print the value of v
@@ -1321,6 +1269,8 @@ def Path(v1, v2):
         [10,32,45,78]
         >>> Path(9,v) # 9 is not an ancestor of 78
         []
+
+    .. seealso:: :class:`MTG`, :class:`Axis`, :class:`Ancestors`.
     """
     global _g
     pass
@@ -1333,28 +1283,26 @@ def Axis(v, Scale=0):
     Axis return the array of vertices representing the botanical axis which the argument v belongs to. 
     The optional argument enables the user to choose the scale at which the axis decomposition is required.
     
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Axis(v)
         Axis(v, Scale=s)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : Vertex of the active MTG
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - Scale (str): scale at which the axis components are required.
 
-    Returns
-    -------
+    :Returns:
+      
         list of vtx_id
 
-    See Also
-    --------
-        `MTG`, `Path`, `Ancestors`.
+    .. seealso:: :class:`MTG`, :class:`Path`, :class:`Ancestors`.
     """
     global _g
     pass
@@ -1367,28 +1315,26 @@ def Trunk(v, Scale=0):
     the bearing axis of the whole branching system defined by `v`. 
     The optional argument enables the user to choose the scale at which the trunk should be detailed.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         Trunk(v)
         Trunk(v, Scale= s)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : Vertex of the active MTG.
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - Scale (str): scale at which the axis components are required.
 
-    Returns
-    -------
+    :Returns:
+      
         list of vtx_id
 
-    See Also
-    --------
-        `MTG`, `Path`, `Ancestors`, `Axis`.
+    .. seealso:: :class:`MTG`, :class:`Path`, :class:`Ancestors`, :class:`Axis`.
     """
     global _g
     pass
@@ -1406,29 +1352,28 @@ def DateSample(e1):
     Options can be specified to define a temporal window and the total 
     list of observation dates will be truncated according to the corresponding temporal window.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
-        - DateSample(v)
-        - DateSample(v, MinDate=d1, MaxDate=d2)
+        DateSample(v)
+        DateSample(v, MinDate=d1, MaxDate=d2)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (VTX) : vertex of the active MTG.
 
-    Optional Parameters
-    -------------------
+    :Optional Parameters:
+      
         - MinDate (date) : defines a minimum date of interest.
         - MaxDate (date) : defines a maximum date of interest.
 
-    Returns
-    -------
+    :Returns:
+
         list of date
 
-    See Also
-    --------
-        `MTG`, `FirstDefinedFeature`, `LastDefinedFeature`, `PreviousDate`, `NextDate`.
+    .. seealso:: :class:`MTG`, :class:`FirstDefinedFeature`, :class:`LastDefinedFeature`, :class:`PreviousDate`, :class:`NextDate`.
+
     """
     global _g
     pass
@@ -1442,30 +1387,28 @@ def FirstDefinedFeature(e1, e2):
     the option `MinDate` and/or less than the maximum `MaxData` when specified.
     Otherwise the returned date is None.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         FirstDefinedFeature(v, fname)
         FirstDefinedFeature(v, fname, MinDate=d1, MaxDate=d2)
 
-    Properties
-    ----------
+    :Properties:
+      
         - v (vtx_id) : vertex of the active MTG
         - fname (str) : name of the considered property
 
-    Optional Properties
-    -------------------
+    :Optional Properties:
+      
         - MinDate (date) : minimum date of interest.
         - MaxData (date) : maximum date of interest.
 
-    Returns
-    -------
+    :Returns:
+      
         date
 
-    See Also
-    --------
-        `MTG`, `DateSample`, `LastDefinedFeature`, `PreviousDate`, `NextDate`.
+    .. seealso:: :class:`MTG`, :class:`DateSample`, :class:`LastDefinedFeature`, :class:`PreviousDate`, :class:`NextDate`.
 
     """
     global _g
@@ -1480,30 +1423,28 @@ def LastDefinedFeature(e1, e2):
     the option `MinDate` and/or less than the maximum `MaxData` when specified.
     Otherwise the returned date is None.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         FirstDefinedFeature(v, fname)
         FirstDefinedFeature(v, fname, MinDate=d1, MaxDate=d2)
 
-    Properties
-    ----------
+    :Properties:
+      
         - v (vtx_id) : vertex of the active MTG
         - fname (str) : name of the considered property
 
-    Optional Properties
-    -------------------
+    :Optional Properties:
+      
         - MinDate (date) : minimum date of interest.
         - MaxData (date) : maximum date of interest.
 
-    Returns
-    -------
+    :Returns:
+      
         date
 
-    See Also
-    --------
-        `MTG`, `DateSample`, `FirstDefinedFeature`, `PreviousDate`, `NextDate`.
+    .. seealso:: :class:`MTG`, :class:`DateSample`, :class:`FirstDefinedFeature`, :class:`PreviousDate`, :class:`NextDate`.
     """
     global _g
     pass
@@ -1516,24 +1457,22 @@ def NextDate(e1):
     starting at date d and proceeding forward in time. 
     None is returned if it does not exists.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         NextDate(v, d)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG.
         - d (date) : departure date.
 
-    Returns
-    -------
+    :Returns:
+      
        date 
 
-    See Also
-    --------
-        `MTG`, `DateSample`, `FirstDefinedFeature`, `LastDefinedFeature`, `PreviousDate`.
+    .. seealso:: :class:`MTG`, :class:`DateSample`, :class:`FirstDefinedFeature`, :class:`LastDefinedFeature`, :class:`PreviousDate`.
     """
     global _g
     pass
@@ -1546,24 +1485,22 @@ def PreviousDate(e1):
     starting at date d and proceeding backward in time. 
     None is returned if it does not exists.
 
-    Usage
-    -----
+    :Usage:
+      
     .. code-block:: python
 
         PreviousDate(v, d)
 
-    Parameters
-    ----------
+    :Parameters:
+      
         - v (vtx_id) : vertex of the active MTG.
         - d (date) : departure date.
 
-    Returns
-    -------
+    :Returns:
+      
        date 
 
-    See Also
-    --------
-        `MTG`, `DateSample`, `FirstDefinedFeature`, `LastDefinedFeature`, `NextDate`.
+    .. seealso:: :class:`MTG`, :class:`DateSample`, :class:`FirstDefinedFeature`, :class:`LastDefinedFeature`, :class:`NextDate`.
     """
     global _g
     pass
