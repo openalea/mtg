@@ -172,3 +172,4 @@ def test_edition():
 def test_order():
     s = '/A/a<b<c[+d[+e<f][+g]]<h<i[+j<k][+l<m]'
     mtg = multiscale_edit(s)
+

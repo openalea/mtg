@@ -34,8 +34,9 @@ def MTG(filename):
     Builds a MTG from a coding file (text file) containing the description of one or several plants.
 
     :Usage:
+    
     .. code-block:: python
-        
+
         >>> MTG(filename)
 
     :Parameters:
@@ -139,6 +140,7 @@ def MTGRoot():
     It is the only vertex at scale 0 (the coarsest scale).
 
     :Usage:
+
     .. code-block:: python
        
         >>> MTGRoot()
@@ -157,7 +159,7 @@ def MTGRoot():
     global _g
     return _g.root
 
-def VtxList(Scale=0):
+def VtxList(Scale=-1):
     """	
     Array of vertices contained in a MTG
 
@@ -256,13 +258,9 @@ def Index(vid):
     .. seealso:: :class:`MTG`, :class:`Class`.
     """
     global _g
-    labels = _g.property('label')
-    label = labels.get(vid, '')
-    try:
-        return int(label[1:])
-    except:
-        return vid
-
+    indices = _g.property('index')
+    return indices.get(vid, vid)
+    
 def Scale(vid):
     """
     Scale of a vertex
@@ -985,6 +983,7 @@ def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= N
 
 
     :Examples:
+
     .. code-block:: python
         
         >>> Sons(v) 

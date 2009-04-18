@@ -70,21 +70,27 @@ def topological_path(g,v1, v2=None, edge=None):
 def order(g, v1, v2=None):
     return topological_path(g, v1, v2, '+')[0]
 
+def alg_rank(g, v1, v2=None):
+    p, sign = path(g,v1,v2)
+    count = 0
+    for v in p:
+        if edge_type(g,v) == '<':
+            count+=1
+        else:
+            break
+    return count*sign
+
 def rank(g, v1, v2=None):
-    return topological_path(g, v1, v2, '<')[0]
+    return abs(alg_rank(g,v1,v2))
 
 def height(g, v1, v2=None):
-    return topological_path(g, v1, v2 )[0]
+    return topological_path(g, v1, v2 )[0]-1
 
 def alg_order(g, v1, v2=None):
     p, s = topological_path(g, v1, v2, '+')
     if p is not None:
         return p*s
 
-def alg_rank(g, v1, v2=None):
-    p, s = topological_path(g, v1, v2, '<')
-    if p is not None:
-        return p*s
 
 def alg_height(g, v1, v2=None):
     p, s = topological_path(g, v1, v2)

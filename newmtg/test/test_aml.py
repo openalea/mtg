@@ -14,8 +14,66 @@
 #
 ################################################################################
 
+from glob import glob
+
 from openalea.mtg.mtg import *
 import openalea.mtg.aml as wrap
+import openalea.aml as aml
+
+def compare(func_name, *args, **kwds):
+    """Apply the same function to the two modules with the same args. 
+    TODO: Add customizable comment, and a cmp function.
+    """
+    rnew = wrap.__dict__[func_name](*args, **kwds)
+    raml = aml.__dict__[func_name](*args, **kwds)
+
+    params = []
+    if args: 
+        params.extend((str(x) for x in args))
+    if kwds: 
+        params.extend(('%s=%s'%(k,v) for k, v in kwds.iteritems()))
+
+    f = func_name+'('+','.join(params)+')'
+    assert rnew == raml, 'Method %s -> %s != %s'%(f,rnew,raml)
+
+def check(fn):
+    " Compare result with the AML library. "
+
+    g = wrap.MTG(fn)
+    g1 = aml.MTG(fn)
+
+    # Test root
+    compare('MTGRoot')
+
+    nb_scales = g.nb_scales()
+
+    # Test VtxList at each scale
+    for scale in range(1,nb_scales):
+        compare('VtxList', Scale=scale)
+
+    # Test VtxList at all scales
+    compare('VtxList')
+
+    vtxs = aml.VtxList()
+
+    methods = """
+    Class
+    Index
+    Scale
+
+    Rank
+    Height
+    Order
+
+    Defined
+    """.split()
+
+    i= vtxs.index(g.root)
+    del vtxs[i]
+    for v in vtxs:
+        for m in methods:
+            compare(m,v)
+    return g
 
 def test1():
     fn='data/mtg1.mtg'
@@ -55,8 +113,13 @@ def test1():
         assert wrap.AlgOrder(1,vid) == 0
 
     for i, vid in enumerate(vtxs):
-        assert wrap.Rank(vid) == (wrap.Height(vid)-1) == i
+        assert wrap.Rank(vid) == wrap.Height(vid) == i
 
     for i, vid in enumerate(vtxs):
         assert wrap.AlgRank(1,vid) == - wrap.AlgRank(vid,1) == i
-    
+
+def test():
+    files = glob('data/*.mtg')
+    for fn in files:
+        yield check, fn
+
