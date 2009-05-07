@@ -1,0 +1,105 @@
+.. _newmtg_tutorial:
+
+.. highlight:: python
+   :linenothreshold: 5
+
+#####################
+Tutorial
+#####################
+
+
+This tutorial will not cover every features of the package.
+Instead, it introduces the main common features of the package,
+and will give you a good idea of the library.
+
+All the examples can be tested in a Python interpreter.
+
+MTG creation
+------------
+
+    * First, the package is imported (**line 1**). 
+    * Then, a mtg is instantiated without parameters (**line 3**).
+    * However, as for a :class:`~openalea.container.tree.Tree`, 
+the mtg is not empty (**line 5-7**).
+    * Their is always a root node at scale 0 (**line 9-10**).
+
+.. code-block:: python
+    :linenos:
+
+    import openalea.mtg as mtg
+    
+    g = mtg.MTG()
+    
+    print len(g)
+    print g.nb_vertices()
+    print g.nb_scales()
+
+    root = g.root
+    print g.scale(root)
+
+
+Simple edition
+--------------
+
+We add a component `root1` to the root node, which will be the root node of the tree 
+at the scale 1.
+
+.. code-block:: python
+    :linenos:
+
+    root1 = g.add_component(root)
+    
+    # Edit the tree at scale 1 by adding three children
+    # to the vertex `root1`.
+    v1 = g.add_child(root1)
+    v2 = g.add_child(root1)
+    v3 = g.add_child(root1)
+
+    g.parent(v1) == root1
+    g.complex(v1) == root
+    v3 in g.siblings(v1)
+
+Traversing the mtg at one scale
+--------------------------------
+
+The mtg can be traversed at any scales like a regular tree.
+Their are three traversal algorithms working on Tree data structures (:ref:`container_algo_traversal`):
+    * :class:`pre_order`
+    * :class:`post_order`
+    * :class:`level_order`
+
+These methods take as parameters a tree like data structure, and a vertex.
+They will traverse the subtree rooted on this vertex in a specific order.
+They will return an iterator on the traversed vertices.
+
+.. code-block:: python
+    :linenos:
+
+    from openalea.container.traversal.tree import *
+
+    print list(g.components(root))
+
+    print list(pre_order(g, root1))
+    print list(post_order(g, root1))
+    print list(level_order(g, root1))
+
+.. warning::
+
+    On **MTG** data structure, methods that return collection of vertices 
+    always return an iterator rather than :class:`list`, :class:`array`, or :class:`set`. 
+    
+    You have to convert the iterator into a :class:`list` if you want to display it,
+    or compute its length.
+
+        >>> print len(g.components(root))
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+        TypeError: object of type 'generator' has no len()
+
+    Use rather:
+
+        >>> components = list(g.components(root))
+        >>> print components
+        [1, 2, 3, 4]
+
+

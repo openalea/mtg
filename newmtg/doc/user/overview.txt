@@ -1,2 +1,8 @@
-Openalea.Mtg descrition in ./doc/user/overview.txt
+Openalea.Mtg defines a Multiscale Tree Graph data structure or **MTG** for short.
+
+This data structure is compatible with the standard MTG format.
+For compatibility reasons, all the AMAPmod interfaces have been implemented in this package.
+However, this is a completly new implementation.
+
+If you have any problems, please contact the author or send a mail on the mailing list.
 
