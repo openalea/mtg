@@ -25,28 +25,26 @@ import itertools
 import traversal
 import random
 
+try: 
+    from openalea.container.tree import PropertyTree, InvalidVertex
+except ImportError:
+    from tree import PropertyTree, InvalidVertex
 
-class MTG(object):
+
+class MTG(PropertyTree):
 
     def __init__(self):
         '''
         MTG constructor.
         '''
-        self._root = 0
-        self._id = 0
-        self._scale = {0:0}
 
-        # Tree structure
-        # Parent is a dict for DAG implementation
-        self._parent = {}
-        self._children = {}
+        super(MTG, self).__init__()
+
+        self._scale = {0:0}
 
         # Multiscale structure
         self._complex = {}
         self._components = {}
-
-        # Properties: name vs property map
-        self._properties = {}
 
         # add default properties
         self.add_property('edge_type')
@@ -82,9 +80,6 @@ class MTG(object):
     #########################################################################
     # Some Vertex List Graph Concept methods.
     #########################################################################
-
-    def __len__(self):
-        return self.nb_vertices()
 
     def nb_vertices(self, scale = -1):
         '''
@@ -167,123 +162,29 @@ class MTG(object):
         :param vid: the id of the vertex to remove
         :type vid: vid
         """
-        # TODO: remove recursively the sub_trees intra and inter scale.
-        raise NotImplementedError
 
-        if vid == self._root:
-            raise 'Unable to delete the root of the MTG.'
-        if vid in self._parent:
-            del self._parent[vid]
-        if vid in self._children:
-            del self._children[vid]
-        if vid in self._scale:
-            del self._scale[vid]
+        if self.nb_components(vid) == 0:
+            super(MTG, self).remove_vertex(vid)
+            if vid in self._scale:
+                del self._scale[vid]
+            if vid in self._complex:
+                del self._complex[vid]
+        else:
+            raise InvalidVertex('Can not remove vertex %d with components.'
+            'Use remove_tree instead.'%vid)
 
     def clear(self):
         """
         remove all vertices and edges
         don't change references to objects
         """
-        self._scale.clear()
-        self._root = 0
-        self._id = 0
-        self._scale = {0:0}
+        super(MTG, self).clear()
 
-        # Tree structure
-        # Parent is a dict for DAG implementation
-        self._parent.clear()
-        self._children.clear()
+        self._scale.clear()
+        self._scale = {0:0}
 
         self._complex.clear()
         self._components.clear()
-
-    #########################################################################
-    # RootedTreeConcept methods.
-    # TODO: Add methods from VertexListGraph concept
-    #########################################################################
-
-    def set_root(self, vtx_id):
-        '''
-        Set the tree root.
-
-        :param vtx_id: The vertex identifier.
-         '''
-        self._root = vtx_id
-
-    def get_root(self):
-        '''
-        returns the tree root.
-
-        :return: vertex identifier
-        '''
-        return self._root
-
-    root= property( get_root, set_root )
-
-    def parent(self, vtx_id):
-        '''
-        returns the parent of `vtx_id`.
-
-        :Parameters:
-         - `vtx_id`: The vertex identifier.
-
-        :returns: vertex identifier
-        '''
-        #assert vtx_id in self._children[self._parent[vtx_id]]
-        return self._parent.get(vtx_id)
-
-    def children(self, vtx_id):
-        '''
-        returns a vertex iterator
-
-        :param vtx_id: The vertex identifier.
-
-        :returns: iter of vertex identifier
-        '''
-        return iter(self._children.get(vtx_id,[]))
-
-    def nb_children(self, vtx_id):
-        '''
-        returns the number of children
-
-        :Parameters:
-         - `vtx_id`: The vertex identifier.
-
-        :returns: int
-        '''
-        return len(self._children.get(vtx_id,[]))
-
-    def siblings(self, vtx_id):
-        '''
-        returns an iterator of vtx_id siblings.
-        vtx_id is not include in siblings.
-
-        :Parameters:
-         - `vtx_id`: The vertex identifier.
-
-        :returns: iter of vertex identifier
-        '''
-        parent = self.parent(vtx_id)
-        return (vid for vid in self._children[parent] if vid != vtx_id)
-
-
-    def nb_siblings(self, vtx_id):
-        '''
-        returns the number of siblings
-
-        :returns: int
-        '''
-        parent = self.parent(vtx_id)
-        return self.nb_children(parent)-1
-
-
-    def is_leaf(self, vtx_id):
-        '''
-        Test if `vtx_id` is a leaf.
-
-        :returns: bool
-        '''
-        return self.nb_children(vtx_id) == 0
 
     def roots(self, scale=0):
         '''
@@ -309,15 +210,7 @@ class MTG(object):
         :returns: vertex id
         '''
 
-
-        if child is None:
-            self._id += 1
-            child = self._id
-
-        self._add_vertex_properties(child, properties)
-
-        self._children.setdefault(parent,[]).append(child)
-        self._parent[child] = parent
+        child = super(MTG, self).add_child(parent, child, **properties)
         self._scale[child] = self._scale[parent]
         return child
 
@@ -330,18 +223,7 @@ class MTG(object):
          - `vtx_id2`: the vertex to insert
         '''
 
-        if vtx_id2 is None:
-            self._id += 1
-            vtx_id2 = self._id
-
-        self._add_vertex_properties(vtx_id2, properties)
-
-        parent = self.parent(vtx_id1)
-        siblings = self._children[parent]
-        index = siblings.index(vtx_id1)
-        siblings.insert(index,vtx_id2)
-
-        self._parent[vtx_id2] = parent
+        vtx_id2 = super(MTG, self).insert_sibling(vtx_id1, vtx_id2, **properties)
         self._scale[vtx_id2] = self._scale[vtx_id1]
         return vtx_id2
 
@@ -354,20 +236,9 @@ class MTG(object):
          - `vtx_id`: a vertex identifier
          - `parent_id`: a vertex identifier
         '''
+        parent_id = super(MTG, self).insert_parent(vtx_id, parent_id, **properties)
 
-        if parent_id is None:
-            self._id += 1
-            parent_id = self._id
-
-        self._add_vertex_properties(parent_id, properties)
-
-        old_parent = self.parent(vtx_id)
-        children = self._children[old_parent]
-
-        self.add_child(parent_id, vtx_id)
-        # replace vtx_id by parent_id in children of old_parent
-        index = children.index(vtx_id)
-        children[index] = parent_id
+        self._scale[parent_id] = self.scale(vtx_id)
         return parent_id
 
     #########################################################################
@@ -490,23 +361,14 @@ class MTG(object):
             self._id += 1
             complex = self._id
 
-        if child is None:
-            self._id += 1
-            child = self._id
-
-        self._add_vertex_properties(child, properties)
-
-        self._children.setdefault(parent,[]).append(child)
-        self._parent[child] = parent
+        child = super(MTG, self).add_child(parent, child, **properties)
         self._scale[child] = self._scale[parent]
 
 
         parent_complex = self.complex(parent)
 
-        self._children.setdefault(parent_complex,[]).append(complex)
-        self._parent[complex] = parent_complex
+        super(MTG, self).add_child(parent_complex, complex)
         self._scale[complex] = self._scale[parent_complex]
-
 
         self._components.setdefault(complex,[]).append(child)
         self._complex[child] = complex
@@ -526,61 +388,11 @@ class MTG(object):
             v= compo[0]
         return '\n'.join(l)
 
-    #########################################################################
-    # Property Interface for Tree Graph and Mutable property concept.
-    #########################################################################
-
-    def property_names(self):
-        '''
-        iter on names of all property maps.
-        Properties are defined only on vertices, even edge properties.
-        return iter of names
-        '''
-        return self._properties.iterkeys()
-
-    def property(self, name):
-        '''
-        Returns the property map between the vid and the data.
-        :returns:  dict of {vid:data}
-        '''
-        return self._properties.get(name, {})
-
-    def add_property(self, property_name):
-        """
-        Add a new map between vid and a data
-        Do not fill this property for any vertex
-        """
-        self._properties[property_name] = {}
-
-    def remove_property(self, property_name):
-        """
-        Remove the property map called property_name from the graph.
-        """
-        del self._properties[property_name]
-
-    def properties(self):
-        """
-        Returns all the property maps contain in the graph.
-        """
-        return self._properties
-
-    def _add_vertex_properties(self, vid, properties):
-        """
-        Add a set of properties for a vertex identifier.
-        """
-        for name in properties:
-            if name in self._properties:
-                self._properties[name][vid] = properties[name]
 
     #########################################################################
     # Specialised algorithms for aml compatibility.
     #########################################################################
 
-    def path(self, vid1, vid2):
-        """
-        Returns a list of vertices between `vid1` and `vid2`.
-        """
-        
     def order(self, v1):
         """
         Order of a vertex in a graph.
@@ -603,6 +415,60 @@ class MTG(object):
             vid = self.parent(vid)
 
         return _order
+
+################################################################################
+# Graph generators
+################################################################################
+
+def fat_mtg(slim_mtg):
+    """
+    Compute missing edges at each scales based on the explicit edges
+    defines at finer scales and decomposition relationship.
+    """ 
+    max_scale = slim_mtg.max_scale()
+    #print 'max_scale %d'%max_scale
+    #roots = slim_mtg.roots(scale=max_scale)
+    #assert len(list(roots)) == 1
+    edge_type_property = slim_mtg.property('edge_type')
+
+    for scale in range(max_scale-1,0,-1):
+        _compute_missing_edges(slim_mtg, scale, edge_type_property)
+    return slim_mtg
+
+
+def _compute_missing_edges(mtg, scale, edge_type_property=None):
+    """ Compute missing edges on an incomplete MTG at a given scale.
+    
+    This is often usefull to create a minimal MTG with missing edges.
+    The missing edges can be computing by using the tree at the finer scale,
+    and by adding edges between the complexes of these nodes.
+
+    For all the non connected nodes (root nodes)
+        - extract the components
+        - compute parent's components and the edge type between 
+        
+    """
+    roots = mtg.roots(scale=scale)
+    #print 'roots: ', list(roots), scale
+    for vid in roots:
+        components = mtg._components.get(vid)
+        if components is None:
+            print 'ERROR: Missing component for vertex %d'%vid
+            continue
+        #assert len(components) == 1
+        cid = components[0]
+        if mtg.parent(cid) is None:
+            continue
+        parent_id = mtg.complex(mtg.parent(cid))
+        if edge_type_property:
+            edge_type = edge_type_property[cid]
+            mtg.add_child(parent_id, child=vid, edge_type=edge_type)
+        else:
+            mtg.add_child(parent_id, child=vid)
+        
+    return True
+
+
 
 ################################################################################
 # Graph generators
@@ -764,37 +630,5 @@ def display_mtg(mtg, vid):
             yield tab* '\t' + et + label.get(vtx, str(vtx))
         current_vertex = vtx
 
-def fat_mtg(slim_mtg):
-    """
-    Compute missing edges at each scales based on the explicit edges
-    defines at finer scales and decomposition relationship.
-    """ 
-    max_scale = slim_mtg.max_scale()
-    #print 'max_scale %d'%max_scale
-    #roots = slim_mtg.roots(scale=max_scale)
-    #assert len(list(roots)) == 1
-    
-    for scale in range(max_scale-1,0,-1):
-        compute_missing_edges(slim_mtg, scale)
-    return slim_mtg
-
-
-def compute_missing_edges(mtg, scale):
-    roots = mtg.roots(scale=scale)
-    #print 'roots: ', list(roots), scale
-    for vid in roots:
-        components = mtg._components.get(vid)
-        if components is None:
-            print 'ERROR: Missing component for vertex %d'%vid
-            continue
-        #assert len(components) == 1
-        cid = components[0]
-        if mtg.parent(cid) is None:
-            continue
-        edge_type = mtg.property('edge_type')[cid]
-        parent_id = mtg.complex(mtg.parent(cid))
-        mtg.add_child(parent_id, child=vid, edge_type=edge_type)
-        
-    return True
 
 

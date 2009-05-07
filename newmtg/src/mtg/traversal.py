@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # -*- python -*-
 #
 #       OpenAlea.mtg
@@ -118,4 +119,21 @@ def iter_mtg(mtg, vtx_id):
         for node in iter_scale(mtg, vid, visited):
             yield node
         
-    
+def topological_sort(tree, vtx_id, visited = None):
+    ''' 
+    Topolofgical sort of a directed acyclic graph.
+
+    This is a non recursive implementation.
+    '''
+    if visited is None:
+        visited = {}
+
+    yield vtx_id
+    visited[vtx_id] = True
+    for vid in g.out_neighbors(vtx_id):
+        if vid in visited:
+            continue
+        for node in topological_sort(g, vid, visited):
+            yield node
+
+
