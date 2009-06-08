@@ -138,4 +138,13 @@ def successor(g, vid, **kwds):
 def predecessor(g, vid, **kwds):
     raise NotImplementedError
 
+def descendants(g, vid, **kwds):
+    """
 
+    """
+    edge_type = g.property('edge_type')
+
+    et = kwds.get('EdgeType','*')
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+    

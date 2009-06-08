@@ -448,7 +448,7 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
         - compute parent's components and the edge type between 
         
     """
-    roots = mtg.roots(scale=scale)
+    roots = list(mtg.roots(scale=scale))
     #print 'roots: ', list(roots), scale
     for vid in roots:
         components = mtg._components.get(vid)
@@ -460,8 +460,12 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
         if mtg.parent(cid) is None:
             continue
         parent_id = mtg.complex(mtg.parent(cid))
+        if parent_id is None:
+            #roots.append(vid)
+            print 'ERROR: Missing complex for vertex %d'%parent_id
+            continue
         if edge_type_property:
-            edge_type = edge_type_property[cid]
+            edge_type = edge_type_property.get(cid)
             mtg.add_child(parent_id, child=vid, edge_type=edge_type)
         else:
             mtg.add_child(parent_id, child=vid)
@@ -518,7 +522,7 @@ def random_mtg(tree, nb_scales):
         colors[s] = l
 
    
-    return colored_tree(tree, colors)
+    return colored_tree(tree, colors)[0]
     
 
 def colored_tree(tree, colors):
@@ -558,17 +562,28 @@ def colored_tree(tree, colors):
                 g._scale[component_id] = scale
 
     # copy the tree information in the MTG
-    g._parent.update(dict(((index_scale[k], index_scale[v]) for k, v in tree._parent.iteritems())))
-    for parent, children in tree._children.iteritems():
-        g._children[index_scale[parent]] = [index_scale[id] for id in children]
+    if isinstance(tree, MTG):
+        max_scale = tree.max_scale()
+        g._parent.update(dict(((index_scale[k], index_scale[v]) 
+                                for k, v in tree._parent.iteritems() if v and tree.scale(v) == max_scale)))
+        for parent, children in tree._children.iteritems():
+            
+            if tree.scale(parent) == max_scale:
+                g._children[index_scale[parent]] = [index_scale[id] for id in children]
+    else:
+        g._parent.update(dict(((index_scale[k], index_scale[v]) 
+                                for k, v in tree._parent.iteritems() )))
+        for parent, children in tree._children.iteritems():
+            g._children[index_scale[parent]] = [index_scale[id] for id in children]
 
     # Copy the properties of the tree
     for pname, prop in tree.properties().iteritems():
         property = g._properties.setdefault(pname, {})
         for id, v in prop.iteritems():
-            property[index_scale[id]] = v
+            if tree.scale(id) == max_scale:
+                property[index_scale[id]] = v
 
-    return fat_mtg(g)
+    return fat_mtg(g), dict(zip(index_scale.values(),index_scale.keys())) 
 
 ################################################################################
 # Utilities
