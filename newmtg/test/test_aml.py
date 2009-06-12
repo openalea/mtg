@@ -75,13 +75,13 @@ def check(fn):
     ComponentRoots
     Descendants
     Extremities
+    Root
     Axis
     Components
     """.split()
 
     """
     Trunk
-    Root
     Location
     Path # require 2 arguments
     """

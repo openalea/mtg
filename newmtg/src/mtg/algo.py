@@ -179,13 +179,10 @@ def root(g, vid, RestrictedTo='NoRestriction', ContainedIn=None):
     rt = RestrictedTo
     ci = ContainedIn
 
-    v = g.parent(vid) if g.parent(vid) else vid
-    
-    while v is not None and edge_type.get(v) == '<':
+    for v in ancestors(g, vid):
         if rt == 'SameComplex':
             if g.complex(v) != g.complex(vid):
                 break
-        v = g.parent(v)
 
     return v
 
@@ -265,8 +262,10 @@ def axis(g, vtx_id, scale=-1, **kwds):
     rt = kwds.get('RestrictedTo', 'NoRestriction')
     ci = kwds.get('ContainedIn')
 
-    v = vtx_id if edge_type.get(vtx_id) == '+' else root(g, vtx_id, rt, ci)
-    return trunk(g, v, scale=scale, **kwds)
+    for v in ancestors(g, vtx_id):
+        if edge_type.get(v) == '+':
+            break
+    return local_axis(g, v, scale=scale, **kwds)
 
                 
 def descendants(g, vtx_id, **kwds):
@@ -317,8 +316,10 @@ def extremities(g, vid, **kwds):
             else:
                 yield v
 
-def trunk(g, vtx_id, scale=-1, **kwds):
-    """ TODO: see the doc aml.Trunk.
+def local_axis(g, vtx_id, scale=-1, **kwds):
+    """ 
+    Return a sequence of vertices connected by '<' edges. 
+    The first element of the sequence is vtx_id.
     """
 
     edge_type = g.property('edge_type')
@@ -327,11 +328,7 @@ def trunk(g, vtx_id, scale=-1, **kwds):
     rt = kwds.get('RestrictedTo', 'NoRestriction')
     ci = kwds.get('ContainedIn')
 
-    current_scale = g.scale(vtx_id)
-    if scale > 0 and scale < current_scale:
-        vtx_id = g.complex_at_scale(vtx_id, scale=scale)
-    elif scale > current_scale:
-        vtx_id = g.component_roots_at_scale(vtx_id, scale=scale).next()
+    vtx_id = vertex_at_scale(g, vtx_id, scale)
 
     if ci is not None:
         c_scale = g.scale(ci)
@@ -351,4 +348,24 @@ def trunk(g, vtx_id, scale=-1, **kwds):
                 if ci and g.complex_at_scale(v, scale=c_scale) != ci:
                     v = None
 
-    
+def vertex_at_scale(g, vtx_id, scale):
+    if scale <= 0:
+        return vtx_id
+
+    current_scale = g.scale(vtx_id)
+    if scale < current_scale:
+        vtx_id = g.complex_at_scale(vtx_id, scale=scale)
+    elif scale > current_scale:
+        vtx_id = g.component_roots_at_scale(vtx_id, scale=scale).next()
+    return vtx_id
+
+def trunk(g, vtx_id, scale=-1, **kwds):
+
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+
+    vtx_id = vertex_at_scale(g, vtx_id, scale)
+
+    v = root(g, vtx_id, RestrictedTo=rt, ContainedIn=ci)
+
+    return local_axis(g, v, scale, **kwds)
