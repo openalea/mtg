@@ -21,8 +21,9 @@ Implementation of a set of algorithms for the MTG datastructure
 
 __docformat__ = "restructuredtext"
 
+import traversal
 
-def ancestors(g, v1):
+def ancestors(g, v1, **kwds):
     " Return the vertices from v1 to the root. "
     v = v1
     while v is not None:
@@ -97,7 +98,7 @@ def alg_height(g, v1, v2=None):
     if p is not None:
         return p*s
 
-def father(g, vid, scale= -1, **kwds):
+def father(g, vid, scale=-1, **kwds):
     """
     See aml.Father function.
     """
@@ -107,10 +108,18 @@ def father(g, vid, scale= -1, **kwds):
     rt = kwds.get('RestrictedTo', 'NoRestriction')
     ci = kwds.get('ContainedIn')
 
-    p = g.parent(vid)
+    current_scale = g.scale(vid)
+    if scale <= 0 or scale == current_scale:
+        p = g.parent(vid)
+    elif scale < current_scale:
+        vid = g.complex_at_scale(vid)
+        p = g.parent(vid)
+    else:
+        vid = g.component_roots_at_scale(vid, scale=scale).next()
+        p = g.parent(vid)
 
     if et != '*':
-        if edge_type[vid] != et:
+        if edge_type.get(vid) != et:
             return None
 
 
@@ -127,24 +136,219 @@ def father(g, vid, scale= -1, **kwds):
         if g.complex_at_scale(vid, scale=c_scale) != g.complex_at_scale(p, scale=c_scale) != ci:
             return None
         
-    if scale != -1:
-        p = g.complex_at_scale(p,scale)
-
     return p
 
 def successor(g, vid, **kwds):
-    raise NotImplementedError
-
-def predecessor(g, vid, **kwds):
-    raise NotImplementedError
-
-def descendants(g, vid, **kwds):
     """
+    TODO: see aml.Successor doc string.
+    """
+    edge_type = g.property('edge_type')
 
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+
+    son = None
+    for v in g.children(vid):
+        if edge_type.get(v) == '<':
+            son = v
+            break
+    else:
+        return None
+
+    if rt == 'SameComplex':
+        if g.complex(son) != g.complex(vid):
+            return None
+
+    if ci is not None:
+        c_scale = g.scale(ci)
+        if g.complex_at_scale(vid, scale=c_scale) != g.complex_at_scale(son, scale=c_scale) != ci:
+            return None
+
+    return son
+
+    
+def predecessor(g, vid, **kwds):
+    return father(g, vid, **kwds)
+
+def root(g, vid, RestrictedTo='NoRestriction', ContainedIn=None):
+    """
+    TODO: see aml.Root doc string.
+    """
+    edge_type = g.property('edge_type')
+
+    rt = RestrictedTo
+    ci = ContainedIn
+
+    v = g.parent(vid) if g.parent(vid) else vid
+    
+    while v is not None and edge_type.get(v) == '<':
+        if rt == 'SameComplex':
+            if g.complex(v) != g.complex(vid):
+                break
+        v = g.parent(v)
+
+    return v
+
+
+def location(g, vid, **kwds):
+    """TODO: see doc aml.Location.
+    """
+    scale = kwds.get('Scale')
+    ci = kwds.get('ContainedIn')
+
+    if not scale or scale < 0:
+        scale = g.max_scale()
+
+    current_scale = g.scale(vid)
+    return father(g, vid, scale=scale, ContainedIn=ci)
+
+
+def sons(g, vid, **kwds):
+    """TODO: see doc aml.sons.
+    """
+    et = kwds.get('EdgeType','*')
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+    scale = kwds.get('Scale')
+
+    edge_type = g.property('edge_type')
+
+    current_scale = g.scale(vid)
+    if not scale or scale < 0:
+        scale = current_scale
+    
+    if scale < current_scale:
+        vid = g.complex_at_scale(vid, scale = scale)
+    elif scale > current_scale:
+        vid = g.component_roots_at_scale(vid, scale=scale).next()
+    children = g.children(vid)
+    
+    if et != '*':
+        children = (v for v in children if edge_type[v] == et)
+    if ci is not None:
+        c_scale = g.scale(ci)
+        children = (v for v in children if g.complex_at_scale(v) == ci)
+
+    return list(children)
+
+def full_ancestors(g, v1, **kwds):
+    " Return the vertices from v1 to the root. "
+    edge_type = g.property('edge_type')
+    et = kwds.get('EdgeType','*')
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+
+    v = v1
+    if ci is not None:
+        c_scale = g.scale(ci)
+
+    while v is not None:
+        if et != '*' and edge_type.get(v) != et:
+            break
+
+        if rt == 'SameComplex':
+            if g.complex(v) != g.complex(v1):
+                break
+        elif rt == 'SameAxis':
+            if edge_type.get(v) == '+':
+                break
+        if ci and g.complex_at_scale(v, scale=c_scale) != ci:
+            break
+        yield v
+        v = g.parent(v)
+
+def axis(g, vtx_id, scale=-1, **kwds):
+    """TODO: see aml doc
+    """
+    edge_type = g.property('edge_type')
+
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+
+    v = vtx_id if edge_type.get(vtx_id) == '+' else root(g, vtx_id, rt, ci)
+    return trunk(g, v, scale=scale, **kwds)
+
+                
+def descendants(g, vtx_id, **kwds):
+    """TODO: see aml doc
     """
     edge_type = g.property('edge_type')
 
     et = kwds.get('EdgeType','*')
     rt = kwds.get('RestrictedTo', 'NoRestriction')
     ci = kwds.get('ContainedIn')
+
+    if ci is not None:
+        c_scale = g.scale(ci)
+
+    v = vtx_id
+
+    if rt == 'SameComplex':
+        complex = g.complex(vtx_id)
+
+    def visitor(v):
+        if et in ['<', '+'] and et != edge_type.get(v, et):
+            return False
+        if rt == 'SameComplex':
+            if g.complex(v) != complex:
+                return False
+        elif rt == 'SameAxis' and edge_type.get(v) == '+':
+                return False
+
+        if ci and g.complex_at_scale(v, scale=c_scale) != ci:
+            return False
+        return True
+
+
+    return traversal.pre_order_with_filter(g, vtx_id, pre_order_filter=visitor)
+        
+def extremities(g, vid, **kwds):
+    """ TODO see aml doc
+    Implement the method more efficiently...
+    """
+    vertices = set(descendants(g,vid, **kwds))
+    for v in vertices:
+        if g.is_leaf(v):
+            yield v
+        else:
+            for vtx in g.children(v):
+                if vtx in vertices:
+                    break
+            else:
+                yield v
+
+def trunk(g, vtx_id, scale=-1, **kwds):
+    """ TODO: see the doc aml.Trunk.
+    """
+
+    edge_type = g.property('edge_type')
+
+    et = kwds.get('EdgeType','*')
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+
+    current_scale = g.scale(vtx_id)
+    if scale > 0 and scale < current_scale:
+        vtx_id = g.complex_at_scale(vtx_id, scale=scale)
+    elif scale > current_scale:
+        vtx_id = g.component_roots_at_scale(vtx_id, scale=scale).next()
+
+    if ci is not None:
+        c_scale = g.scale(ci)
+
+    
+    v = vtx_id
+    while v is not None:
+        yield v
+        vtx = v; v = None
+        for vid in g.children(vtx):
+            if edge_type.get(vid) == '<':
+                v = vid
+
+                if rt == 'SameComplex':
+                    if g.complex(v) != g.complex(vtx_id):
+                        v = None
+                if ci and g.complex_at_scale(v, scale=c_scale) != ci:
+                    v = None
+
     

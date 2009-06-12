@@ -34,7 +34,7 @@ def compare(func_name, *args, **kwds):
         params.extend(('%s=%s'%(k,v) for k, v in kwds.iteritems()))
 
     f = func_name+'('+','.join(params)+')'
-    assert rnew == raml, 'Method %s -> %s != %s'%(f,rnew,raml)
+    assert (rnew == raml) or set(rnew) == set(raml) , 'Method %s -> %s != %s'%(f,rnew,raml)
 
 def check(fn):
     " Compare result with the AML library. "
@@ -66,8 +66,25 @@ def check(fn):
     Order
 
     Defined
+    Father
+    Successor
+    Predecessor
+    Complex
+    Sons
+    Ancestors
+    ComponentRoots
+    Descendants
+    Extremities
+    Axis
+    Components
     """.split()
 
+    """
+    Trunk
+    Root
+    Location
+    Path # require 2 arguments
+    """
     i= vtxs.index(g.root)
     del vtxs[i]
     for v in vtxs:
@@ -120,6 +137,10 @@ def test1():
 
 def test():
     files = glob('data/*.mtg')
+    exclude = '''
+    reconstructed_appletree.mtg
+    '''.split()
+    files = [f for f in files for e in exclude if e not in f]
     for fn in files:
         yield check, fn
 

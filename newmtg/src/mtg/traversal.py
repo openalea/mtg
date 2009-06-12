@@ -19,7 +19,7 @@
 # Tree  and MTG Traversals
 ################################################################################
 
-def pre_order(tree, vtx_id, complex=None):
+def pre_order(tree, vtx_id, complex=None, visitor_filter=None):
     ''' 
     Traverse a tree in a prefix way.
     (root then children)
@@ -41,8 +41,15 @@ def pre_order(tree, vtx_id, complex=None):
             successor.append(vid)
             continue
 
+        if visitor_filter and not visitor_filter.pre_order(tree, vid):
+            continue
+
         for node in pre_order(tree, vid, complex):
             yield node
+
+        if visitor_filter:
+            visitor_filter.post_order(vid)
+
 
     # 2. select then '<' edges
     for vid in successor:
@@ -68,7 +75,7 @@ def traverse_tree(tree, vtx_id, visitor):
   Traverse a tree in a prefix or postfix way.
   
   We call a visitor for each vertex.
-  This is usefull for printing, cmputing or storing vertices 
+  This is usefull for printing, computing or storing vertices 
   in a specific order. 
   
   See boost.graph.
@@ -136,4 +143,43 @@ def topological_sort(tree, vtx_id, visited = None):
         for node in topological_sort(g, vid, visited):
             yield node
 
+def pre_order_with_filter(tree, vtx_id, pre_order_filter=None, post_order_visitor=None):
+    ''' 
+    Traverse a tree in a prefix way.
+    (root then children)
 
+    This is a non recursive implementation.
+    
+    TODO: make the naming and the arguments more consistent and user friendly.
+    pre_order_filter is a functor which has to return a boolean.
+    If the return value is False, the vertex is not visited.
+    Otherelse, some computation can be done.
+
+    The post_order_visitor is used to execute, store, compute a function when the 
+    tree rooted on the vertex has been visited.
+    
+    '''
+    if pre_order_filter and not pre_order_filter(vtx_id):
+        return
+
+    edge_type = tree.property('edge_type')
+
+    # 1. select first '+' edges
+    successor = []
+    yield vtx_id
+    for vid in tree.children(vtx_id):
+        if edge_type.get(vid) == '<':
+            successor.append(vid)
+            continue
+
+        for node in pre_order_with_filter(tree, vid, pre_order_filter, post_order_visitor):
+            yield node
+
+
+    # 2. select then '<' edges
+    for vid in successor:
+        for node in pre_order_with_filter(tree, vid, pre_order_filter, post_order_visitor):
+            yield node
+
+    if post_order_visitor:
+        post_order_visitor(vtx_id)

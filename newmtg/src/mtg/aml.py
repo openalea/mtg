@@ -763,7 +763,7 @@ def Successor(v, RestrictedTo='NoRestriction', ContainedIn=None):
     .. seealso:: :class:`MTG`, :class:`Sons`, :class:`Predecessor`.
     """
     global _g
-    return algo.successors(_g, vid, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
+    return algo.successor(_g, v, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
 
 
 def Predecessor(v, **kwds):
@@ -849,7 +849,7 @@ def Root(v, RestrictedTo='*', ContainedIn=None):
     .. seealso:: :class:`MTG`, :class:`Extremities`.
     """
     global _g
-    pass
+    return algo.root(_g, v, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
 
 def Complex(v, Scale=-1):
     """
@@ -887,9 +887,12 @@ def Complex(v, Scale=-1):
     .. seealso:: :class:`MTG`, :class:`Components`.
     """
     global _g
-    return _g.complex_at_scale(v, Scale)
+    if Scale == -1 or Scale == _g.scale(v)-1:
+        return _g.complex(v)
+    else:
+        return _g.complex_at_scale(v, scale=Scale)
 
-def Location(v, Scale=0, ContainedIn=None):
+def Location(v, Scale=-1, ContainedIn=None):
     """
     Vertex defining the father of a vertex with maximum scale.
 
@@ -938,11 +941,11 @@ def Location(v, Scale=0, ContainedIn=None):
     .. seealso::        :class:`MTG`, :class:`Father`.
     """
     global _g
-    pass
+    return algo.location(_g, v, Scale=Scale, ContainedIn=ContainedIn)
 
 def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= None):
     """
-    Set of vertices borne or preceded by a vertex
+    Set of vertices born or preceded by a vertex
 
     The set of sons of a given vertex is returned as an array of vertices. 
     The order of the vertices in the array is not significant. 
@@ -996,7 +999,7 @@ def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= N
     .. seealso:: :class:`MTG`, :class:`Father`, :class:`Successor`, :class:`Descendants`.
     """
     global _g
-    pass
+    return algo.sons(_g, v, RestrictedTo=RestrictedTo, Scale=Scale, ContainedIn=ContainedIn)
 
 def Ancestors(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
     """
@@ -1046,7 +1049,9 @@ def Ancestors(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
     .. seealso:: :class:`MTG`, :class:`Descendants`.
     """
     global _g
-    pass
+    return list(algo.full_ancestors(_g, v, RestrictedTo=RestrictedTo, 
+                                          EdgeType=EdgeType, 
+                                          ContainedIn=ContainedIn))
 
 def Descendants(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
     """
@@ -1094,7 +1099,9 @@ def Descendants(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None)
     .. seealso:: :class:`MTG`, :class:`Ancestors`.
     """
     global _g
-    pass
+    return list(algo.descendants(_g, v, 
+                                 RestrictedTo=RestrictedTo, 
+                                 ContainedIn=ContainedIn))
 
 def Extremities(v, RestrictedTo='NoRestriction', ContainedIn=None):
     """
@@ -1137,7 +1144,7 @@ def Extremities(v, RestrictedTo='NoRestriction', ContainedIn=None):
     .. seealso:: :class:`MTG`, :class:`Descendants`, :class:`Root`, :class:`MTGRoot`.
     """
     global _g
-    pass
+    return list(algo.extremities(_g, v, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn))
 
 def Components(v, Scale=-1):
     """
@@ -1173,9 +1180,15 @@ def Components(v, Scale=-1):
     .. seealso:: :class:`MTG`, :class:`Complex`.
     """
     global _g
-    pass
+    scale = _g.scale(v)
+    components = []
+    if Scale == -1 or scale == Scale:
+        components = _g.components(v)
+    elif scale < Scale:
+        components = _g.components_at_scale(v, scale=Scale)
+    return list(components)
 
-def ComponentRoots(e1):
+def ComponentRoots(v, Scale=-1):
     """
     Set of roots of the tree graphs that compose a vertex
 
@@ -1225,7 +1238,7 @@ def ComponentRoots(e1):
     .. seealso:: :class:`MTG`, :class:`Components`, :class:`Trunk`.
     """
     global _g
-    pass
+    return list(_g.component_roots_at_scale(v, scale=Scale))
 
 def Path(v1, v2):
     """
@@ -1272,9 +1285,9 @@ def Path(v1, v2):
     .. seealso:: :class:`MTG`, :class:`Axis`, :class:`Ancestors`.
     """
     global _g
-    pass
+    return algo.path(_g, v1, v2)[0]
 
-def Axis(v, Scale=0):
+def Axis(v, Scale=-1):
     """
     Array of vertices constituting a botanical axis
 
@@ -1304,9 +1317,9 @@ def Axis(v, Scale=0):
     .. seealso:: :class:`MTG`, :class:`Path`, :class:`Ancestors`.
     """
     global _g
-    pass
+    return list(algo.axis(_g, v, scale=Scale))
 
-def Trunk(v, Scale=0):
+def Trunk(v, Scale=-1):
     """
     List of vertices constituting the bearing botanical axis of a branching system.
 
@@ -1336,8 +1349,7 @@ def Trunk(v, Scale=0):
     .. seealso:: :class:`MTG`, :class:`Path`, :class:`Ancestors`, :class:`Axis`.
     """
     global _g
-    pass
-
+    return list(algo.trunk(_g, v, scale=Scale))
 ################################################################################
 # Date functions
 ################################################################################

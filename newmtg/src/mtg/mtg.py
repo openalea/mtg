@@ -314,6 +314,28 @@ class MTG(PropertyTree):
 
         return gen
 
+    def component_roots(self, vtx_id):
+        '''Return the set of roots of the tree graphs that compose a vertex.
+        '''
+        components = self._components.get(vtx_id,[])
+        
+        for ci in components:
+            p = self.parent(ci)
+            if p is None or self.complex(p) != vtx_id:
+                yield ci
+
+    def component_roots_at_scale(self, vtx_id, scale):
+        '''Return the set of roots of the tree graphs that compose a vertex.
+        '''
+        cur_scale = self.scale(vtx_id)
+        if scale == -1 or scale == cur_scale+1:
+           return self.component_roots(vtx_id)
+        elif scale > cur_scale+1:
+            gen = (vtx_id,)
+            for i in range(cur_scale+1, scale):
+                gen = (vid for vtx in gen for vid in self.component_roots(vtx)) 
+            return gen
+        
     def nb_components(self, vid):
         '''
         returns the number of components
