@@ -271,7 +271,7 @@ class PlantFrame(object):
         # 
         
 
-def iter_order(g, v edge_type = None):
+def iter_order(g, v, edge_type = None):
     ''' Iter on a tree by considering first 
     all the vertices of the axe at the first order,
     then the vertices at the second order and so on.
