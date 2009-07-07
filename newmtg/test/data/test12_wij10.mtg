@@ -1,0 +1,225 @@
+#				
+# Pommiers wijick x Baujade				
+# Bordeaux				
+# 102 Plantes				
+#				
+CODE:	FORM-A			
+
+
+CLASSES:				
+SYMBOL	SCALE	DECOMPOSITION	INDEXATION	DEFINITION
+$	0	FREE	FREE	IMPLICIT
+P 	1 	CONNECTED	FREE	EXPLICIT
+A 	2 	<-LINEAR	FREE	EXPLICIT
+U 	3 	<-LINEAR	FREE	EXPLICIT
+I 	3 	<-LINEAR	FREE	EXPLICIT
+E	4 	FREE    	FREE	EXPLICIT
+C	4 	FREE    	FREE	EXPLICIT
+B	4 	FREE    	FREE	EXPLICIT
+
+DESCRIPTION :				
+LEFT	RIGHT	RELTYPE	MAX	
+A	A	<	1 	
+A	A	+	?	
+U	U,I	<	1 	
+U	U,I	+	?	
+I	U,I	+	10 	
+E	E,C,B	<	1 	
+C	E,C,B	<	1 	
+B	E,C,B	<	1 	
+B	E,C,B	+	1 	
+
+
+
+FEATURES:													
+NAME	TYPE												
+
+diabase	INT												
+diasom	INT												
+longueur	INT												
+nbfruit	INT												
+rem	ALPHA												
+
+MTG:													
+
+TOPO									diabase	diasom	longueur	nbfruit	rem
+
+/P1													
+	/A90/U1								1980	1700	8000		
+	^/E1<C2<C3<E4<B5<B6	
+		+A91/U1/E1<B2
+	^<C7<B8<<B10<B11	
+		+A91/U1/E1<B2
+	^<B12<B13	
+		+A91/U1/E1<B2
+	^<B14	
+		+A91/U1/E1<B2
+	^<B15	
+		+A91/U1/E1<B2
+	^<B16	
+		+A91/U1/E1<B2
+	^<B17	
+		+A91/U1/E1<B2
+	^<B18	
+		+A91/U1/E1<B2
+	^<B19	
+		+A91/U1/E1<B2
+	^<B20<B21<B22	
+		+A91/U1/E1<B2
+	^<C23<B24	
+		+A91/U1/E1<B2
+	^<B25	
+		+A91/U1/E1<B2
+	^<B26	
+		+A91/U1/E1<B2
+	^<B27	
+		+A91/U1/E1<B2
+	^<B28	
+		+A91/U1/E1<B2
+	^<B29	
+		+A91/U1/E1<B2
+	^<B30											
+		+A91/U1/E1<B2										
+	^<B31											
+		+A91/U1/E1<B2										
+	^<B32											
+		+A91/U1/E1<B2										
+	^<B33											
+		+A91/U1/E1<B2										
+	^<B34<B35											
+		+A91/U1/E1<B2										
+	^<B36											
+		+A91/U1/E1<B2										
+	^<B37<B38											
+		+A91/U1							540	440	100	
+		^/E1<E2<A93/I1										1
+		^/B1
+	^<B39											
+		+A91/U1/E1<B2										
+	^<B40											
+		+A91/U1/E1<B2										
+	^<B41											
+		+A91/U1/E1<B2										
+			<A93/I1									1
+			^/B1
+	^<B42											
+		+A91/U1/E1<B2										
+			<A93/I1									1
+			^/B1
+	^<B43											
+		+A91/U1							580	490	100	
+		^/E1<E2<A93/I1										1
+		^/B1
+	^<B44<B45<B46											
+		+A91/U1/E1<B2										
+	^<B47											
+		+A91/U1/E1<B2										
+	^<B48											
+		+A91/U1/E1<B2										
+	^<B49											
+		+A91/U1/E1<B2										
+	^<B50											
+		+A91/U1/E1<B2										
+	^<B51											
+		+A91/U1/E1<A93/I1										1
+		^/B1
+	^<B52											
+		+A91/U1/E1<E2<A93/I1										1
+		^/B1
+	^<B53											
+		+A91/U1/E1<A93/I1										1
+		^/B1
+	^<B54											
+		+A91/U1							550	500	100	
+		^/E1<E2<A93/I1										2
+		^/B1
+	^<B55											
+		+A91/U1/E1<A93/I1									
+		^/B1
+	^<B56										
+		+A91/U1/E1<A93/I1									
+		^/B1
+	^<C57<<C61<B62										
+		+A91/U1							600	530	110
+		^/E1<E2<B3									
+	^<B63										
+	^<A91/U1								1800	1130	5700
+	^/E1<C2<<C4<B5<B6										
+		+A92/U1/E1<B2									
+	^<B7										
+		+A92/U1/E1<B2									
+	^<B8										
+		+A92/U1/E1<B2									
+	^<B9										
+		+A92/U1							700	700	110
+		^/E1<E2<B3										
+	^<B10											
+		+A92/U1/E1<B2										
+	^<B11											
+		+A92/U1/E1<B2										
+	^<B12<B13<B14											
+		+A92/U1/E1<B2										
+	^<B15											
+		+A92/U1/E1<A93/I1										0
+		^/B1
+	^<B16											
+		+A92/U1/E1<B2										
+	^<B17											
+		+A92/U1/E1<A93/I1										1
+		^/B1
+	^<B18											
+		+A92/U1/E1<A93/I1										2
+		^/B1
+	^<B19											
+		+A92/U1/E1<B2										
+	^<B20											
+		+A92/U1/E1<B2										
+	^<B21											
+		+A92/U1/E1<B2										
+	^<B22											
+		+A92/U1/E1<B2										
+	^<B23											
+		+A92/U1/E1<B2										
+	^<B24											
+		+A92/U1/E1<B2										
+	^<B25											
+		+A92/U1/E1<B2										
+	^<B26											
+		+A92/U1/E1<A93/I1										1
+		^/B1
+	^<B27											
+		+A92/U1/E1<B2										
+	^<B28											
+		+A92/U1/E1<B2										
+	^<B29											
+		+A92/U1/E1<B2										
+	^<B30											
+		+A92/U1/E1<B2										
+	^<B31											
+		+A92/U1/E1<B2										
+	^<B32											
+		+A92/U1/E1<B2										
+	^<B33											
+		+A92/U1/E1<B2										
+	^<B34											
+		+A92/U1/E1<A93/I1										1
+		^/B1
+	^<B35											
+		+A92/U1/E1<B2										
+	^<B36											
+		+A92/U1/E1<A93/I1										2
+		^/B1
+	^<B37											
+		+A92/U1/E1<B2										
+	^<B38											
+		+A92/U1/E1<B2										
+	^<B39											
+		+A92/U1/E1<B2										
+	^<B40											
+		+A92/U1/E1<B2										
+	^<B41<<B44<C45<<C51<B52<<B55<E56<E57											
+	^<A92/U1								1200	1010	3800	
+	^/E1<C2<C3<B4<<B33<B34											
+		+A93/I1										1
+		^/B1
+	^<C35<<C40<B41											

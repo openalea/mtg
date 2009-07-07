@@ -94,4 +94,11 @@ def test_mtg():
     assert g.nb_vertices(scale=3) == 24
     assert g.nb_vertices(scale=4) == 34
 
+def test_mtg2():
+    s = '/P1\\/P2'
+    g = multiscale_edit(s)
+    assert len(g) == 3 
+    assert g.nb_scales() == 2
+    assert g.nb_vertices(scale=1) ==2 
+
 

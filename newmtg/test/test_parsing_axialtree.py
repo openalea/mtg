@@ -1,4 +1,4 @@
-from openalea.mtg.io import axialtree2mtg, mtg2mss 
+from openalea.mtg.io import axialtree2mtg, mtg2mss , lpy2mtg, mtg2lpy
 from openalea.lpy import AxialTree, generateScene, Lsystem
 #from openalea.plantgl.all import Scene, Viewer
 
@@ -13,6 +13,8 @@ def str2mtg(s):
     mtg = axialtree2mtg(tree, scale, scene)
     return tree, mtg, scene
 
+
+
 def str2mss(s, envelop):
     tree, mtg, scene = str2mtg(s)
     return mtg2mss('test', mtg, scene, envelop), mtg, tree, s
@@ -21,9 +23,9 @@ def check(tree, mtg, scene):
     s = str(tree)
     n1, n2 = [s.count(char) for char in ['P', 'A']]
     n3 = s.count('N') + s.count('L') + s.count('F')
-    assert mtg.nb_vertices(scale=1) == n1
-    assert mtg.nb_vertices(scale=2) == n2
-    assert mtg.nb_vertices(scale=3) == n3
+    assert mtg.nb_vertices(scale=1) == n1, '%d, %d'%(mtg.nb_vertices(scale=1), n1 )
+    assert mtg.nb_vertices(scale=2) == n2, '%d, %d'%(mtg.nb_vertices(scale=2), n2 )
+    assert mtg.nb_vertices(scale=3) == n3, '%d, %d'%(mtg.nb_vertices(scale=3), n3)
     v3 = set(mtg.vertices(scale=3))
     geom3 = set((sh.id for sh in scene))
     assert v3 == geom3, str(v3)+'!='+str(geom3)
@@ -78,4 +80,23 @@ PANNN[+ANNN[+ANNN[+ANNN][-ANNN]NNNANAN]][-ANNN[+ANNN[-ANNN]]NN]NANAN
         for env in envelop:
             print env
             check_mss( *str2mss(s, env) )
+
+def test_mtglpy():
+    l = Lsystem('ex_luz4.lpy')
+
+    tree = l.iterate()
+
+    scene = l.sceneInterpretation(tree)
+
+    mtg = lpy2mtg(tree, l, scene)
+    print len(mtg)
+    axial_tree = AxialTree()
+    axial_tree = mtg2lpy(mtg, l, axial_tree)
+    print len(axial_tree)
+    #axial_tree = mtg2axialtree(mtg, scale, parameters, axial_tree)
+    
+    # Check
+    assert True
+    return mtg, tree
+
 

@@ -72,3 +72,7 @@ def test10():
     fn = r'data/test10_agraf.mtg'
     g = check(fn)
 
+def test11():
+    fn = r'data/test11_wij10.mtg'
+    g = check(fn)
+

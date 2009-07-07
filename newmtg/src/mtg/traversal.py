@@ -183,3 +183,15 @@ def pre_order_with_filter(tree, vtx_id, pre_order_filter=None, post_order_visito
 
     if post_order_visitor:
         post_order_visitor(vtx_id)
+
+def iter_mtg_with_filter(mtg, vtx_id, pre_order_filter, post_order_visitor):
+    visited = {}
+    loc = vtx_id
+    while mtg._components.get(loc):
+        loc = mtg._components[loc][0]
+    vtx_id = loc
+
+    for vid in pre_order_with_filter(mtg, vtx_id, pre_order_filter, post_order_visitor):
+        for node in iter_scale(mtg, vid, visited):
+            yield node
+
