@@ -28,7 +28,7 @@ from mtg import *
 from traversal import iter_mtg
 
 debug = 0
-cpl = 1
+
 def log(*args):
     if debug:
         print '  '.join(map(str, args))
@@ -68,7 +68,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
         _type = dict([('INT', int), ('REAL', float), ('ALPHA', str)])
         args = {}
         l = name.strip().split('(')
-        label = l[0]
+        label = get_label(name)
         index = get_index(label)
         if index.isdigit():
             args['index'] = int(index)
@@ -136,7 +136,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
             if implicit_scale:
                 symbol_class = get_name(name)
                 new_scale = symbol_at_scale[symbol_class]
-                if cpl and tag == '/' and new_scale <= scale:
+                if tag == '/' and new_scale <= scale:
                     new_scale -= 1
                 while new_scale < scale:
                     scale -= 1
@@ -158,7 +158,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
                 pending_edge = ''
                 for i in range(previous_index+1, index+1):
                     args['index'] = i
-                    args['label'] = label.replace(str(index), str(i))
+                    ll = args['label'] = label.replace(str(index), str(i))
                     vid = mtg.add_child(vid, edge_type='<', **args)
                     current_vertex = vid
             elif tag == '/':
@@ -172,20 +172,18 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
                     if mtg.scale(vid) == scale:
                         vid = mtg.add_child(vid, 
                                             child=component, 
-                                            edge_type=pending_edge, 
-                                            label=name)
+                                            edge_type=pending_edge)
                         assert vid == component
                         current_vertex = vid
                     else:
                         current_vertex = component
-                elif cpl:
+                else:
                     vid = mtg.add_component(current_vertex, **args)
                     current_vertex = vid
             elif tag == '\\':
                 scale -= 1
                 current_vertex = mtg.complex(current_vertex)
-        
-    
+            
     mtg = fat_mtg(mtg)
     return mtg
 
@@ -894,7 +892,7 @@ class Reader(object):
         if diff_space == 0:
             if s.startswith('^'):
                 s = s[1:]
-            elif edge_type and cpl:
+            elif edge_type:
                 elt = ''
                 if edge_type[-1] == '+':
                     elt = ']'
@@ -904,10 +902,7 @@ class Reader(object):
                 elif s[0] == '/':
                     s = elt + s
                     edge_type[-1] = '/'
-            elif edge_type:
-                s = ']['+s
-                edge_type[-1] = '+'
-            else:
+            elif s[0] == '+':
                 edge_type.append(s[0])
 
         elif diff_space > 0:
@@ -932,7 +927,7 @@ class Reader(object):
             assert nb_spaces - indent[-1] == 0
             if s.startswith('^'):
                 s = s[1:]
-            elif edge_type and cpl:
+            elif edge_type:
                 elt=''
                 if edge_type[-1] == '+':
                     elt = ']'
@@ -942,9 +937,6 @@ class Reader(object):
                     edge_type.append('+')
                 elif s[0] == '/':
                     s = elt + s
-            elif edge_type:
-                brackets.append('][')
-                edge_type[-1] = s[0]
   
             s = ''.join(brackets+[s])
 
@@ -987,7 +979,8 @@ class Reader(object):
                 new_code.append(']')
 
         self._new_code = ''.join(new_code)
-        #print self._new_code
+        if debug:
+            print self._new_code
 
     def build_mtg(self):
         """
@@ -1118,10 +1111,6 @@ class Writer(object):
         sym_at_col = []
         for vtx in traversal.iter_mtg(self.g, self.g.root):
             
-            if tab > nb_tab:
-                msg = """There is not enough tabs to store the MTG code.
-                Increase the nb_tab variable to at least %d"""
-                raise Exception(msg%(nb_tab+2))
 
             cur_scale = self.g.scale(vtx)
             if vtx == current_vertex:
@@ -1156,11 +1145,20 @@ class Writer(object):
                             et = '^'+et
                             tab = i
                         else:
-                            tab = i+1
+                            if i+1 < nb_tab:
+                                tab = i+1
+                            else:
+                                et = '^'+et
+                                tab = i
                         break
                 else:
                     print sy
                     raise Exception("Error in the MTG for vertex %d"%vtx)
+
+            if tab >= nb_tab:
+                msg = """There is not enough tabs to store the MTG code.
+                Increase the nb_tab variable to at least %d"""
+                raise Exception(msg%(nb_tab+2))
 
 
             # Create a valid line with properties.
@@ -1295,7 +1293,7 @@ class Writer(object):
     
         return symbols 
 
-def write_mtg(g, properties=[], class_at_scale=None):
+def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12):
     """
     Returns a list of strings.
     g is a MTG.
@@ -1330,7 +1328,7 @@ def write_mtg(g, properties=[], class_at_scale=None):
     header.append('')
 
     property_name = [p[0] for p in properties]
-    code = w.code(property_name)
+    code = w.code(property_name, nb_tab=nb_tab)
 
     header.extend(code)
     header.append('')

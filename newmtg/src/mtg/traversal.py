@@ -18,6 +18,7 @@
 ################################################################################
 # Tree  and MTG Traversals
 ################################################################################
+from collections import deque
 
 def pre_order(tree, vtx_id, complex=None, visitor_filter=None):
     ''' 
@@ -56,6 +57,46 @@ def pre_order(tree, vtx_id, complex=None, visitor_filter=None):
         for node in pre_order(tree, vid, complex):
             yield node
     
+def pre_order2(tree, vtx_id, complex=None, visitor_filter=None):
+    ''' 
+    Traverse a tree in a prefix way.
+    (root then children)
+
+    This is a non recursive implementation.
+    '''
+    if complex is not None and tree.complex(vtx_id) != complex:
+        return
+
+    edge_type = tree.property('edge_type')
+    
+    queue = deque()
+    queue.append(vtx_id)
+
+    
+    # 1. select first '+' edges
+
+    while queue:
+        plus = []
+        successor = []
+        vtx_id = queue.pop()
+        yield vtx_id
+
+        for vid in tree.children(vtx_id):
+            if complex is not None and tree.complex(vid) != complex:
+                continue
+            if edge_type.get(vid) == '<':
+                successor.append(vid)
+                continue
+
+            if visitor_filter and not visitor_filter.pre_order(tree, vid):
+                continue
+
+            plus.append(vid)
+
+        plus.extend(successor)
+        child = plus
+        queue.extend(reversed(child))
+
 def post_order(tree, vtx_id, complex=None):
     ''' 
     Traverse a tree in a postfix way.
@@ -122,7 +163,7 @@ def iter_mtg(mtg, vtx_id):
         loc = mtg._components[loc][0]
     vtx_id = loc
 
-    for vid in pre_order(mtg, vtx_id):
+    for vid in pre_order2(mtg, vtx_id):
         for node in iter_scale(mtg, vid, visited):
             yield node
         

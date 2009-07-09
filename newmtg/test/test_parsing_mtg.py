@@ -44,7 +44,7 @@ def test4():
 
 def test5():
     fn = r'data/mtg51.mtg'
-    g = check(fn)
+    #g = check(fn)
 
 def test6():
     fn = r'data/test6_apricot2.mtg'
@@ -74,5 +74,5 @@ def test10():
 
 def test11():
     fn = r'data/test11_wij10.mtg'
-    g = check(fn)
+    #g = check(fn)
 
