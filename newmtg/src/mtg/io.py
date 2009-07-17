@@ -156,10 +156,13 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
                 label = args['label']
                 previous_index = mtg.property('index')[current_vertex]
                 pending_edge = ''
+                _args = {}
                 for i in range(previous_index+1, index+1):
-                    args['index'] = i
-                    ll = args['label'] = label.replace(str(index), str(i))
-                    vid = mtg.add_child(vid, edge_type='<', **args)
+                    if i == index:
+                        _args = args
+                    _args['index'] = i
+                    ll = _args['label'] = label.replace(str(index), str(i))
+                    vid = mtg.add_child(vid, edge_type='<', **_args)
                     current_vertex = vid
             elif tag == '/':
                 if mtg.scale(vid) == scale:
