@@ -25,7 +25,7 @@ from warnings import warn
 import openalea.plantgl.all as pgl
 
 from mtg import *
-from traversal import iter_mtg
+from traversal import iter_mtg, iter_mtg_with_filter
 
 debug = 0
 
@@ -552,7 +552,6 @@ def mtg2lpy(g, lsystem, axial_tree=None):
     """
     # Retrieve the set of modules, their label, scale and proerty names.
 
-    import traversal
 
 
     edge_type = g.properties().get('edge_type', {})
@@ -569,8 +568,6 @@ def mtg2lpy(g, lsystem, axial_tree=None):
         parameters[m.name] = m.parameterNames
         scales[m.name] = m.scale
 
-    print scales
-
     tree = axial_tree
     if tree is None:
         import openalea.lpy as lpy
@@ -579,27 +576,18 @@ def mtg2lpy(g, lsystem, axial_tree=None):
     # Roor of the MTG at scale 1
     vtx_id = g.roots(scale=0).next()
 
-    print vtx_id
-
     prev = vtx_id
-    prev_order = 0
-    prev_scale = g.scale(vtx_id)
 
     def axialtree_pre_order_visitor(vid, tree=tree):
-        print label.get(vid), vid
         et = edge_type.get(vid)
         if et == '+':
             tree += '['
 
         name = label.get(vid)
         if not name: 
-            print vid
             return False
 
         l = [name]
-
-        if name == 'plante':
-            print name
 
         for p in parameters.get(name, []):
             arg = g.property(p).get(vid)
@@ -617,12 +605,12 @@ def mtg2lpy(g, lsystem, axial_tree=None):
             tree += ']'
 
 
-    for  vid in traversal.iter_mtg_with_filter(g, vtx_id, 
+    for  v in traversal.iter_mtg_with_filter(g, vtx_id, 
                     axialtree_pre_order_visitor, 
                     axialtree_post_order_visitor):
-        if prev == vid:
-            if g.property('label').get(vid) == 'plante':
-                print vid
+
+        print v
+        if prev == v:
             continue
 
     return tree
