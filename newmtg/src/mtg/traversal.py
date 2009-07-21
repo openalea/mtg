@@ -240,7 +240,5 @@ def iter_mtg_with_filter(mtg, vtx_id, pre_order_filter, post_order_visitor):
 
     for vid in pre_order_with_filter(mtg, vtx_id, pre_order_filter, post_order_visitor):
         for node in iter_scale(mtg, vid, visited):
-            if pre_order_filter and node != vid:
-                pre_order_filter(node)
             yield node
 

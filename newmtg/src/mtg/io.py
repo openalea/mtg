@@ -605,12 +605,14 @@ def mtg2lpy(g, lsystem, axial_tree=None):
             tree += ']'
 
 
-    for  v in traversal.iter_mtg_with_filter(g, vtx_id, 
-                    axialtree_pre_order_visitor, 
+    for v in traversal.iter_mtg_with_filter(g, vtx_id, 
+                    lambda x: True, 
                     axialtree_post_order_visitor):
 
         if prev == v:
             continue
+        else:
+            axialtree_pre_order_visitor(v)
 
     return tree
 
