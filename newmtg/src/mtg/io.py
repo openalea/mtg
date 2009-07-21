@@ -569,28 +569,38 @@ def mtg2lpy(g, lsystem, axial_tree=None):
         parameters[m.name] = m.parameterNames
         scales[m.name] = m.scale
 
+    print scales
+
     tree = axial_tree
     if tree is None:
-        import openalea.lpy
+        import openalea.lpy as lpy
         tree = lpy.AxialTree()
 
     # Roor of the MTG at scale 1
-    vtx_id = g.roots(scale=1).next()
+    vtx_id = g.roots(scale=0).next()
+
+    print vtx_id
 
     prev = vtx_id
     prev_order = 0
     prev_scale = g.scale(vtx_id)
 
     def axialtree_pre_order_visitor(vid, tree=tree):
+        print label.get(vid), vid
         et = edge_type.get(vid)
         if et == '+':
             tree += '['
 
         name = label.get(vid)
         if not name: 
+            print vid
             return False
 
         l = [name]
+
+        if name == 'plante':
+            print name
+
         for p in parameters.get(name, []):
             arg = g.property(p).get(vid)
             if arg is None:
@@ -607,8 +617,12 @@ def mtg2lpy(g, lsystem, axial_tree=None):
             tree += ']'
 
 
-    for  vid in traversal.iter_mtg_with_filter(g, vtx_id, axialtree_pre_order_visitor, axialtree_post_order_visitor):
+    for  vid in traversal.iter_mtg_with_filter(g, vtx_id, 
+                    axialtree_pre_order_visitor, 
+                    axialtree_post_order_visitor):
         if prev == vid:
+            if g.property('label').get(vid) == 'plante':
+                print vid
             continue
 
     return tree
