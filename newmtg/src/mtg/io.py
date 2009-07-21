@@ -609,7 +609,6 @@ def mtg2lpy(g, lsystem, axial_tree=None):
                     axialtree_pre_order_visitor, 
                     axialtree_post_order_visitor):
 
-        print v
         if prev == v:
             continue
 
