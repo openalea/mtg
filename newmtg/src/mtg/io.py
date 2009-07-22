@@ -434,11 +434,12 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
                 for shape in geoms[axial_id]:
                     shape.id = mtg_id
                 mtg.property('geometry')[mtg_id]=geoms[axial_id]
+            else:
+                print 'Be carefull : no id ', axial_id
 
     # The string represented by the axial tree...
 
     geoms = scene_id(scene)
-
     mtg = MTG()
     if scene:
         mtg.add_property('geometry')
@@ -535,8 +536,7 @@ def lpy2mtg(axial_tree, lsystem, scene = None):
         scales[m.name] = m.scale
 
     tree = axial_tree
-    geom_tree = l.homomorphism(tree)
-    scene = l.sceneInterpretation(geom_tree)
+    scene = l.sceneInterpretation(tree)
 
     mtg = axialtree2mtg(tree, scales, scene, parameters)
     return mtg
