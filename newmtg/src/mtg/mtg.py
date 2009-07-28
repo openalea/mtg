@@ -236,9 +236,14 @@ class MTG(PropertyTree):
          - `vtx_id`: a vertex identifier
          - `parent_id`: a vertex identifier
         '''
-        parent_id = super(MTG, self).insert_parent(vtx_id, parent_id, **properties)
+        if parent_id is None:
+            self._id += 1
+            parent_id = self._id
 
         self._scale[parent_id] = self.scale(vtx_id)
+
+        parent_id = super(MTG, self).insert_parent(vtx_id, parent_id, **properties)
+
         return parent_id
 
     #########################################################################
