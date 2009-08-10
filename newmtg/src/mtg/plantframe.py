@@ -27,11 +27,19 @@ based on various infomation.
 :Examples:
 
 .. todo::
-    - 
+    - define a set of algorithms that can be used independently (as plug'in).
+    - for each algo:
+        * Decompose the problem into subproblems by computing the frontere.
+          =>define a color based on the properties and the semantic.
+          => define a partial order for solving each problems 
+        * Solve each subproblems and assemble the solutions
+        * Return the solution as properties
+    - define a generic method (or methods) to build a geometric object for computed values and properties.
 '''
 
 import traversal
 
+from math import sqrt
 
 class PlantFrame(object):
     ''' Engine to compute the geometry of a plant based on 

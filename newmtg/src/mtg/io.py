@@ -716,7 +716,7 @@ class Reader(object):
         SYMBOL  SCALE   DECOMPOSITION   INDEXATION  DEFINITION
         ...
         """
-        decomp = ['NONE', 'FREE', 'CONNECTED', 'LINEAR', 'PURELINEAR', '<-LINEAR', '+-LINEAR']
+        decomp = ['NONE', 'FREE', 'CONNECTED', 'NOTCONNECTED', 'LINEAR', 'PURELINEAR', '<-LINEAR', '+-LINEAR']
         l = self._next_line()
         if not l.startswith('CLASSES'):
             self.warnings.append((self._no_line, "CLASSES section not found."))
