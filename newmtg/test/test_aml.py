@@ -46,6 +46,7 @@ test11_wij10.mtg:Predecessor
 
 """.split()
 excludes = [l.split(':') for l in excludes]
+excludes = []
 
 def compare(func_name, *args, **kwds):
     """Apply the same function to the two modules with the same args. 

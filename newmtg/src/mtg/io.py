@@ -123,6 +123,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
         elif tag == ']':
             vid = branching_stack.pop()
             current_vertex = vid
+            scale = mtg.scale(vid)
         else:
             if class_type:
                 args = get_properties(name)
@@ -138,6 +139,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
                 new_scale = symbol_at_scale[symbol_class]
                 if tag == '/' and new_scale <= scale:
                     new_scale -= 1
+                    pending_edge = '/'
                 while new_scale < scale:
                     scale -= 1
                     current_vertex = mtg.complex(current_vertex)
@@ -172,7 +174,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
                 elif mtg.scale(vid) > scale:
                     scale += 1
                     component = mtg.add_component(current_vertex, **args)
-                    if mtg.scale(vid) == scale:
+                    if mtg.scale(vid) == scale and pending_edge != '/':
                         vid = mtg.add_child(vid, 
                                             child=component, 
                                             edge_type=pending_edge)
@@ -180,6 +182,12 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
                         current_vertex = vid
                     else:
                         current_vertex = component
+                        # two case :
+                        # 1. up and down in scales E+A/U/E
+                        # 2. /P/P
+                        if pending_edge == '/':
+                            vid = current_vertex
+                            scale = mtg.scale(vid)
                 else:
                     vid = mtg.add_component(current_vertex, **args)
                     current_vertex = vid
@@ -453,7 +461,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
 
     vid = mtg.root
     current_vertex = vid
-    branching_stack = []
+    branching_stack = [vid]
 
     pending_edge = '' # edge type for the next edge to be created
 
@@ -900,15 +908,14 @@ class Reader(object):
                 s = s[1:]
             elif edge_type:
                 elt = ''
-                if edge_type[-1] == '+':
+                if edge_type[-1] in ['+', '/']:
                     elt = ']'
-                if s[0] == '+':
+                if s[0] in ['+','/']:
+                    if elt == ']':
+                        edge_type.pop()
+                    edge_type.append(s[0])
                     s = elt+'[' + s
-                    edge_type[-1] = '+'
-                elif s[0] == '/':
-                    s = elt + s
-                    edge_type[-1] = '/'
-            elif s[0] == '+':
+            elif s[0] in ['+']:
                 edge_type.append(s[0])
 
         elif diff_space > 0:
@@ -916,18 +923,22 @@ class Reader(object):
             if s.startswith('^'):
                 print 'ERROR %s'%s
             indent.append(nb_spaces)
-            edge_type.append(s[0])
-            if s[0] == '+':
+            if s[0] in ['+','/']:
+                edge_type.append(s[0])
                 s = "[" + s
+            else:
+                edge_type.append(s[0])
         else:
             # unindent
             brackets = []
             # Close the previous brackets
+            print 'nbspaces indent', nb_spaces, indent, edge_type
             while nb_spaces - indent[-1] < 0:
                 indent.pop()
-                edge = edge_type.pop()
-                if edge == '+':
-                    brackets.append(']')
+                if edge_type:
+                    edge = edge_type.pop()
+                    if edge in ['+','/']:
+                        brackets.append(']')
                 
             # Same case as diff_space == 0
             assert nb_spaces - indent[-1] == 0
@@ -935,14 +946,13 @@ class Reader(object):
                 s = s[1:]
             elif edge_type:
                 elt=''
-                if edge_type[-1] == '+':
+                if edge_type[-1] in ['+','/']:
                     elt = ']'
-                    edge_type.pop()
-                if s[0] == '+':
+                if s[0] in ['+','/']:
+                    if elt == ']':
+                        edge_type.pop()
+                    edge_type.append(s[0])
                     s = elt+'[' + s
-                    edge_type.append('+')
-                elif s[0] == '/':
-                    s = elt + s
   
             s = ''.join(brackets+[s])
 
@@ -981,7 +991,7 @@ class Reader(object):
             
         while edge_type:
             edge = edge_type.pop()
-            if edge == '+':
+            if edge in ['+','/']:
                 new_code.append(']')
 
         self._new_code = ''.join(new_code)

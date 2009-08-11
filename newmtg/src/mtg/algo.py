@@ -179,12 +179,14 @@ def root(g, vid, RestrictedTo='NoRestriction', ContainedIn=None):
     rt = RestrictedTo
     ci = ContainedIn
 
+    v_current = vid
     for v in ancestors(g, vid):
         if rt == 'SameComplex':
             if g.complex(v) != g.complex(vid):
                 break
+        v_current = v
 
-    return v
+    return v_current
 
 
 def location(g, vid, **kwds):
