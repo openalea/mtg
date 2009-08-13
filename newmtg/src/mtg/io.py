@@ -653,7 +653,7 @@ class Reader(object):
     The code contains topology relations and properties.
     """
 
-    def __init__(self, string):
+    def __init__(self, string, has_line_as_param=True):
         self.mtg = None
 
         # First implementation.
@@ -670,6 +670,7 @@ class Reader(object):
         # debug
         self._no_line = 0
         self.warnings = []
+        self.has_line_as_param = has_line_as_param
 
     def parse(self):
         """
@@ -835,6 +836,9 @@ class Reader(object):
 
         if l.startswith('MTG'):
             self._no_line -= 1
+        # add _line feature as int
+        if self.has_line_as_param:
+            self._features['_line'] = 'INT'
 
     def _next_line(self):
         self._no_line += 1
@@ -843,11 +847,17 @@ class Reader(object):
             return ""
         
         l = self.lines[self._no_line]
-        l = l.strip()
-        if not l or l[0] == '#':
+        l1 = l.strip()
+        if not l1 or l1[0] == '#':
             return self._next_line()
         else:
             return l
+
+    def next_line_iter(self):
+        l = self._next_line()
+        while l:
+            yield l
+            l = self._next_line()
 
     def errors(self):
         nb_lines = len(self.lines)
@@ -932,7 +942,6 @@ class Reader(object):
             # unindent
             brackets = []
             # Close the previous brackets
-            print 'nbspaces indent', nb_spaces, indent, edge_type
             while nb_spaces - indent[-1] < 0:
                 indent.pop()
                 if edge_type:
@@ -961,13 +970,16 @@ class Reader(object):
 
 
     def preprocess_code(self):
+
         code = [l for l in self.lines[self._no_line+1:] if l.strip() and not l.strip().startswith('#')]
 
         indent = [0]
         edge_type = []
         tab = 0
         new_code = []
-        for l in code:
+
+        #for l in code:
+        for l in self.next_line_iter():
             #l = l.expandtabs(4)
             s = l.strip()
             s= s.split()[0]
@@ -976,6 +988,8 @@ class Reader(object):
             n = len(args)
             params = [ "%s=%s"%(k,v) for k, v in zip(self._feature_head, args) if v.strip()]
 
+            if self.has_line_as_param:
+                params.append("_line=%d"%self._no_line)
             if params:
                 s = s + "("+','.join(params)+")"
             

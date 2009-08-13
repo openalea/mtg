@@ -177,6 +177,12 @@ class DressingData(object):
             # - phyllotaxy, position between plants, ...
 
 
+def dressing_data_from_file(fn):
+    f=open(fn)
+    dresser = dressing_data(f)
+    f.close()
+    return dresser
+
 def dressing_data(file):
     """ Parse a dressing data file and return a Dressing Data object.
     """
@@ -462,19 +468,19 @@ class Reader(object):
         "MinLenght A = 10"
         name = l[1]
         value = l[3]
-        self.dresser.min_length[name] = value
+        self.dresser.min_length[name] = float(value)
 
     def min_top_diameter(self, l):
         "MinTopDiameter A = 10"
         name = l[1]
         value = l[3]
-        self.dresser.min_topdia[name] = value
+        self.dresser.min_topdia[name] = float(value)
 
     def min_bottom_diameter(self, l):
         "MinBottomDiameter A = 10"
         name = l[1]
         value = l[3]
-        self.dresser.min_botdia[name] = value
+        self.dresser.min_botdia[name] = float(value)
 
     def leaf_length(self, l):
         "LeafLength = 100"

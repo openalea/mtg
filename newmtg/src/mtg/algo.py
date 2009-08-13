@@ -270,7 +270,7 @@ def axis(g, vtx_id, scale=-1, **kwds):
     return local_axis(g, v, scale=scale, **kwds)
 
                 
-def descendants(g, vtx_id, **kwds):
+def descendants(g, vtx_id, scale=-1, **kwds):
     """TODO: see aml doc
     """
     edge_type = g.property('edge_type')
@@ -281,6 +281,8 @@ def descendants(g, vtx_id, **kwds):
 
     if ci is not None:
         c_scale = g.scale(ci)
+
+    vtx_id = vertex_at_scale(g, vtx_id, scale)
 
     v = vtx_id
 

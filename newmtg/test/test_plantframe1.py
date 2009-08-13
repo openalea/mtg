@@ -1,26 +1,11 @@
 from openalea.mtg.io import *
 import openalea.mtg.plantframe as plantframe
 import openalea.mtg.algo as algo 
-from openalea.mtg import aml
-
-#from openalea.aml import *
-
-# def check(fn):
-#     g = read_mtg_file(fn)
-#     g1 = aml.MTG(fn)
-#     
-#     assert list(g.vertices()) == VtxList()
-#     for scale in range(1,g.nb_scales()):
-#         assert list(g.vertices(scale=scale)) == VtxList(Scale=scale), set(g.vertices(scale=scale)).difference(VtxList(Scale=scale))
-# 
-#     l = VtxList(Scale=g.max_scale())
-#     for vid in l:
-#         assert g.parent(vid) == aml.Father(vid), 'vertex %d has not the same parent at scale %d'%(vid, g.max_scale())
-# 
-#     return g
+from openalea.mtg import aml, dresser
 
 def test1():
     fn = r'data/test12_wij10.mtg'
+    drf = r'data/wij10.drf'
 
     length = lambda x: g.property('longueur').get(x)
     botdia = lambda x: g.property('diabase').get(x)
@@ -28,10 +13,30 @@ def test1():
 
     g = read_mtg_file(fn)
 
-    pf = plantframe.PlantFrame(g, Length=length, TopDiameter=topdia, BottomDiameter=botdia)
+    dressing_data = dresser.dressing_data_from_file(drf)
+    pf = plantframe.PlantFrame(g, Length=length, 
+                               TopDiameter=topdia, 
+                               BottomDiameter=botdia,
+                               DressingData = dressing_data)
+    pf.propagate_constraints()
 
+    # axes are linear and diameter are defined on axes.
+    assert len(pf.top_diameter) == 16
+    assert len(pf.bottom_diameter) == 16
+    
+    for v in g.vertices(scale=3):
+        assert pf.is_linear(g, v)
+    
+    mtg, new_map = pf.build_mtg_from_radius()
+    
+    axes = [v for v in mtg.vertices(scale=1) if pf.is_linear(mtg, v)]
+    for v in axes:
+        assert mtg.order(v) == 1
 
-    return g, pf
+    diameters = pf.algo_diameter()
+    assert len(diameters) == g.nb_vertices(scale=4)
+    
+    return g, pf, mtg, new_map
 
 def test2():
     fn = r'data/hetre.mtg'

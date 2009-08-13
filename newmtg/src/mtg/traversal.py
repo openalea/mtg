@@ -97,6 +97,8 @@ def pre_order2(tree, vtx_id, complex=None, visitor_filter=None):
         child = plus
         queue.extend(reversed(child))
 
+
+
 def post_order(tree, vtx_id, complex=None):
     ''' 
     Traverse a tree in a postfix way.
@@ -107,9 +109,12 @@ def post_order(tree, vtx_id, complex=None):
     for vid in tree.children(vtx_id):
         if complex is not None and tree.complex(vid) != complex:
             continue
-        for node in post_order(tree, vid):
+        for node in post_order(tree, vid, complex=complex):
             yield node
     yield vtx_id
+
+
+
 
 def traverse_tree(tree, vtx_id, visitor):
   ''' 
