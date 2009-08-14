@@ -21,7 +21,9 @@ For interface definition, see openalea.core.graph.interface
 
 __docformat__ = "restructuredtext"
 
+import re
 import itertools
+
 import traversal
 import random
 
@@ -443,6 +445,61 @@ class MTG(PropertyTree):
 
         return _order
 
+    def edge_type(self, vid):
+        """
+        Type of the edge between a vertex and its parent.
+
+        The different values are '<' for successor, and '+' for ramification.
+        """
+        return self.property('edge_type').get(vid,'')
+
+    def class_name(self, vid):
+        """
+        Class of a vertex.
+        The Class of a vertex are the first characters of the label.
+        The label of a vertex is the string defined by the concatenation 
+        of the class and its index.
+
+        The label thus provides general information about a vertex and 
+        enable to encode the plant components.
+
+        The class_name may be not defined. Then , an empty string is returned.
+        """
+
+        pattern = r'[a-zA-Z]+'
+        label = self.property('label').get(vid)
+        if not label:
+            return ''
+        else:
+            m=re.match(pattern, label)
+            if m:
+                return m.group(0)
+            else:
+                return ''
+
+    def index(self, vid):
+        """
+        Index of a vertex
+
+        The :class:`Index` of a vertex is a feature always defined and independent of time 
+        (like the index). 
+        It is represented by an by a non negative integer. 
+        The label of a vertex is the string defined by the concatenation 
+        of its class and its index. 
+        The label thus provides general information about a vertex and 
+        enables us to encode the plant components.
+        """
+        pattern = r'[0-9]+$'
+        label = self.property('label').get(vid)
+        if not label:
+            return vid
+        else:
+            m=re.search(pattern, label)
+            if m:
+                return m.group(0)
+            else:
+                return vid
+        
 ################################################################################
 # Graph generators
 ################################################################################
