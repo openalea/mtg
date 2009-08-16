@@ -29,6 +29,8 @@ def pre_order(tree, vtx_id, complex=None, visitor_filter=None):
     '''
     if complex is not None and tree.complex(vtx_id) != complex:
         return
+    if visitor_filter and not visitor_filter.pre_order(vtx_id):
+        return
 
     edge_type = tree.property('edge_type')
 
@@ -36,26 +38,25 @@ def pre_order(tree, vtx_id, complex=None, visitor_filter=None):
     successor = []
     yield vtx_id
     for vid in tree.children(vtx_id):
-        if complex is not None and tree.complex(vid) != complex:
-            continue
+
         if edge_type.get(vid) == '<':
             successor.append(vid)
             continue
 
-        if visitor_filter and not visitor_filter.pre_order(tree, vid):
-            continue
 
-        for node in pre_order(tree, vid, complex):
+        for node in pre_order(tree, vid, complex, visitor_filter):
             yield node
 
-        if visitor_filter:
-            visitor_filter.post_order(vid)
 
 
     # 2. select then '<' edges
     for vid in successor:
-        for node in pre_order(tree, vid, complex):
+        for node in pre_order(tree, vid, complex, visitor_filter):
             yield node
+
+    if visitor_filter:
+        visitor_filter.post_order(vtx_id)
+
     
 def pre_order2(tree, vtx_id, complex=None, visitor_filter=None):
     ''' 
@@ -84,18 +85,41 @@ def pre_order2(tree, vtx_id, complex=None, visitor_filter=None):
         for vid in tree.children(vtx_id):
             if complex is not None and tree.complex(vid) != complex:
                 continue
-            if edge_type.get(vid) == '<':
-                successor.append(vid)
-                continue
-
             if visitor_filter and not visitor_filter.pre_order(tree, vid):
                 continue
 
-            plus.append(vid)
+            if edge_type.get(vid) == '<':
+                successor.append(vid)
+            else:
+                plus.append(vid)
+
+
 
         plus.extend(successor)
         child = plus
         queue.extend(reversed(child))
+
+def pre_order_in_scale(tree, vtx_id, visitor_filter=None):
+    ''' 
+    Traverse a tree in a prefix way.
+    (root then children)
+
+    This is a non recursive implementation.
+    '''
+    
+    queue = deque()
+    queue.append(vtx_id)
+
+    
+    while queue:
+        vtx_id = queue.pop()
+        yield vtx_id
+
+        for vid in tree.components(vtx_id):
+            if visitor_filter and not visitor_filter.pre_order(vid):
+                continue
+
+            queue.append(vid)
 
 
 
@@ -113,6 +137,26 @@ def post_order(tree, vtx_id, complex=None):
             yield node
     yield vtx_id
 
+
+def post_order2(tree, vtx_id, complex=None, visitor_filter=None):
+    ''' 
+    Traverse a tree in a postfix way.
+    (from leaves to root)
+    '''
+    if complex is not None and tree.complex(vtx_id) != complex:
+        return
+    if visitor_filter and not visitor_filter.pre_order(vtx_id):
+        return
+    
+    for vid in tree.children(vtx_id):
+
+        for node in post_order2(tree, vid, complex, visitor_filter):
+            yield node
+
+
+    if visitor_filter:
+        visitor_filter.post_order(vtx_id)
+    yield vtx_id
 
 
 

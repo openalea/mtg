@@ -35,16 +35,24 @@ based on various infomation.
         * Solve each subproblems and assemble the solutions
         * Return the solution as properties
     - define a generic method (or methods) to build a geometric object for computed values and properties.
+
+    - diameter
+    - length vs points
+    - angles
+
+    - remove noise from points
+    - translate the branch at the extremities of the cylinder.
 '''
 import sys
-
 import traversal
 from dresser import DressingData
 import algo
-from mtg import colored_tree
+from mtg import colored_tree, PropertyTree
 from math import sqrt
 
-error = True
+from vplants.plantgl.all import * 
+
+error = False
 epsilon = 1e-5
 
 class PlantFrame(object):
@@ -79,6 +87,7 @@ class PlantFrame(object):
 
 
         self.g = g
+        self.max_scale = g.max_scale()
 
         # Global parameters
         self.origin = kwds.get('origin', (0,0,0))
@@ -107,13 +116,13 @@ class PlantFrame(object):
         # Geometry associated to an element with mtg parameters
 
         # User define axes: Return True or False
-        #
-        self.axe_root = self._extract_properties('Axe', kwds)
+        self.new_axe = self._extract_properties('Axe', kwds)
+        self.axes = {}
 
         
  
         self._compute_global_data()
-
+        self.propagate_constraints()
 
 
     def _extract_properties(self, name, kwds):
@@ -150,18 +159,16 @@ class PlantFrame(object):
         
         
 
-
     def _compute_global_data(self):
         """
         Scale the values according to units.
         """
-        length_unit = self.dresser.length_unit
-
+        g = self.g
         self.points = {}
         points = self.points
         for vid in self.xx:
             try:
-                points[vid] = xx[vid]*length_unit, yy[vid]*length_unit, zz[vid]*length_unit
+                points[vid] = self.xx[vid], self.yy[vid], self.zz[vid]
             except:
                 continue
 
@@ -172,9 +179,55 @@ class PlantFrame(object):
                 angles[vid] = self.aa[vid], self.bb[vid], self.cc[vid]
             except:
                 continue
+        
+        if not self.new_axe:
+            self.new_axe = [v for v in g.vertices(scale = self.max_scale) if g.edge_type(v) == '+']
+
+        # Method to compute the axes and their order.
+        self._compute_axes()
 
 
+    def _compute_axes(self):
+        """
+        Compute the axes with their order.
+        """
+        if self.axes:
+            return
 
+        g = self.g
+        max_scale = self.max_scale
+        marked = {}
+        axes = self.axes
+        new_axe = self.new_axe
+
+        self.max_order_axes = 0
+
+        def ancestors(v):
+            while v is not None:
+                yield v
+                marked[v] = True
+                if g.parent(v) is None or v in new_axe:
+                    break
+                v = g.parent(v)
+                
+        def order(v):
+            _order = 0
+            while v is not None:
+                if v in new_axe:
+                    _order += 1
+                v = g.parent(v)
+            return _order
+
+        for root in g.roots(scale=max_scale):
+            for vid in traversal.post_order(g, root):
+                if vid in marked:
+                    continue
+                _axe = list(reversed(list(ancestors(vid))))
+                _order = order(_axe[0])
+                axes.setdefault(_order, []).append(_axe)
+
+
+        
     def _get_origin(self, vid):
         ''' Compute the origin for the vertex `vid`.
         '''
@@ -198,6 +251,7 @@ class PlantFrame(object):
         if scale == -1:
             scale = self.g.max_scale()
 
+        # TODO: Compute the plantframe for several plants.
         root = list(self.g.roots(scale=scale))[0]
 
         # 1. compute the origin of the tree
@@ -218,6 +272,7 @@ class PlantFrame(object):
         # diameter
         max_scale = g.max_scale()
         # Between scale constraints
+        # Copy of the keys because we modify the
         for vid in self.bottom_diameter.keys():
             scale = g.scale(vid)
             if scale == max_scale:
@@ -233,7 +288,7 @@ class PlantFrame(object):
         # Within scale constraint
         # BottomDiameter(x) = TopDiameter(Parent(x))
         # WARNING : This is NOT TRUE:
-            # You may have several bot_dia values for the same parent.
+        #  - You may have several bot_dia values for the same parent.
         edge_type  = g.property('edge_type')
         for vid in self.bottom_diameter:
             pid = g.parent(vid)
@@ -306,6 +361,9 @@ class PlantFrame(object):
     ################################################################
     # Write the different plugins
 
+    ################################################################
+    # Diameter algorithms
+
     def algo_diameter(self, mode=1, power = 2):
         """
         Compute the radius for each vertices.
@@ -320,7 +378,8 @@ class PlantFrame(object):
         if mode == 0:
             diameter = self.default_algo_diameter(power)
         else:
-            diameter = self.advanced_algo_diameter(power)
+            #diameter = self.advanced_algo_diameter(power)
+            diameter = self.advanced_algo_diameter2(power)
 
         return diameter
 
@@ -336,6 +395,7 @@ class PlantFrame(object):
         # Compute default diameter
         dresser = self.dresser
         default_diameter = 1 if not dresser.min_topdia else min(dresser.min_topdia.values())
+        default_diameter *= 1./self.dresser.diameter_unit
 
         strands = {}
         for vid in traversal.post_order(g, v):
@@ -345,9 +405,9 @@ class PlantFrame(object):
         for vid, s in strands.iteritems():
             diameters[vid] = default_diameter * pow(s, 1./power)
 
-        return diameter
+        return diameters
 
-    def advanced_algo_diameter(self, power):
+    def advanced_algo_diameter(self, power, default_diameter=None):
         """ 
         Compute the pipe model on the entire mtg.
 
@@ -362,12 +422,19 @@ class PlantFrame(object):
                     The diameter has to be decreasing.
                 - if no value for the root, compute the total strands for the tree.
                 - Then  divide by the defined radius values obtain from step 1.
+
+        May be improved by a filtering pass.
+        Select all the segment without ramification (linear) and interpolate the radius.
         """
         g, new_map = self.build_mtg_from_radius()
         max_scale = g.max_scale()
         dresser = self.dresser
-        default_diameter = 1 if not dresser.min_topdia else min(dresser.min_topdia.values())
+        if default_diameter is None:
+            default_diameter = 1 if not dresser.min_topdia else min(dresser.min_topdia.values())
+            default_diameter *= 1./self.dresser.diameter_unit
+
         default_diameter = default_diameter**power
+
 
         strands = {}
         diameters = {}
@@ -393,20 +460,174 @@ class PlantFrame(object):
             root = g.component_roots(cid).next()
             has_root_diameter = root in diameters or root in bottom_diameter or g.parent(root) in diameters
             if has_root_diameter:
-
-                root_diameter = max(diameters.get(root, 0), 
-                                    bottom_diameter.get(root,0)**power)
-                if root_diameter == 0:
+                pid = g.parent(root)
+                if pid in diameters:
                     root_diameter = diameters[g.parent(root)]
+                else:
+                    root_diameter = max(diameters.get(root, 0), 
+                                    bottom_diameter.get(root,0)**power)
 
             sorted_vertices = list(traversal.post_order(g, root, complex=cid))
             for vid in sorted_vertices:
-                diam = sum(diameters[v] for v in g.children(vid) if v in diameters)
+                if vid in diameters:
+                    continue
+
+                children = [v for v in g.children(vid) if g.complex(v) == cid]
+                children_diam = [diameters[v] for v in children if v in diameters]
+                diam = sum(children_diam)
+
 
                 if has_root_diameter and diam > root_diameter:
                     if error:
-                        print 'WARNING: The pipe model compute at %d for power=%f a too large diameter.'%(vid, power)
-                        print '       -> decrease the power of the pipe model.'
+                        if max(children_diam) < root_diameter:
+                            print "ONE children has a greater radius value than its root."
+                            print children, children_diam
+                        else:
+                            print 'WARNING: The pipe model compute at %d for power=%f a too large diameter.'%(vid, power)
+                            print '       -> decrease the power of the pipe model.'
+                        print 'root ', root, 'root_diam ', root_diameter, 'current ', diam
+                    error_vertex.append(new_map[vid])
+
+                if diam > 0:
+                    diameters[vid] = diam
+
+                strand = sum(strands.get(v,0) for v in children)
+                if strand > 0:
+                    strands[vid] = strand
+                elif diam == 0:
+                    strands[vid] = 1
+
+            # Solve the boundary condition
+            # if there are a bottom diam on root
+            
+            # check
+            for vid in sorted_vertices:
+                assert vid in strands or vid in diameters
+
+            if has_root_diameter:
+                #if len(sorted_vertices) == 1:
+                #    diameters[root] = root_diameter
+                #    continue
+
+                delta_diameter = root_diameter - diameters.get(root,0)
+
+                if delta_diameter < epsilon:
+                    # compute strands default radius
+                    # Add diameter only at the branching where 
+                    # Select only the vertices which do not have a diam value.
+                    strands_diameter = default_diameter
+                    vtxs = [v for v in sorted_vertices if v in strands and v not in diameters]
+
+                    for vid in vtxs:
+                        s = strands[vid]
+                        diameters[vid] = strands_diameter * s
+
+                else:
+                    # d**2 = sum(d**2) + sum(strand_diameter**2) = n * cst_strand_diameter**2
+                    n = strands.get(root,0)
+                    if n > 0:
+                        strands_diameter = delta_diameter / n
+                        vtxs = [v for v in sorted_vertices if v in strands]
+                        for vid in vtxs:
+                            diameters[vid] = diameters.get(vid, 0) + strands[vid] * strands_diameter
+                    
+            else:
+                # Compute the total number of strands for the mtg
+                nb_leaves = len([v for v in g.vertices(scale=2) if g.is_leaf(v)])
+                if root not in diameters:
+                    strands_diameter = default_diameter
+                elif root not in strands:
+                    continue
+                else:
+                    strands_diameter = diameters[root] / (nb_leaves - strands[root])
+                    vtxs = [v for v in sorted_vertices if v in strands]
+                    for vid in vtxs:
+                        diameters[vid] = diameters.get(vid, 0) + strands[vid] * strands_diameter
+                    
+
+        # compute the final diameters
+        factor = 1./power
+        result = dict(( (new_map[v], d**factor) for v, d in diameters.iteritems()))
+
+        self.error_vertex = error_vertex
+        if error_vertex:
+            print 'Warnings on diameter for %d vertices'%len(error_vertex)
+        return result
+
+    def advanced_algo_diameter2(self, power, default_diameter=None):
+        """ 
+        Compute the pipe model on the entire mtg.
+
+        There are 4 cases:
+            for each component:
+                - traverse in a post_order way all the vertices
+                    -  compute strands and diameter
+                    - compute the difference at the root
+                    - compute a diameter value for the strands
+
+                - fix problem with wrong power value:
+                    The diameter has to be decreasing.
+                - if no value for the root, compute the total strands for the tree.
+                - Then  divide by the defined radius values obtain from step 1.
+
+        May be improved by a filtering pass.
+        Select all the segment without ramification (linear) and interpolate the radius.
+        """
+        trees = self.decompose_radius()
+        g = self.g
+        max_scale = g.max_scale()
+        dresser = self.dresser
+
+        n = 0
+
+        if default_diameter is None:
+            default_diameter = 1 if not dresser.min_topdia else min(dresser.min_topdia.values())
+            default_diameter *= 1./self.dresser.diameter_unit
+
+        default_diameter = default_diameter**power
+
+
+        strands = {}
+        diameters = {}
+
+        # update the defined properties with the new indices
+        top_diameter = self.top_diameter
+        bottom_diameter = self.bottom_diameter
+
+        for k,td in top_diameter.iteritems():
+            if g.scale(k) == max_scale:
+                diameters[k] = td**power
+        ###
+        error_vertex = []
+        # For each independant sub_systems
+        
+        for tree in trees.itervalues():
+            # traverse the tree in a post_order way only for all vid in cid
+            root = tree.root
+            pid = g.parent(root)
+            has_root_diameter = root in bottom_diameter or pid in diameters or g.parent(pid) in diameters
+            strands.clear()
+            if has_root_diameter:
+                if pid in diameters:
+                    root_diameter = diameters[pid]
+                else:
+                    root_diameter = max(diameters.get(g.parent(pid), 0), 
+                                    bottom_diameter.get(root,0)**power)
+
+            for vid in traversal.post_order(tree, root):
+                assert vid not in diameters
+
+                children_diam = [diameters[v] for v in g.children(vid) if v in diameters]
+                diam = sum(children_diam)
+
+                if has_root_diameter and diam > root_diameter:
+                    if error:
+                        if max(children_diam) < root_diameter:
+                            print "ONE children has a greater radius value than its root."
+                            print list(g.children(vid)), children_diam
+                        else:
+                            print 'WARNING: The pipe model compute at %d for power=%f a too large diameter.'%(vid, power)
+                            print '       -> decrease the power of the pipe model.'
                         print 'root ', root, 'root_diam ', root_diameter, 'current ', diam
                     error_vertex.append(vid)
 
@@ -422,59 +643,56 @@ class PlantFrame(object):
             # Solve the boundary condition
             # if there are a bottom diam on root
             
-            # check
-            for vid in sorted_vertices:
-                assert vid in strands or vid in diameters
-
             if has_root_diameter:
-                if len(sorted_vertices) == 1:
-                    diameters[root] = root_diameter
-                    continue
 
-                delta_diameter = root_diameter - diameters[root]
+                delta_diameter = root_diameter - diameters.get(root,0)
+
                 if delta_diameter < epsilon:
                     # compute strands default radius
                     # Add diameter only at the branching where 
                     # Select only the vertices which do not have a diam value.
                     strands_diameter = default_diameter
-                    vtxs = set(sorted_vertices).intersection(strands.iterkeys()) 
-                    vtxs = vtxs.difference(diameters.iterkeys())
-
-                    for vid in vtxs:
-                        s = strands[vid]
-                        diameters[vid] = strands_diameter * s
+                    for vid, nb_strands in strands.iteritems():
+                        if vid not in diameters:
+                            diameters[vid]= nb_strands * strands_diameter
 
                 else:
                     # d**2 = sum(d**2) + sum(strand_diameter**2) = n * cst_strand_diameter**2
-                    n = strands[root]
+                    n = strands.get(root,0)
                     if n > 0:
                         strands_diameter = delta_diameter / n
-                        vtxs = set(sorted_vertices).intersection(strands.iterkeys()) 
-                        for vid in vtxs:
-                            diameters[vid] = diameters.get(vid, 0) + strands[vid] * strands_diameter
+                        for vid, nb_strands in strands.iteritems():
+                            diameters[vid] = diameters.get(vid,0) + nb_strands * strands_diameter
                     
             else:
+                n+=1
                 # Compute the total number of strands for the mtg
-                nb_leaves = len([v for v in g.vertices(scale=2) if g.is_leaf(v)])
+                if strands.get(root,0)==0:
+                    assert not bool(strands)
+                    assert root in diameters
+                    continue
+                
                 if root not in diameters:
                     strands_diameter = default_diameter
-                elif root not in strands:
-                    continue
                 else:
+                    nb_leaves = len([v for v in traversal.pre_order2(g, root) if g.is_leaf(v)])
                     strands_diameter = diameters[root] / (nb_leaves - strands[root])
-                    vtxs = set(sorted_vertices).intersection(strands.iterkeys()) 
-                    for vid in vtxs:
-                        diameters[vid] = diameters.get(vid, 0) + strands[vid] * strands_diameter
+
+                for vid, nb_strands in strands.iteritems():
+                    diameters[vid] = diameters.get(vid,0) + nb_strands * strands_diameter
                     
 
         # compute the final diameters
         factor = 1./power
-        result = dict(( (new_map[v], d**factor) for v, d in diameters.iteritems()))
+        for v, d in diameters.iteritems():
+            diameters[v] = d**factor
 
         self.error_vertex = error_vertex
         if error_vertex:
-            print 'Errors on diameter for %d vertices'%len(error_vertex)
-        return result
+            print 'Warnings on diameter for %d vertices'%len(error_vertex)
+
+        return diameters
+
 
 
     def build_mtg_from_radius(self):
@@ -493,7 +711,8 @@ class PlantFrame(object):
         bd = self.bottom_diameter
         td = self.top_diameter
 
-        complex = [v for v in tv if (v in bd) or (v == tree_root) or g.parent(v) in td]
+        
+        complex = [v for v in tv if  (v == tree_root) or ((v in bd or g.parent(v) in td) and v not in td) ]
 
         colors[1] = complex
         
@@ -507,6 +726,140 @@ class PlantFrame(object):
 
         return mtg, new_map
 
+    def decompose_radius(self):
+        """ Decompose the tree (mtg at finest scale) into sub trees which contains
+        all the free nodes (nodes without radius).
+        by creating complex which do not have interior nodes with a given values.
+        Every tree have a defined frontier or are free.
+        """
+        g = self.g
+        bd = self.bottom_diameter
+        td = self.top_diameter
+
+        tree_id = {}
+        trees = {}
+        max_scale = g.max_scale()
+        for tree_root in g.roots(scale=max_scale):
+            for vid in traversal.pre_order(g, tree_root):
+                if vid not in td:
+                    pid = g.parent(vid)
+                    if pid in tree_id:
+                        tree = trees[tree_id[pid]]
+                        tree.add_child(pid, vid)
+                    else:
+                        tree = PropertyTree(root=vid) 
+                        trees[vid] = tree
+                    tree_id[vid] = tree.root
+
+        return trees
+
+    #--------------------------------------------------------------------------------------
+    #  algorithms with points
+    #--------------------------------------------------------------------------------------
+
+    #--------------------------------------------------------------------------------------
+    #  algorithms with Length
+    #--------------------------------------------------------------------------------------
+    def algo_length(self, default_length=None):
+        """
+        Compute the length of each vertex.
+        The length of a complex is the sum of the length of its components.
+        Length can be computed from points or is given as a property.
+        """
+        # Check if points are defined
+        # 1. points not defined
+        if not self.points:
+            return self.algo_length_without_points(default_length=default_length)
+        else:
+            pass
+        return {}
+
+    def algo_length_without_points(self, default_length=None):
+
+        g = self.g
+        length = self.length
+        min_length = self.dresser.min_length.copy()
+        unit = self.dresser.length_unit
+
+        if min_length and not default_length: 
+            default_lenght = min(min_length.values())
+        else:
+            default_length = default_length if default_length else 1
+
+        _length = {}
+        _unknows = {}
+
+        max_scale = g.max_scale()
+
+        # Traverse all the scales.
+        # in  bottom up to propaate values and unknows
+        for scale in range(max_scale, 1, -1):
+            for vid in g.vertices(scale=scale):
+                cid = g.complex(vid)
+                name = g.class_name(vid)
+
+                if vid in length:
+                    _length[cid] = _length.get(cid,0) + length[vid]
+
+                elif vid in _length:
+                    _length[cid] = _length.get(cid,0) + _length[vid]
+
+                elif vid in _unknows:
+                    d = _unknows[vid]
+                    complex_unknow = _unknows.setdefault(cid,{})
+                    for name, x in d.iteritems():
+                        complex_unknow[name] = d.get(name) + x
+
+                else:
+                    if name not in min_length:
+                        name = 'default'
+                    _unknows[cid][name] = _unknows.setdefault(cid,{name:0}).get(name,0) + 1
+            
+        print _length, _unknows
+        # Solve the equations in top down.
+        marked = {}
+        class Visitor:
+            def pre_order(self, vid):
+                if vid in marked or vid in length:
+                    return False
+                else: 
+                    return True
+
+            def post_order(self, vid):
+                pass
+
+        visitor = Visitor()
+
+        # A possible alternative is to add a weight depending on the ClassName.
+        for vid in length.keys():
+            if vid not in _unknows:
+                continue
+            n = sum(_unknows.get(vid).values())
+            x = (length[vid] - _length.get(vid,0)) / float(n)
+
+            for v in traversal.pre_order_in_scale(g,vid, visitor):
+                if v not in length:
+                    print v
+                    length[v] = _length.get(v,0) + x * sum(_unknows.get(vid).values())
+
+        # Solve all the others without length
+
+        for root in g.roots(scale=1):
+            for v in traversal.pre_order_in_scale(g, root, visitor):
+                if v not in length:
+                    l = _length.get(v,0) 
+                    for name, weight in _unknows.get(v,{}).iteritems():
+                        l+= weight * min_length.get(name, default_length) / unit
+                    length[v] = l
+
+        return length
+
+
+
+    #--------------------------------------------------------------------------------------
+    #  Phyllotaxy algorithms
+    #--------------------------------------------------------------------------------------
+
 ###########################################################################################
 
 def iter_order(g, v, edge_type = None):
@@ -519,20 +872,29 @@ def iter_order(g, v, edge_type = None):
 def compute_axes(g, v, fixed_points, origin):
     marked = {}
     axes = {}
+    others = {}
     for vid in traversal.post_order(g,v):
         if vid in marked:
             continue
         
         _axe = list(simple_axe(g,vid, marked, fixed_points))
         _axe.reverse()
-        if g.order(vid) == 0: 
-            new_points = compute_missing_points(g, _axe, fixed_points, origin=origin)
-        else:
-            new_points = compute_missing_points(g, _axe, fixed_points)
-        fixed_points.update(new_points)
         
         _axe, other = zip(*_axe)
         axes.setdefault(g.order(_axe[0]),[]).append(list(_axe))
+        others.setdefault(g.order(_axe[0]),[]).append(list(other))
+        
+    orders = axes.keys().sort()
+    for order in axes:
+        for i, axe in enumerate(axes[order]):
+            other = others[order][i]
+            _axe = zip(axe, other)
+            if order == 0: 
+                new_points = compute_missing_points(g, _axe, fixed_points, origin=origin)
+            else:
+                new_points = compute_missing_points(g, _axe, fixed_points)
+            fixed_points.update(new_points)
+
     return axes
 
 
@@ -613,8 +975,11 @@ def compute_missing_points(g, axe, fixed_points, origin=None):
         
     # Management of first and last interval.
     # It is a silly algorithm.
-    if i0:
-        if origin and (i0[-1], True) in axe:
+    if i0 and (i0[-1], True) in axe:
+        if g.parent(i0[0]) in fixed_points:
+            origin = fixed_points[g.parent(i0[0])]
+
+        if origin :
             inter = i0
             # The first point do not belong to the interval
             n = len(inter) 
@@ -630,10 +995,12 @@ def compute_missing_points(g, axe, fixed_points, origin=None):
                     new_points[v] = pt
 
         else:
-
+            """
+            # We must compute the min disance between the axe and its parent
             v0 = i0[-1]
-            if (v0, True) in axe:
 
+            if (v0, True) in axe:
+                
                 index0 = axe.index((v0,True))
                 if index0+1 < len(axe):
                     v1, defined = axe[index0+1]
@@ -644,12 +1011,19 @@ def compute_missing_points(g, axe, fixed_points, origin=None):
                 
                     if p2:
                         p1 = Vector3(*fixed_points[v0])
-                        pt21 = Vector3(*p1) -Vector3(*p2)
+                        pt21 = Vector3(*p2) -Vector3(*p1)
                         n = len(i0)-1
                         for i, v in enumerate(i0[:-1]):
                             index = n-i
-                            pt = p1 + pt21*index
-                            new_points[v] = pt
+                            pt = p1 + pt21*(index/n)
+                            #new_points[v] = pt
+                        
+                            if v == 2503:
+                                print 2, v, p1, p2, step, pt21 
+                                if g.parent(v) in fixed_points:
+                                    print step - (p1-fixed_points[g.parent(v)])
+            """
+            print 'TODO : point for ', i0[0]
 
     if i1 and (i1 != i0):
         v1 = i1[0]
@@ -703,7 +1077,7 @@ def compute_diameter(g, v, radius, default_value):
 
     return all_r
 
-def build_scene(g, origin, axes, points, rad, default_radius, option='axe'):
+def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'):
 
 
     scene = Scene()
@@ -713,7 +1087,7 @@ def build_scene(g, origin, axes, points, rad, default_radius, option='axe'):
     radius_law = []
     scale = g.max_scale()
 
-
+    rad = diameters
     if option == 'cylinder':
         for vid in points :
             if g.scale(vid) != scale:
@@ -759,7 +1133,7 @@ def build_scene(g, origin, axes, points, rad, default_radius, option='axe'):
             eps = 1
             curve = Polyline(poly)
 
-            radius = [[rad.get(vid, 1.)*2]*2 for vid in axe if vid in points]
+            radius = [[rad.get(vid, 1.)]*2 for vid in axe if vid in points]
             if len(radius)>1:
                 radius[0] = radius[1]
 

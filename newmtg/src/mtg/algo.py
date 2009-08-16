@@ -263,6 +263,7 @@ def axis(g, vtx_id, scale=-1, **kwds):
 
     rt = kwds.get('RestrictedTo', 'NoRestriction')
     ci = kwds.get('ContainedIn')
+    kwds['EdgeType'] = '<'
 
     for v in ancestors(g, vtx_id):
         if edge_type.get(v) == '+':
@@ -367,9 +368,11 @@ def trunk(g, vtx_id, scale=-1, **kwds):
 
     rt = kwds.get('RestrictedTo', 'NoRestriction')
     ci = kwds.get('ContainedIn')
+    kwds['EdgeType'] = '<'
 
     vtx_id = vertex_at_scale(g, vtx_id, scale)
 
     v = root(g, vtx_id, RestrictedTo=rt, ContainedIn=ci)
 
     return local_axis(g, v, scale, **kwds)
+
