@@ -1,6 +1,7 @@
 from openalea.mtg.io import axialtree2mtg, mtg2mss , lpy2mtg, mtg2lpy
 from openalea.lpy import AxialTree, generateScene, Lsystem
 #from openalea.plantgl.all import Scene, Viewer
+from openalea.core.path import path
 
 def str2mtg(s):
     #s = s.replace('N', 'F')
@@ -82,6 +83,10 @@ PANNN[+ANNN[+ANNN[+ANNN][-ANNN]NNNANAN]][-ANNN[+ANNN[-ANNN]]NN]NANAN
             check_mss( *str2mss(s, env) )
 
 def test_mtglpy():
+    fn = path('ex_luz4.lpy')
+    if not fn.exists():
+        return
+
     l = Lsystem('ex_luz4.lpy')
 
     tree = l.iterate()

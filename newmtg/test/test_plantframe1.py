@@ -35,7 +35,7 @@ def test1():
 
     return pf
 
-def test2():
+def __test2():
     fn = r'data/hetre.mtg'
 
     g = read_mtg_file(fn)
