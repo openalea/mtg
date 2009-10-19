@@ -56,7 +56,7 @@ class Tree(object):
         self._id = 0
         # Tree structure
         # Parent is a dict for DAG implementation
-        self._parent = {}
+        self._parent = {self._root : None}
         self._children = {}
 
 
@@ -128,9 +128,15 @@ class Tree(object):
         :param vid: the id of the vertex to remove
         :type vid: vid
         """
-        if self.nb_children(vid) == 0:
+        if vid == self.root:
+            raise InvalidVertex('Removing the root node %d is forbidden.'% vid)
+
+        elif self.nb_children(vid) == 0:
+            p = self._parent[vid]
+            self._children[p].remove(vid)
             del self._parent[vid]
-            del self._children[vid]
+            if vid in self._children:
+                del self._children[vid]
         else:
             raise InvalidVertex('Can not remove vertex %d  with children. Use remove_tree instead.'% vid)
 
@@ -146,6 +152,7 @@ class Tree(object):
         # Parent is a dict for DAG implementation
         self._parent.clear()
         self._children.clear()
+        self._parent[self._root] = None
 
 
     #########################################################################
@@ -413,6 +420,7 @@ class Tree(object):
         vid = vtx_id
 
         vertices = []
+
         for vtx_id in post_order(self, vid):
             self.remove_vertex(vtx_id)
             vertices.append(vtx_id)
@@ -420,6 +428,11 @@ class Tree(object):
         return vertices
             
 
+
+    def copy(self):
+        """ Deep copy of the tree.
+        """
+        return deepcopy(self)
 
 
 class PropertyTree(Tree):
@@ -685,6 +698,20 @@ def post_order(tree, vtx_id):
         for node in post_order(tree, vid):
             yield node
     yield vtx_id
+
+def level_order(tree, vtx_id):
+    ''' Traverse the vertices in a level order.
+
+    Traverse the root node, then its children and so on.
+    '''
+    queue = deque()
+    queue.append(vtx_id)
+
+    while queue:
+        vid = queue.popleft()
+        yield vid
+        queue.extend(tree.children(vid))
+
 
 def depth_order(tree, vtx_id):
     '''Traverse all the leaves first.
