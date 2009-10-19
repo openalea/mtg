@@ -118,10 +118,7 @@ def pre_order_in_scale(tree, vtx_id, visitor_filter=None):
         for vid in tree.components(vtx_id):
             if visitor_filter and not visitor_filter.pre_order(vid):
                 continue
-
             queue.append(vid)
-
-
 
 def post_order(tree, vtx_id, complex=None):
     ''' 

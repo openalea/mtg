@@ -22,7 +22,6 @@ import re
 from string import Template
 from warnings import warn
 
-import openalea.plantgl.all as pgl
 
 from mtg import *
 from traversal import iter_mtg, iter_mtg_with_filter
@@ -216,6 +215,7 @@ def read_lsystem_string( string,
     :Retturn: mtg
     '''
     
+    import openalea.plantgl.all as pgl
     s = string
 
     def transform(turtle, mesh):

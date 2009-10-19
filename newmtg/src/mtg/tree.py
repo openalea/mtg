@@ -349,7 +349,7 @@ class Tree(object):
             tree = Tree()
             tree.root = 0
             treeid_id[vtx_id] = tree.root
-            subtree = pre_order(tree, vtx_id)
+            subtree = pre_order(self, vtx_id)
             
             subtree.next()
             for vid in subtree:

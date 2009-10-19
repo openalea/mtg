@@ -297,9 +297,9 @@ class MTG(PropertyTree):
         # explicit complex.
 
         if vid in self._components:
-            v = self._components[vid][0]
-            for vtx in traversal.pre_order(self, v, complex=vid):
-                yield vtx
+            for v in self.component_roots(vid):
+                for vtx in traversal.pre_order(self, v, complex=vid):
+                    yield vtx
 
     def components_at_scale(self, vid, scale):
         '''
@@ -416,6 +416,54 @@ class MTG(PropertyTree):
             compo = self._components.get(v,[None])
             v= compo[0]
         return '\n'.join(l)
+
+    #########################################################################
+    # Algorithms to copy extract and extend sub_mtg
+    #########################################################################
+    def sub_mtg(self, vtx_id, copy=True):
+        """Return the submtg rooted on `vtx_id`.
+
+        The induced sub mtg of the mtg are all the vertices which have vtx_id
+        has a complex plus vtx_id.
+
+        :Parameters:
+          - `vtx_id`: A vertex of the original tree.
+          - `copy`:  
+            If True, return a new tree holding the subtree. If False, the subtree is
+            created using the original tree by deleting all vertices not in the subtree.
+
+        :returns: A sub mtg of the mtg. If copy=True, a new MTG is returned. 
+            Else the sub mtg is created inplace by modifying the original tree. 
+        """
+
+        if not copy:
+            # remove all vertices not in the sub_tree
+            bunch = set(pre_order_in_scale(self, vtx_id))
+            for vid in self:
+                if vid not in bunch:
+                    # remove vertex vid
+                    for vtx in self._components.get(vid):
+                        del self._complex[vtx]
+                    del self._components[vid]
+                    self.remove_vertex(vid)
+
+            self._root = vtx_id
+            self._parent[self._root] = None
+            return self
+        else:
+            treeid_id = {}
+            tree = MTG()
+            tree.root = 0
+            treeid_id[vtx_id] = tree.root
+            subtree = pre_order_in_scale(self, vtx_id)
+            
+            subtree.next()
+            for vid in subtree:
+                complex = treeid_id[self.complex(vid)]
+                v = tree.add_component(parent)
+                treeid_id[vid] = v
+
+            return tree
 
 
     #########################################################################
