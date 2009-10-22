@@ -999,7 +999,7 @@ def Sons(v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= N
     .. seealso:: :class:`MTG`, :class:`Father`, :class:`Successor`, :class:`Descendants`.
     """
     global _g
-    return algo.sons(_g, v, RestrictedTo=RestrictedTo, Scale=Scale, ContainedIn=ContainedIn)
+    return algo.sons(_g, v, EdgeType=EdgeType, RestrictedTo=RestrictedTo, Scale=Scale, ContainedIn=ContainedIn)
 
 def Ancestors(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
     """
