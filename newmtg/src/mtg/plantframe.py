@@ -1077,8 +1077,25 @@ def compute_diameter(g, v, radius, default_value):
 
     return all_r
 
-def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'):
+def build_scene(g, origin, axes, points, diameters, default_radius, option='axe', colors = None):
+    """ Build a scene from the  `MTG` g and properties.
 
+    Build a 3D scene from the MTG and several properties that have been computed or extracted from the MTG.
+    Return the 3D PlantGL scene.
+
+    :Properties:
+        - g : MTG data structure
+        - origin: 3 point to indicate the position of the base of the Tree
+        - points: a dict containing all the 3D coordiantes of the MTG vertices
+        - diameters: a dict containing the iameters for the MTG  vertices
+        - default_radius: default radius value when there is no diameter given for a given vertex
+        - option: draw all the axes as extrusion shapes or using cylinder
+        - colors: a function returning (r, g, b) values in [0,255]
+
+    """
+
+    if colors is None:
+        colors = lambda x: (255, 255, 0)
 
     scene = Scene()
     section = Polyline2D.Circle(0.5,10)
@@ -1105,14 +1122,22 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
                 rad_vid = rad.get(vid, default_radius)
                 rad_parent = rad.get(parent, rad_vid)
                 radius = [[rad_parent]*2, [rad_vid]*2]
-                shape = Shape(Extrusion(curve, section, radius), Material(Color3(255,0,0)))
+                
+                color = colors(vid)
+                if color is None:
+                    color = (255,0,0)
+                shape = Shape(Extrusion(curve, section, radius), Material(Color3(*color)))
                 shape.id = vid
                 scene += shape
             else:
                 rad_vid = rad.get(vid, 1)
                 rad_parent = rad.get(parent, rad_vid)
                 radius = [[rad_parent]*2, [rad_vid]*2]
-                shape = Shape(Extrusion(curve, section, radius))
+                color = colors(vid)
+                if color:
+                    shape = Shape(Extrusion(curve, section, radius),Material(Color3(*color)))
+                else:
+                    shape = Shape(Extrusion(curve, section, radius))
                 shape.id = vid
                 scene += shape
 
@@ -1129,6 +1154,14 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
             if order == 0:
                 poly[0] = origin
 
+            color = None
+            for vid in axe:
+                color = colors(vid)
+                if color is not None:
+                    break
+            if not color:
+                color = (0,0,0)
+
             # Delete null segments
             eps = 1
             curve = Polyline(poly)
@@ -1138,8 +1171,9 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
                 radius[0] = radius[1]
 
                 curve, radius = clean_curve(curve, radius)
-
-                scene += Extrusion(curve, section, radius)
+                shape = Shape(Extrusion(curve, section, radius),Material(Color3(*color)))
+                shape.id = vid
+                scene += shape
 
     return scene
 

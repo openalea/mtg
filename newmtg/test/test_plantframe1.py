@@ -4,6 +4,7 @@ import openalea.mtg.algo as algo
 from openalea.mtg import aml, dresser
 
 from time import clock
+from collections import defaultdict
 
 def test1():
     fn = r'data/test12_wij10.mtg'
@@ -153,10 +154,37 @@ def test5():
 
     return scene, pf
 
+def walnut():
+    fn = r'data/test9_noylum2.mtg'
+    drf = r'data/walnut.drf'
+
+    g = read_mtg_file(fn)
+
+    topdia = lambda x: g.property('TopDia').get(x)
+
+    dressing_data = dresser.dressing_data_from_file(drf)
+    pf = plantframe.PlantFrame(g, 
+                               TopDiameter=topdia, 
+                               DressingData = dressing_data)
+    pf.propagate_constraints()
+
+    return pf
+
    
+def test_colors():
+    pf = walnut()
+    axes = plantframe.compute_axes(pf.g,3, pf.points, pf.origin)
+    axes[0][0].insert(0,pf.origin)
+    diameters = pf.algo_diameter()
 
+    g = pf.g
+    colors =defaultdict(lambda x: (0,255,0), 
+        zip(range(8), [ ((i&2**0)*255, ((i&2**1)>>1)*255, ((i&2**2)>>2)*255) for i in range(8)])) 
+    def my_color(vid):
+        return colors[g.order(vid)]
 
-
+    scene=plantframe.build_scene(pf.g, pf.origin, axes, pf.points, diameters, 10000, option='cylinder', colors = my_color)
+    return scene
 
 
 
