@@ -1077,7 +1077,7 @@ def compute_diameter(g, v, radius, default_value):
 
     return all_r
 
-def build_scene(g, origin, axes, points, diameters, default_radius, option='axe', colors = None):
+def build_scene(g, origin, axes, points, diameters, default_radius, option='axe', colors = None, hide=None):
     """ Build a scene from the  `MTG` g and properties.
 
     Build a 3D scene from the MTG and several properties that have been computed or extracted from the MTG.
@@ -1107,6 +1107,8 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
     rad = diameters
     if option == 'cylinder':
         for vid in points :
+            if hide is not None and hide(vid):
+                continue
             if g.scale(vid) != scale:
                 continue
             parent = g.parent(vid)
@@ -1145,6 +1147,8 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
 
     for order in axes:
         for axe in axes[order]:
+            if hide is not None and hide(axe[0]):
+                continue		
             parent = g.parent(axe[0])
             if  order > 0 and parent and (parent in points):
                 axe.insert(0,parent)
