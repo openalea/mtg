@@ -1,31 +1,19 @@
-# This import will 
-#   - import sphinx ini in this directory
-#   - import the common.ini in openalea/doc
-#   - execute the statements in openalea/doc/common_conf.py
-# you may overwrite some paramters found in common.ini here below
+import os,sys
 
-import sys
-import os
-
-sys.path.append(os.path.join(os.getcwd(), '../../../openalea/doc'))
-
-from common_conf import *
-
-# Overwrite extension if required
-#extensions = [
-#    'sphinx.ext.autodoc',
-#    'sphinx.ext.doctest', 
-#    'sphinx.ext.intersphinx',
-#    'inheritance_diagram', 
-#    'sphinx.ext.pngmath',
-#    'sphinx.ext.todo', 
-#    'numpydoc',
-#    'phantom_import', 
-#    'autosummary',
-#    'sphinx.ext.coverage',
-#    'only_directives'
-#    ]
+# read sphinx conf.py file
+try:
+    from openalea.misc.sphinx_configuration import *
+except:
+    raise IOError('openalea.misc.sphinx_configuration file not found. You must install OpenAlea to generate the doc or create your own conf.py using sphinx_quickstart.')
+from openalea.misc.sphinx_tools import sphinx_check_version, read_metainfo
+sphinx_check_version()
+# must update some fields with the package information
+version, authors, release, project = read_metainfo('../metainfo.ini')
+# and extra by-product fields
+latex_documents = ['index', 'main.tex', project + ' documentation', authors, 'manual']
 
 
-# to speed up compilation in development mode, uncomment this line
-#intersphinx_mapping = {}
+html_static_path = ['_static', os.path.join(os.environ['OPENALEA'], 'doc', '.static')]
+html_style = 'new_openalea.css'
+
+
