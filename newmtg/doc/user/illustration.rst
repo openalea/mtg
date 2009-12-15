@@ -1,5 +1,9 @@
+.. _newmtg_illustration:
+
 Illustration: exploring an apple tree orchard
 ##############################################
+
+.. todo:: This section has to be validated (e.g., translate aml code into python)
 
 Let us now illustrate the usage of openalea.mtg package together with other packages such as openalea.sequence_analysis in a real application. To do this, we shall consider an apple tree orchard and show how a plant architecture database can be created from observations [24]_. Then, we shall use this database to illustrate the use of specific tools employed to explore plant architecture databases.
 
@@ -32,28 +36,37 @@ It is then possible to obtain an initial feedback on the collected data by displ
 
 .. todo:: continue to adapt the documenation from here including example here above
 
-Such reconstructions can be carried out even if no geometric information is available in the collected data. In this case, algorithms are used to infer the missing data where possible (otherwise, default information is used) [19]. In other cases, plants are precisely digitised and the algorithms can provide accurate 3D geometric reconstructions [7; 22; 46; 48].
+Such reconstructions can be carried out even if no geometric information is available in the collected data. In this case, algorithms are used to infer the missing data where possible (otherwise, default information is used) [19]_. In other cases, plants are precisely digitised and the algorithms can provide accurate 3D geometric reconstructions [7]_ [22]_ [46]_ [48]_.
 
-Apart from giving a natural view of the plants contained in the database, these 3D reconstructions play another important role: they can be used as a support to graphically visualise how various sorts of information are distributed in the plant architecture. Figure 3-7b for example shows the organisation of plant components according to their branching order (trunk components have order 0, branch components have order 1, etc.). In AML, this would be obtained by the following commands::
+Apart from giving a natural view of the plants contained in the database, these 3D reconstructions play another important role: they can be used as a support to graphically visualise how various sorts of information are distributed in the plant architecture. Figure 3-7b for example shows the organisation of plant components according to their branching order (trunk components have order 0, branch components have order 1, etc.). This would be obtained by the following commands::
     
     color_order(_x) = Switch Order(_x) Case 0: MediumGrey
         Case 1: DarkGrey Case 2: LightGrey Case 3: Black
         Default: White
-    Plot(geom_struct, Color -> color_order)
+    Plot(geom_struct, Color=color_order)
 
 This representation emphasises different informations related to the branching order: it can be seen in Figure 3-7b that the maximum branching order is 4, that this order is reached only once in the tree crown, and that this occurs at a floral site (black component).
 
 
-.. tabularcolumns:: |c|c|
+.. htmlonly::
+
+    .. tabularcolumns:: |c|c|
 
 
-+------------------------+------------------------+
-| .. image:: fig3_7a.png | .. image:: fig3_7b.png |
-+------------------------+------------------------+
-| .. image:: fig3_7c.png | .. image:: fig3_7d.png |
-+========================+========================+
-| **Figure 3.7**                                  |
-+------------------------+------------------------+
+    +------------------------+------------------------+
+    | .. image:: fig3_7a.png | .. image:: fig3_7b.png |
+    +------------------------+------------------------+
+    | .. image:: fig3_7c.png | .. image:: fig3_7d.png |
+    +========================+========================+
+    | **Figure 3.7**                                  |
+    +------------------------+------------------------+
+
+.. latexonly::
+
+    .. image:: fig3_7a.png
+    .. image:: fig3_7b.png
+    .. image:: fig3_7c.png
+    .. image:: fig3_7d.png
 
 
 
@@ -61,10 +74,10 @@ The use of the 3D representation of plant structure can also be illustrated in t
 
 Thanks to the multiscale nature of the plant representation, more or less detailed information can be projected onto the plant structure. Let us consider again the context of plant growth analysis. Plant growth is characterised by rhythms that result in the production of long internodes during periods of high activity and short internodes during rest periods (indicated on the plant by scares close together). These informations, at the level of internodes, can be projected onto the plant 3D structure (Figure 3-7d). Like the year of growth, this information enables us to access plant growth dynamics, but now, at an intra-year scale.
 
-Finally, another use for the virtual reconstruction of measured plants is illustrated in Figure 3-8a and 8b. These plants have been reconstructed from the MTG at the scale of each leafy internode. This enables us to obtain a natural representation of the plant which can be used for instance in models that are intended to describe the interaction of the plant and its environment (e.g. light) at a detailed level, e.g. [41]. More generally, the user can plot a set of plants from the database (Figure 3-9)::
+Finally, another use for the virtual reconstruction of measured plants is illustrated in Figure 3-8a and 8b. These plants have been reconstructed from the MTG at the scale of each leafy internode. This enables us to obtain a natural representation of the plant which can be used for instance in models that are intended to describe the interaction of the plant and its environment (e.g. light) at a detailed level, e.g. [41]_. More generally, the user can plot a set of plants from the database (Figure 3-9)::
 
-    orchard = PlantFrame(plant_list)
-    Plot(orchard)
+    orchard = aml.PlantFrame(plant_list)
+    aml.Plot(orchard)
 
 Extraction of data samples
 ==========================
@@ -75,7 +88,7 @@ Firstly, a sample of components is created to study the target character.
 Secondly, the character itself is defined. It may be more or less directly derived from the data recorded in the field. For example, it is straightforward to define the diameter of a component if this has been measured in the field. On the other hand, the maximum branching order of the components that are borne by a given component needs some computation.
 Thirdly, the target character is computed for each component of the selected sample of components.
 
-The output of these three operations is a set of values that can be analysed and visualised in various ways. Let us assume for instance that we wish to determine the distribution of the number of internodes produced during a specific growth period for all the plants in the database. It is first necessary to determine the sample of components on which we wish to study this distribution. In our case, we assume that we are interested in the growth units of the trunk that are produced during the first year of growth. This would be written in AML as::
+The output of these three operations is a set of values that can be analysed and visualised in various ways. Let us assume for instance that we wish to determine the distribution of the number of internodes produced during a specific growth period for all the plants in the database. It is first necessary to determine the sample of components on which we wish to study this distribution. In our case, we assume that we are interested in the growth units of the trunk that are produced during the first year of growth. This would be written as::
 
     sample = Foreach _component In growth_unit_list:
         Select(_component,Order(_component) == 0 And
@@ -83,7 +96,7 @@ The output of these three operations is a set of values that can be analysed and
 
 The variable sample thus contains the set of growth units whose order is 0 (i.e. which are parts of trunks) and whose growth year is 1990 (assuming 1990 corresponds to the first year of growth). The second step consists of defining the target character. This can be done by defining a corresponding function::
 
-    nb_of_internodes(_x) = Size(Components(_x))
+    nb_of_internodes = lambda x: len(Components(x))
 
 The number of internodes of a component _x (assumed to be a growth unit) is defined as the size of the set of components that compose this growth unit _x (assuming that growth units are composed of internodes). Finally, this function is applied to each component in the previously selected sample and the corresponding histogram is plotted (Figure 3-10)::
 
@@ -106,7 +119,7 @@ Extraction and analysis of biological sequences
 
 The previous section illustrates the extraction of a simple sample type, made up of numeric values. In this section, we consider a more complex sample type, made up of sequences of values. For example, in the apple tree database, let us consider sequences of lateral productions along trunks. Our aim is to analyse how lateral branches are distributed along the trunks of hybrids.
 
-The sequences are coded as follows: for each plant, the 90 annual shoot of the trunk is described node by node from the base to the top. Each node is qualified by the type of lateral production (latent bud: 0, one-year-delayed short shoot: 1, one-year-delayed long shoot: 2 and immediate shoot: 3). This sample of sequences is built as follows in AML::
+The sequences are coded as follows: for each plant, the 90 annual shoot of the trunk is described node by node from the base to the top. Each node is qualified by the type of lateral production (latent bud: 0, one-year-delayed short shoot: 1, one-year-delayed long shoot: 2 and immediate shoot: 3). This sample of sequences is built as follows::
 
     AML> seq = Foreach _component In growth_unit_sample :
     Foreach _node In Axis(_component, Scale -> 4) :
@@ -118,11 +131,12 @@ The AML variable growth_unit_sample contains the set of growth units of interest
 
 Figure 3-12 illustrates the diversity of annual shoot branching structures encountered in the studied hybrid family, which results from the different branching habits of the two parents. In our context, we wish to characterise and classify the hybrids according to their branching habits. The difficulty arises from the fact that the branching pattern is made of a succession of branching zones which are not characterised by a single type of lateral production but by a combination of types (e.g. short shoots interspersed with latent buds). We shall use this example to illustrate how parametric models may be used in AMAPmod to identify and characterize successive branching zones along these annual shoots.
 
-We assume that sequences have a two-level structure, where annual shoots are made up of a succession of zones, each zone being characterised by a particular combination of lateral production types. To model this two-level structure, we use a hierarchical model with two levels of representation. At the first level, a semi-Markov chain (Markov chain with null self-transitions and explicit state occupancy distributions) represents the succession of zones along the annual shoots and the lengths of each zone [6; 28; 29]. Each zone is represented by a state of the Markov chain and the succession of zones are represented by transitions between states. The second level consists of attaching to each state of the semi-Markov chain a discrete distribution which represents the lateral productions types observed in the corresponding zone. The whole model is called a hidden semi-Markov chain [26; 27].
+We assume that sequences have a two-level structure, where annual shoots are made up of a succession of zones, each zone being characterised by a particular combination of lateral production types. To model this two-level structure, we use a hierarchical model with two levels of representation. At the first level, a semi-Markov chain (Markov chain with null self-transitions and explicit state occupancy distributions) represents the succession of zones along the annual shoots and the lengths of each zone [6]_ [28]_ [29]_. Each zone is represented by a state of the Markov chain and the succession of zones are represented by transitions between states. The second level consists of attaching to each state of the semi-Markov chain a discrete distribution which represents the lateral productions types observed in the corresponding zone. The whole model is called a hidden semi-Markov chain [26]_ [27]_.
+
 
 The model parameters are estimated from the extracted sample of sequences by the function Estimate::
 
-    hsmc = Estimate(seq, "HIDDEN_SEMI-MARKOV", initial_hsmc,Segmentation -> True)
+    hsmc = Estimate(seq, "HIDDEN_SEMI-MARKOV", initial_hsmc,Segmentation = True)
 
 The first argument seq represents the extracted sequences, "HIDDEN_SEMI-MARKOV" specifies the family of models and initial_hsmc is an initial hidden semi-Markov chain which summarises the hypotheses made in the specification stage. An optimal segmentation of the sequences is required by the optional argument Segmentation set at True.
 

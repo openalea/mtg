@@ -1,10 +1,14 @@
-.. _newmtg_intro:
+
 .. contents::
 
-Overview
-#########
+.. _newmtg_intro:
 
-.. include:: overview.txt
+MTG file 
+##################
+
+:mod:`openalea.mtg` provides a Multiscale Tree Graph data structure (MTG) that is compatible with the standard MTG format that was defined in the AMAPmod software.
+For compatibility reasons, the same interfaces have been implemented in this package. However, this is a completly new implementation written in Python that will evolve
+by adding new functionalities and algorthims.
 
 
 MTG: a Plant Architecture Databases
@@ -85,7 +89,7 @@ MTGs can be constructed from field observations using textual encoding of the pl
 architecture as described in [22]_ (see `Figure3.2.a`_). 
 Alternatively, code files representing plant architectures can also be constructed 
 from simulation programs that generate artificial plants, 
-or directly from any Python program, as we will illustrate it in the `newmtg_tutorial`_.
+or directly from any Python program, as we will illustrate it in the :ref:`newmtg_tutorial`.
 
 .. todo:: fix the internal link reference
 
@@ -382,6 +386,7 @@ The total volume of the trunk::
     trunk_volume = sum([volume(x) for x in growth_unit_set])
 
 .. todo::  how and purpose of volume for the whole plant. Isnt' it the volume of the trunk ?
+
 The wood volume of the whole plant can be computed by::
 
     plant_volume = sum[volume(gu) for gu in Components(plant1)])

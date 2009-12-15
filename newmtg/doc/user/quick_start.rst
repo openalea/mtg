@@ -1,3 +1,5 @@
+.. _newmtg_quick_start:
+
 Quick Start to manipulate MTGs
 ###################################
 

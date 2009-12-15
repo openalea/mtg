@@ -1,4 +1,4 @@
-Openalea.Mtg defines a Multiscale Tree Graph data structure or **MTG** for short.
+**Openalea.Mtg** defines a Multiscale Tree Graph data structure or **MTG** for short.
 
 This data structure is compatible with the standard MTG format.
 For compatibility reasons, all the AMAPmod interfaces have been implemented in this package.

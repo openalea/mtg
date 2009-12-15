@@ -1,7 +1,7 @@
 .. _newmtg_user:
 
 MTG User Guide
-####################
+##############
 
 .. topic:: Summary
 
@@ -11,31 +11,34 @@ MTG User Guide
     :Provides: **MTG** or *Multiscale Tree Graph* data structure.
 
 
-    The :mod:`openalea.mtg` package defines a *multiscale tree graph* data
-    structure. which consists of a set of layered *trees* (:ref:`openalea.container.container_tree`).
-    A MTG integrates - within a unique data structure - the different tree graph representations that correspond to the different scales of description of a structure (e.g. a plant architecture).
+In order to quickly learn how to read a MTG file and plot it with PlantGL, jump to the the :ref:`newmtg_quick_start`. If you are in a hurry and want to parse the MTG to retrieve information about it, look at the :ref:`newmtg_tutorial_mtg_aml` that fully describes the :mod:`openalea.mtg.aml` module.
 
-.. A vertex is a node of a tree at a given scale, i.e. given level of representation. It has a unique parent and may have several children. It is also connected to the two trees at the upper and lower scales. It has a unique complex and may have several components.
+Then, we advice you to look at the section :ref:`newmtg_intro` to understand what is a MTG file through a detailled description of the format and a few examples (note that the section :ref:`newmtg_syntax` gives a full description of the format). The section :ref:`newmtg_illustration` explains through a full example what can be done with the MTG data in point of view of statistical analysis. 
 
-This manual details functions, modules, and objects included in 
-**OpenAlea.MTG**, describing what they are and what they do. 
-For learning how to use OpenAlea.MTG see :ref:`newmtg_reference`.
+Then, section
 
-.. seealso::
+The full guide reference is also available :ref:`newmtg_reference`.
 
-    :ref:`openalea.container.container_user`
-        Data structures such as graph, tree, and topological mesh.
+.. .. seealso::
+
+..    :ref:`openalea.container.container_user`
+..        Data structures such as graph, tree, and topological mesh.
 
 .. toctree::
     :maxdepth: 2
     :numbered:
 
+    quick_start.rst
+    tutorial_mtg_aml.rst
     intro.rst
     illustration.rst
-    quick_start.rst
     tutorial.rst
     syntax.rst
-    data_structure.rst
-    algorithm.rst
+    autosum.rst
 
+
+..    data_structure.rst
+    algorithm.rst
+    syntax.rst
+    autosum.rst
 
