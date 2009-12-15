@@ -1,23 +1,25 @@
-The openalea.mtg.aml module: how to start
-#########################################
+Quick Start to manipulate MTGs
+###################################
 
-
-.. note:: This tutorial is adapted from the AMAPmod user manual, ref 1.8
 
 Reading an MTG file and activate it
 ===================================
 
-A plant architecture described in a coding file can be loaded in :mod:`openalea.mtg` using primitive MTG:
+
+A plant architecture described in a coding file can be loaded in :mod:`openalea.mtg.aml` as follows:
 
 .. doctest::
     :options: +SKIP
 
     >>> from openalea.mtg.aml import MTG
-    >>> g1 = MTG('reconstructed_appletree.mtg')
+    >>> g1 = MTG('agraf.mtg')
 
-The MTG primitive attempts to read a valid MTG description and parses the coding file. If errors are detected during the parsing, they are displayed on the screen and the parsing fails. In this case, no MTG is built and the user should make corrections to the coding file. If the parsing succeeds, this function creates an internal representation of the plant (or a set of plants) encoded as a MTG. In this example, the MTG object is stored in variable `g1` for further use. Note that a MTG should always be stored in a variable otherwise it is destroyed immediately after its building. The last built MTG is considered as the "active" MTG. It is used as an implicit argument by all the functions of the MTG module.
+.. note:: In order to reproduce the example, download  :download:`agraf MTG file <agraf.mtg>` and the :download:`agraf DRF file <agraf.drf>`.
+        Other files that may be required are also available in the same directory (`*smb` files) but are not compulsary.
 
-It is possible to change the active MTG using primitive Activate ::
+The MTG function attempts to read a valid MTG description and parses the coding file. If errors are detected during the parsing, they are displayed on the screen and the parsing fails. In this case, no MTG is built and the user should make corrections to the coding file. If the parsing succeeds, this function creates an internal representation of the plant (or a set of plants) encoded as a MTG. In this example, the MTG object is stored in variable `g1` for further use. Note that a MTG should always be stored in a variable otherwise it is destroyed immediately after its building. The last built MTG is considered as the "active" MTG. It is used as an implicit argument by all the functions of the MTG module.
+
+It is possible to change the active MTG using :func:`Activate` ::
 
     g1 = MTG("filename1") # g1 is the current MTG
     g2 = MTG("filename2") # g2 becomes the current MTG
@@ -25,16 +27,49 @@ It is possible to change the active MTG using primitive Activate ::
 
 .. warning:: the notion of activation is very important. Each call to a function in the package MTG will look at the active MTG.
 
-AML primitives related to MTGs
+Plotting
+==========
+
+.. warning:: PlantFrame is still in development and not all MTG files can be plotted with the current code, 
+   especially the files that have no information about positions
+
+The following examples shows how to plot the contents of a MTG given that a dressing data file (DRF) is available. See the :ref:`newmtg_syntax` section for more 
+information about the MTG and DRF syntax. Note that the following code should be simplified in the future.
+
+.. code-block:: python
+    :linenos:
+
+    from openalea.mtg.aml import MTG
+    from openalea.mtg.dresser import dressing_data_from_file
+    from openalea.mtg.plantframe import PlantFrame, compute_axes, build_scene
+    g = MTG('agraf.mtg')
+    dressing_data = dressing_data_from_file('agraf.drf')
+    topdia = lambda x:  g.property('TopDia').get(x)
+    pf = PlantFrame(g, TopDiameter=topdia,    DressingData = dressing_data)
+    axes = compute_axes(g, 3, pf.points, pf.origin)
+    diameters = pf.algo_diameter()
+    scene = build_scene(pf.g, pf.origin, axes, pf.points, diameters, 10000)
+    from  vplants.plantgl.all import Viewer
+    Viewer.display(scene)
+
+.. figure:: fig3_5_bis.png
+    :align: center
+    :width: 50%
+    :height: 300px
+
+    **Figure 3.5** An apple tree plotted with the python script shown above
+
+
+Functions related to MTGs
 ==================================
 
-There exists a comprehensive set of primitives related to MTGs. These primitives may be directly used on the active MTG or they may be combined with each other in order to define new functions on MTGs. Let us give a few examples of these specific primitives.
+There exists a comprehensive set of functions related to MTGs. These functions may be directly used on the active MTG or they may be combined with each other in order to define new functions on MTGs. Here are some of them. Full details may be found elsewhere either in the tutorials (e.g., :ref:`newmtg_tutorial_mtg_aml`)  or in the :ref:`newmtg_reference` section.
 
     * **MTG constructor**.
-      A MTG can be built from its code file by using the primitive :class:`~openalea.mtg.aml.MTG` which takes one mandatory argument, i.e. the name of the MTG code file.
+      We've already seen how to read a MTG file by using :func:`~openalea.mtg.aml.MTG`, which takes one mandatory argument, namely the MTG's filename.
 
     * **Extraction of vertex sets: e.g. VtxList().**
-      Different types of lists of vertices can be extracted from a MTG through the primitive :func:`~openalea.mtg.aml.VtxList`. Notably, the set of primitives at a given scale is obtained with the optional argument **Scale**:
+      Different types of lists of vertices can be extracted from a MTG through the function :func:`~openalea.mtg.aml.VtxList`. Notably, the set of functions at a given scale is obtained with the optional argument **Scale**:
 
       .. code-block:: python
           :linenos:
@@ -45,16 +80,16 @@ There exists a comprehensive set of primitives related to MTGs. These primitives
           vtx2 = VtxList(Scale=2)
           vtx3 = VtxList(Scale=3)
 
-      On line 2, we extract the vertices that have scale 1. The list that is returned contains only 1 element that have the index 1. conversely, we could use the :func:`~openalea.mtg.aml.Scale` function to figure out what is the scale if the vertex that have the index 1:
+      On line 2, we extract the vertices that have scale set to 1. The returned list contains only 1 element that have the index 1. Conversely, we could use the :func:`~openalea.mtg.aml.Scale` function to figure out what is the Scale of the vertex that have the index 1:
 
       .. doctest::
 
           >>> from openalea.mtg.aml import Scale
-          >>> aml.Scale(1)
+          >>> Scale(1)
           1
 
-    * **Primitives returning vertex attributes: e.g. Class(vtx), Index(vtx), Feature(vtx, feature_name).**
-      The different attributes attached to a given vertex can be retrieved by these functions. The class and the index of a vertex are respectively returned by primitives :func:`~openalea.mtg.aml.Class()` and :func:`~openalea.mtg.aml.Index()`.
+    * **Functions returning vertex attributes: e.g. Class(vtx), Index(vtx), Feature(vtx, feature_name).**
+      The different attributes attached to a given vertex can be retrieved by these functions. The class and the index of a vertex are respectively returned by functions :func:`~openalea.mtg.aml.Class()` and :func:`~openalea.mtg.aml.Index()`.
       The value of any other attribute may be obtained by specifying its name:
 
       .. doctest::
@@ -63,18 +98,18 @@ There exists a comprehensive set of primitives related to MTGs. These primitives
           >>> vtxList = VtxList(Scale=2)  # get a list of vertices according to a scale
           >>> v1 = vtxList[0]             # look at the first vertex
           >>> # Feature(vertex_id, name)  
-          >>> Feature(v1,"XX")
+          >>> Feature(v1, "XX")
           >>> Class(v1)
           >>> Index(v1)
 
-      Returns the attribute "XX" (if any) of a vertex v1. These primitives return scalar (INTEGER, STRING, REAL), i.e. elementary types different from VTX.
+      Returns the attribute "XX" (if any) of a vertex v1. These functions return scalar (INTEGER, STRING, REAL), i.e. elementary types different from VTX.
 
-    * **Primitives for moving in MTGs: e.g. Father(vtx), Complex(vtx), Successor(vtx), Predecessor(vtx).**
-      Some primitives take a VTX as an argument and return a VTX. These primitives allow topological moves in the MTG, i.e. they allow to select new vertices with topological reference to given vertices. See :func:`~openalea.mtg.aml.Father`, :func:`~openalea.mtg.aml.Predecessor`  , :func:`~openalea.mtg.aml.Successor`, and :func:`~openalea.mtg.aml.Complex`
+    * **Functions for moving in MTGs: e.g. Father(vtx), Complex(vtx), Successor(vtx), Predecessor(vtx).**
+      Some functions take a VTX as an argument and return a VTX. These functions allow topological moves in the MTG, i.e. they allow to select new vertices with topological reference to given vertices. See :func:`~openalea.mtg.aml.Father`, :func:`~openalea.mtg.aml.Predecessor`  , :func:`~openalea.mtg.aml.Successor`, and :func:`~openalea.mtg.aml.Complex`
  
         .. doctest::
 
-          >>> from openalea.mtg.aml import Father, complex, Successor, Predecessor
+          >>> from openalea.mtg.aml import Father, Successor, Predecessor
           >>> Father(v1)
           >>> Predecessor(v1)
 
@@ -82,19 +117,21 @@ There exists a comprehensive set of primitives related to MTGs. These primitives
            equivalent to Father(v, EdgeType-> '<'). It thus returns the father 
            (at the same scale) of the argument 
 
-        .. todo:: What is a complex 
 
+    * **Functions for creating collections of vertices: e.g. Sons(vtx), Components(vtx), Axix(vtx).**
+      These functions return sets of vertices associated with a certain vertex. Components() returns all the vertices that compose at the scale immediately superior a given vertex. Axis() returns the ordered set of vertices which compose the axis which the argument belongs to.
 
-    * Primitives for creating collections of vertices: e.g. Sons(vtx), Components(vtx), Axis(vtx).
-      These primitives return sets of vertices associated with a certain vertex. Components() returns all the vertices that compose at the scale immediately superior a given vertex. Axis() returns the ordered set of vertices which compose the axis which the argument belongs to.
-
-    * Primitives for creating graphical representations of MTGs: PlantFrame(vtx) Plot(PlantFrame), DressingData(filename), VirtualPattern().
+    * **Functions for creating graphical representations of MTGs: PlantFrame(), Plot(), DressingData**
       PlantFrame() enables the user to compute 3D-geometrical representations of MTGs.
 
-The above primitives can be combined together using the AML language to extract from plant databases various types of information.
+The above functions can be combined together using the Python language to extract from plant databases various types of information.
 
 
-.. sectionauthor:: Thomas Cokelaer <Thomas.Cokelaer@inria.fr>, Dec 2009
-.. topic:: documentation status
+.. topic:: documentation status: 
 
-    Documentation adapted from the AMAPmod user manual.
+    .. sectionauthor:: Thomas Cokelaer <Thomas.Cokelaer@inria.fr>, Dec 2009
+
+    Documentation adapted from the AMAPmod user manual version 1.8 Dec 2009.
+    
+    Documentation to be revised
+
