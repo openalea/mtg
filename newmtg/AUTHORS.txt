@@ -1,1 +1,8 @@
-Christophe Pradal <christophe pradal __at__ cirad fr>
+
+=========================================== ====================================================================
+
+=========================================== ====================================================================
+Implementation                              Christophe Pradal <christophe pradal __at__ cirad fr>
+Documentation and tutorials                 Thomas Cokelaer <thomas cokelaer __at__ inria fr>
+                                            Christophe Pradal <christophe pradal __at__ cirad fr>
+=========================================== ====================================================================

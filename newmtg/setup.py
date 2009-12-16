@@ -1,21 +1,13 @@
 import os, sys
 pj = os.path.join
-
 from setuptools import setup, find_packages
+from openalea.deploy.metainfo import read_metainfo
 
 
-# Package name
-name = 'OpenAlea.Mtg'
-namespace = 'openalea'
-pkg_name = 'openalea.mtg'
-version = '0.7.4' 
-description = 'Multiscale Tree Graph datastructure and interfaces.' 
+metadata = read_metainfo('metainfo.ini', verbose=True)
+for key,value in zip(metadata.keys(), metadata.values()):
+    exec("%s = '%s'" % (key, value))
 
-author = 'Christophe Pradal'
-author_email = 'christophe pradal at cirad fr, christophe godin at sophia inria fr'
-
-url = 'http://openalea.gforge.inria.fr'
-license = 'Cecill-C' 
 
 packages = [ namespace+"."+pkg for pkg in find_packages('src') if 'openalea' not in pkg]
 
@@ -23,8 +15,8 @@ setup(
     name=name,
     version=version,
     description=description,
-    author=author,
-    author_email=author_email,
+    author=authors,
+    author_email=authors_email,
     url=url,
     license=license,
 
