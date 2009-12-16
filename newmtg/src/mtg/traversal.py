@@ -14,10 +14,8 @@
 #       OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
 ################################################################################
+"""Tree  and MTG Traversals"""
 
-################################################################################
-# Tree  and MTG Traversals
-################################################################################
 from collections import deque
 
 def pre_order(tree, vtx_id, complex=None, visitor_filter=None):

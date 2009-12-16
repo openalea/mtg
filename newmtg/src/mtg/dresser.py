@@ -31,10 +31,11 @@ the geometric interpretation of a MTG (i.e. PlantFrame)
     
 
 :Examples:
-    >>> g=MTG('a_MTG')
-    >>> d = DressingData('file')
-    >>> pf = PlantFrame(1, Scale=3, DressingData=d)
-    >>> Plot(pf)
+
+    >>> g = MTG('a_MTG') #doctest: +SKIP
+    >>> d = DressingData('file') #doctest: +SKIP
+    >>> pf = PlantFrame(1, Scale=3, DressingData=d) #doctest: +SKIP
+    >>> Plot(pf) #doctest: +SKIP
 
 '''
 

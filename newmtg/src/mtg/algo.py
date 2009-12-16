@@ -14,10 +14,9 @@
 #       OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
 ################################################################################
+"""Implementation of a set of algorithms for the MTG datastructure"""
 
-'''
-Implementation of a set of algorithms for the MTG datastructure
-'''
+
 
 __docformat__ = "restructuredtext"
 
