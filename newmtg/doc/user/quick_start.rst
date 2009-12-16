@@ -1,3 +1,7 @@
+.. testsetup::
+
+    from openalea.mtg.aml import *
+
 .. _newmtg_quick_start:
 
 Quick Start to manipulate MTGs
@@ -11,10 +15,11 @@ Reading an MTG file and activate it
 A plant architecture described in a coding file can be loaded in :mod:`openalea.mtg.aml` as follows:
 
 .. doctest::
-    :options: +SKIP
 
     >>> from openalea.mtg.aml import MTG
-    >>> g1 = MTG('agraf.mtg')
+    >>> g1 = MTG('user/agraf.mtg')          # some errors may occur while loading the MTG
+    ERROR: Missing component for vertex 2532
+
 
 .. note:: In order to reproduce the example, download  :download:`agraf MTG file <agraf.mtg>` and the :download:`agraf DRF file <agraf.drf>`.
         Other files that may be required are also available in the same directory (`*smb` files) but are not compulsary.
@@ -101,8 +106,11 @@ There exists a comprehensive set of functions related to MTGs. These functions m
           >>> v1 = vtxList[0]             # look at the first vertex
           >>> # Feature(vertex_id, name)  
           >>> Feature(v1, "XX")
+          0.0
           >>> Class(v1)
+          'U'
           >>> Index(v1)
+          94
 
       Returns the attribute "XX" (if any) of a vertex v1. These functions return scalar (INTEGER, STRING, REAL), i.e. elementary types different from VTX.
 

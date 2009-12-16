@@ -1,3 +1,7 @@
+.. testsetup::
+
+    from openalea.mtg.aml import *
+
 
 .. contents::
 
@@ -228,7 +232,9 @@ The procedure MTG attempts to build the plant formal representation, checking fo
 
 .. warning:: However, for efficiency reasons, the latest constructed MTG is said to be **active** : it will be considered as an implicit argument of most of the functions dealing with MTGs. See :func:`~openalea.mtg.aml.Activate`
 
-To get the list of all vertices contained in **g**, for instance, we write::
+To get the list of all vertices contained in **g**, for instance, we write:
+
+::
 
     from openalea.mtg.aml import VtxList
     vlist = VtxList()
@@ -356,14 +362,17 @@ The first line retrieves the vertex corresponding to the first growth unit of th
 
 Variable `first_gu_length` contains value 10.
 
-The user can simplify this extraction by creating alias names using lambda function::
+The user can simplify this extraction by creating alias names using lambda function:
 
-    diameter = lambda x: g.property('Diameter').get(x)
-    length = lambda x: g.property('Length').get(x)
+.. doctest:: 
+
+    >>> diameter = lambda x: g.property('Diameter').get(x)
+    >>> length = lambda x: g.property('Length').get(x)
 
 It is then possible with these functions to build data arrays corresponding to feature values associated with growth units:
 
 .. doctest::
+    :options: +SKIP
 
     >>> growth_unit_set = VtxList(Scale=2)
     >>> [length(x) for x in growth_unit_set]
@@ -412,6 +421,7 @@ The set of growth units is the set of entities at scale 2 ::
 Third, we have to apply function internode_nb() to each element of the selected set of entities:
 
 .. doctest::
+    :options: +SKIP
 
     >>> sample1 = [internode_nb(x) for x in gu_set]
     >>> sample1
@@ -425,17 +435,18 @@ We use the list-comprehension Python syntax in order to browse the whole set of 
 Now, we want to get the distribution of the number of internodes on a more restricted set of growth units. More precisely, we would like to study the distribution of internode numbers of different populations corresponding to particular locations in the plant structure. We thus have to define these populations first and then to iterate the function internode_nb() on each entity of this new population like in the previous example. Let us consider for example the population made of the growth units composing branches of order 1. Consider again the whole set of growth units gu_set. Among them, those which are located on branches (defined as entities of order 1 in AML) are defined by:
 
 .. doctest::
+    :options: +SKIP
 
     >>> gu1 = [x for x in VtxList(Scale=2)]
     >>> [Order(x) for x in gu1]
-    >>> [0, 1, 1, 0, 0]
+    [0, 1, 1, 0, 0]
 
 Here again, we use the Python list comprehension in order to browse the whole set of growth units of the database, and to apply the Order  function to each of them. Then, in order to select growth unit vertices whose order is 1 (all the growth units in the corpus which are located on branches), change the above command into:
 
 .. doctest::
+    :options: +SKIP
 
-    >>> gu1 = [x for x in gu1 if Order(x) == 1]
-    >>> gu1
+    >>> [x for x in VtxList(Scale=2) if Order(x) == 1]
     [9, 15]
 
 Eventually, after the sample of values is built, the above function is applied to the selected entities :

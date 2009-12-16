@@ -1,29 +1,43 @@
+.. module:: openalea.mtg.aml
+
 .. _newmtg_tutorial_mtg_aml:
 
 The :mod:`openalea.mtg.aml` module: Long Tour
 #############################################
 
+Reading the file
+================
+
 This page illustrates the usage of all the functionalities available in :mod:`openalea.mtg.aml` module. All 
 the examples uses the MTG file :download:`code_file2.mtg`. If you are interested in the syntax, we stronly recommend
 you to look at Section :ref:`newmtg_intro`. 
 
-First, let us read the MTG file and activate the relevant one.
+First, let us read the MTG file with the function :func:`MTG`. Note that only one MTG object can be manipulated at a time. This MTG object is the **active** MTG.
 
 
-.. image:: fig3_4.png
+.. figure:: fig3_4.png
+
+    **Figure 1:** Graphical representation of the MTG file code_file2.mtg used as an input file to all examples contained in this page
 
 .. doctest::
 
     >>> from openalea.mtg.aml import *
     >>> g = MTG('user/code_file2.mtg')
+    >>> Active() == g
+    True
+
+The :func:`Active` function checks that `g` is currently the active MTG.
+
+
+If a new MTG file is read, it becomes the new active MTG object. However, the function :func:`Activate` can be use to switch between MTG objects as follows:
+
+.. doctest::
+    :options: +SKIP
+
     >>> h = MTG('user/agraf.mtg')
-    >>> Active() #doctest: +SKIP
-    <openalea.mtg.mtg.MTG object at 0x8bb3e6c>
     >>> Active() == h
     True
-    Activate(g)
-    >>> Active() == g
-    >>> True
+    >>> Activate(g)
 
 .. doctest::
 
@@ -33,10 +47,12 @@ First, let us read the MTG file and activate the relevant one.
 Feature functions
 =================
 
-:func:`Order`, `Height`, `Rank`, `AlgOrder`, `AlgHeight`, `AlgRank`
---------------------------------------------------------------------------
 
-Order is the number  of + sign that need to be crosse before reaching the vertex considered
+Order, Rank and Height
+----------------------
+
+
+:func:`Order` (:func:`AlgOrder`) look at the number of + sign that need to be crossed before reaching the vertex considered
 
 .. doctest::
 
@@ -47,7 +63,7 @@ Order is the number  of + sign that need to be crosse before reaching the vertex
     >>> AlgOrder(3,14)
     1
 
-Height is the number of components between the root of the vertix''s branch and the vertix''s position.
+:func:`Height` (:func:`AlgHeight`) look at the number of components between the root of the vertex's branch and the vertex's position.
 
 .. doctest::
 
@@ -58,7 +74,7 @@ Height is the number of components between the root of the vertix''s branch and 
     >>> AlgHeight(3, 14)
     10
 
-Rank is the number  of < sign that need to be cross before reaching the vertex considered
+:func:`Rank` (:func:`AlgRank`) returns the number  < sign that need to be crosssed before reaching the vertex considered.
 
 .. doctest::
 
@@ -69,30 +85,31 @@ Rank is the number  of < sign that need to be cross before reaching the vertex c
     >>> AlgRank(3, 14)
     5
 
-:func:`Class`, `Index`, `Label`, `Feature`
-------------------------------------------------
+:func:`Class`, :func:`Index`, :func:`Label`, :func:`Feature`
+--------------------------------------------------------------
 
-Class gives the type of vertex usually defined by a letter
+:func:`Class` gives the type of vertex usually defined by a letter
 
 .. doctest::
 
     >>> Class(3)
     'I'
 
-and index gives the other part of the label
+and :func:`Index` gives the other part of the label
+
 .. doctest::
 
     >>> Index(3)
     1
 
-When speaking about multiscale tree graph, we also want to access the scale:
+When speaking about multiscale tree graph, we also want to access the :func:`Scale`:
 
 .. doctest::
 
     >>> Scale(3)
     3
 
-A new function called :func:`Label` combines the Class and Index:
+A new function called :func:`Label` combines the `Class` and `Index`:
 
 .. doctest::
 
@@ -100,24 +117,24 @@ A new function called :func:`Label` combines the Class and Index:
     'I1'
 
 
-Feature returns value of a given feature coded in the MTG file.
+Finally, :func:`Feature` returns value of a given feature coded in the MTG file.
 
 .. doctest:: 
 
-    >>> Feature(2, "Diameter")
-    10
+    >>> Feature(2, "Len")
+    10.0
 
-ClassScale, EdgeType, Defined
-------------------------------------
+:func:`ClassScale`, :func:`EdgeType`, :func:`Defined`
+------------------------------------------------------
 
-* ClassScale returns the Scale at which appears a given class of vertex:
+:func:`ClassScale` returns the Scale at which appears a given class of vertex:
 
 .. doctest::
 
     >>> ClassScale('U')
     3
 
-* EdgeType returns Type of connection between two vertices (e.g., +, <)
+:func:`EdgeType` returns the type of connection between two vertices (e.g., +, <)
 
 .. doctest::
 
@@ -128,7 +145,7 @@ ClassScale, EdgeType, Defined
     >>> EdgeType(8,9)
     '+'
 
-* Defined test whether a vertex is present in the active MTG
+:func:`Defined` tests whether a vertex's id is present in the active MTG
 
 .. doctest:: 
 
@@ -143,9 +160,10 @@ Date functions
 
 The following function requires MTG files to contain Date information.
 
-.. todo:: example required
+.. todo:: not yet implemented
 
 ==============================  =========================
+Function
 ==============================  =========================
 DateSample(e1)
 FirstDefinedFeature(e1, e2)
@@ -160,12 +178,12 @@ Functions for moving in MTGs
 
 :func:`Trunk`
 ---------------
-Trunk retursn the list of vertices constituting the bearing botanical axis of a branching system
+:func:`Trunk` returns the list of vertices constituting the bearing botanical axis of a branching system
 
 .. doctest::
 
-    >>> Trunk(2)    # vertex 2  is U1
-    [2, 24, 31]     # which returns U1, U2, U3
+    >>> Trunk(2)    # vertex 2  is U1 therefore the Trunk should return index related to U1, U2, U3
+    [2, 24, 31]
     >>> Class(24), Index(24)
     ('U', 2)
 
@@ -181,39 +199,39 @@ Topological father of a given vertex.
 
 .. doctest::
 
-    >>> Class(8), Index(8)
-    ('I', 6)
+    >>> Label(8)
+    'I6'
     >>> Father(8)
     7
-
-    >>> Class(9), Index(9)
-    ('U', 1)        # vertex 9 is has the U1 label
-    >>> Father(9)   # look for its father
-    2               # its vertex 2
-    >>> Class(2), Index(2)  
-    ('U', 1)        # which is also of type U1
+    >>> Label(9)      # Let us look at vertex 9 (with the U1 label)
+    'U1'
+    >>> Father(9)               # and look for its father's index
+    2
+    >>> Label(2)      # and its father's label that appear to also be equal to 1
+    'U1'
 
 
 :func:`Axis`
 -----------------
-Axis returns the vertices of the axis to which belongs a given vertex.
+:func:`Axis` returns the vertices of the axis to which belongs a given vertex.
 
 .. doctest::
 
-    >>> [Class(x)+str(Index(x)) for x in Axis(9)]
+    >>> [Label(x) for x in Axis(9)]
     ['U1', 'U2']
 
 The scale may be specified
 
 .. doctest::
 
-    >>> [Class(x)+str(Index(x)) for x in Axis(9, Scale=3)]
-    Out[1482]: ['I20', 'I21', 'I22', 'I23', 'I24', 'I25', 'I26', 'I27', 'I28', 'I29']
+    >>> [Label(x) for x in Axis(9, Scale=3)]
+    ['I20', 'I21', 'I22', 'I23', 'I24', 'I25', 'I26', 'I27', 'I28', 'I29']
 
 
-Ancestors
------------
-Ancestors returns a list of ancestors of a given vertex
+:func:`Ancestors`
+-----------------
+
+:func:`Ancestors` returns a list of ancestors of a given vertex
 
 .. doctest::
 
@@ -225,7 +243,7 @@ Ancestors returns a list of ancestors of a given vertex
 :func:`Path`
 -------------
 
-The Path returns a list of vertices defining the path between two vertices
+The :func:`Path` returns a list of vertices defining the path between two vertices
 
 .. doctest::
 
@@ -235,7 +253,8 @@ The Path returns a list of vertices defining the path between two vertices
 
 :func:`Sons`
 ------------------
-to illustrate the :func:`Sons` function, let us consider the vertex 8
+
+In order to illustrate the :func:`Sons` function, let us consider the vertex 8
 
 .. doctest::
 
@@ -247,30 +266,30 @@ to illustrate the :func:`Sons` function, let us consider the vertex 8
 :func:`Descendants` and :func:`Ancestors`
 ------------------------------------------
 
-Descendants an array with  all the vertices, at the same scale as v, that belong to the branching system starting at v::
+:func:`Descendants` an array with  all the vertices, at the same scale as v, that belong to the branching system starting at v::
 
     >>> [Class(x)+str(Index(x)) for x in Descendants(8)]
 
-Ancestors contains the vertices on the path from v back to the root (in this order) and finishes by the tree root.::
+:func:`Ancestors` contains the vertices on the path from v back to the root (in this order) and finishes by the tree root.::
 
     >>> [Class(x)+str(Index(x)) for x in Ancestors(8)]
 
-:func:`Predecessors` and :func:`Successors`
+:func:`Predecessor` and :func:`Successor`
 ----------------------------------------------------------------
 
-Predecessor returns the Father of a vertex connected to it by a ‘<’ edge, and is therefore equivalent to::
+:func:`Predecessor` returns the Father of a vertex connected to it by a ‘<’ edge, and is therefore equivalent to::
 
     Father(v, EdgeType-> ‘<’). 
 
 
-Similarly, Successor is equivalent to ::
+Similarly, :func:`Successor` is equivalent to ::
 
     Sons(v, EdgeType=’<’)[0]
 
-:func:`Roots`
+:func:`Root`
 --------------
 
-Root returns root of the branching systenme containing a given vertex and therefore is equivalent to::
+:func:`Root` returns root of the branching systenme containing a given vertex and therefore is equivalent to::
 
     Ancestors(v, EdgeType=’<’)[-1]
 
@@ -312,15 +331,15 @@ Vertex defining the father of a vertex with maximum scale.
 .. doctest::
 
     >>> Label(9)            # starting from a Component U1 at vertex's id 9
-    U1
+    'U1'
     >>> Father(9)           # what is its Father ?
     2
-    >>> Label(Father(9))    #  
-    U1                      # answer: another U1 of vertex's id 2
+    >>> Label(Father(9))    # answer: another U1 of vertex's id 2
+    'U1'
     >>> Location(9)         # what is the location of vertex 9
     8
     >>> Label(Location(9))  # the internode I6
-    I6
+    'I6'
 
 :func:`Extremities`
 --------------------
@@ -336,7 +355,9 @@ Vertex defining the father of a vertex with maximum scale.
 Geometric interpretation
 ========================
 
-Most of the following functions are not yet implemented.
+Most of the following functions are not yet implemented. See :ref:`newmtg_quick_start` to see the usage of :func:`PlantFrame` with dressing data. 
+
+You may also use the former AML code using `openalea.aml` package
 
 
 :func:`PlantFrame` and :func:`Plot`
@@ -345,6 +366,7 @@ Most of the following functions are not yet implemented.
 One can use openalea.aml for now:
 
 .. doctest::
+    :options: +SKIP
 
     >>> import openalea.aml as aml
     >>> aml.MTG('code_file2.txt')
@@ -353,18 +375,15 @@ One can use openalea.aml for now:
 
 Shows the MTG file at scale 2. This is possible because Diameter and Lenmgth features are provided at that scale. 
 
-
-
-
+========================= ======================
+========================= ======================
 :func:`DressingData`
 :func:`Plot`
-
 :func:`TopCoord`
 RelTopCoord(e1, e2)
 BottomCoord(e1, e2)
 RelBottomCoord(e1, e2)
 Coord(e1, e2)
-
 BottomDiameter(e1,e2)
 TopDiameter(e1,e2)
 Alpha(e1,e2)
@@ -373,11 +392,13 @@ Length(e1,e2)
 VirtualPattern(e1)
 PDir(e1,e2)
 SDir(e1,e2)
+========================= ======================
 
 
 Comparison Functions
 ====================
 .. todo:: not yet implemented
+
 TreeMatching(e1)
 MatchingExtract(e1)
 

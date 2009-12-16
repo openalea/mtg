@@ -10,10 +10,10 @@ sphinx_check_version()
 # must update some fields with the package information
 version, authors, release, project = read_metainfo('../metainfo.ini')
 # and extra by-product fields
-latex_documents = ['index', 'main.tex', project + ' documentation', authors, 'manual']
+latex_documents = [('contents', 'main.tex', project + ' documentation', authors, 'manual')]
 
 
 html_static_path = ['_static', os.path.join(os.environ['OPENALEA'], 'doc', '.static')]
-html_style = 'new_openalea.css'
+html_style = 'openalea.css'
 
 

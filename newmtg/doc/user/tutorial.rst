@@ -1,11 +1,12 @@
-.. _newmtg_tutorial:
 
 .. highlight:: python
    :linenothreshold: 5
 
-#####################
-Tutorial
-#####################
+.. _newmtg_tutorial:
+
+#######################################
+Tutorial: Create MTG file from scratch
+#######################################
 
 
 This tutorial briefly introduces the main features of the package
@@ -37,7 +38,7 @@ MTG creation
 * First, the package is imported (**line 1**). 
 * Then, a mtg is instantiated without parameters (**line 3**).
 * However, as for a :class:`~openalea.container.tree.Tree`, the mtg is not empty (**line 5-7**).
-* Their is always a root node at scale 0 (**line 9-10**).
+* There is always a root node at scale 0 (**line 9-10**).
 
 
 Simple edition

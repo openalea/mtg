@@ -3,8 +3,6 @@
 
 .. _Mtg:
 
-.. module:: Mtg
-
 Openalea mtg documentation
 ##########################
 
@@ -29,10 +27,14 @@ Documentation
 .. toctree::
     :maxdepth: 1
 
-    User Guide<user/index.rst>   
-    Reference Guide<newmtg/index.rst>
+    user/index.rst
+    user/autosum.rst
 
-- A `PDF <../latex/Mtg.pdf>`_ version of |Mtg| documentation is 
+
+
+..    Reference Guide<newmtg/index.rst>
+
+- A `PDF <../latex/main.pdf>`_ version of |Mtg| documentation is 
   available.
 
 .. seealso::

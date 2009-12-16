@@ -648,7 +648,8 @@ A graphic model can be associated with a component in the following way (all key
 
    2. Any symbolic name (like internode) can then be associated with a component using the class of the component as follows::
 
-      Class I = internode
+          Class I = internode
+ 
       where I corresponds to a class name. This means that all the vertices of class I will have a geometry defined by the geometric model internode. Note that class I does not necessarily correspond to a valid class of a MTG (however, it should be a alphabetic letter in a-z,A-Z).
 
 Alternatively, to allow for ascendant compatibility with previous versions of AMAPmod, it is possible to directly refer to geometric models defined in .smb files. In this case, the set of geometric models corresponds to the files contained in directory SMBPath and a geometric model can be loaded in AMAPmod by identifying a smb file in this directiry. This is done as follows in the dressing file::

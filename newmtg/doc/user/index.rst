@@ -11,18 +11,14 @@ MTG User Guide
     :Provides: **MTG** or *Multiscale Tree Graph* data structure.
 
 
-In order to quickly learn how to read a MTG file and plot it with PlantGL, jump to the the :ref:`newmtg_quick_start`. If you are in a hurry and want to parse the MTG to retrieve information about it, look at the :ref:`newmtg_tutorial_mtg_aml` that fully describes the :mod:`openalea.mtg.aml` module.
+In order to quickly learn how to read a MTG file and plot it with PlantGL, jump to the the :ref:`newmtg_quick_start`. If you are in a hurry and want to parse the MTG to retrieve information about it, look at the :ref:`newmtg_tutorial_mtg_aml` that fully describes the :mod:`openalea.mtg.aml` module. 
 
 Then, we advice you to look at the section :ref:`newmtg_intro` to understand what is a MTG file through a detailled description of the format and a few examples (note that the section :ref:`newmtg_syntax` gives a full description of the format). The section :ref:`newmtg_illustration` explains through a full example what can be done with the MTG data in point of view of statistical analysis. 
 
-Then, section
+Finally, once the MTG format is understood, you may want to create your own MTG file from scratch as described in Section :ref:`newmtg_tutorial`. 
 
 The full guide reference is also available :ref:`newmtg_reference`.
 
-.. .. seealso::
-
-..    :ref:`openalea.container.container_user`
-..        Data structures such as graph, tree, and topological mesh.
 
 .. toctree::
     :maxdepth: 2
@@ -34,11 +30,13 @@ The full guide reference is also available :ref:`newmtg_reference`.
     illustration.rst
     tutorial.rst
     syntax.rst
-    autosum.rst
 
+.. toctree::
+    :hidden:
 
-..    data_structure.rst
+    biblio.rst
+    data_structure.rst
     algorithm.rst
-    syntax.rst
-    autosum.rst
 
+
+.. .. plot:: user/pylab.py
