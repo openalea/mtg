@@ -40,7 +40,7 @@ Documentation
 .. seealso::
 
    More documentation can be found on the
-   `openalea <http://openalea.gforge.inria.fr>`__ wiki.
+   `openalea wiki <http://openalea.gforge.inria.fr/dokuwiki/doku.php?id=packages:vplants:mtg:mtg>`_
 
 Authors
 =======

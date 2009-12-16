@@ -17,7 +17,7 @@ Then, we advice you to look at the section :ref:`newmtg_intro` to understand wha
 
 Finally, once the MTG format is understood, you may want to create your own MTG file from scratch as described in Section :ref:`newmtg_tutorial`. 
 
-The full guide reference is also available :ref:`newmtg_reference`.
+.. note:: The full guide reference is also available :ref:`newmtg_reference`.
 
 
 .. toctree::
@@ -29,6 +29,7 @@ The full guide reference is also available :ref:`newmtg_reference`.
     intro.rst
     illustration.rst
     tutorial.rst
+    visualea.rst
     syntax.rst
 
 .. toctree::

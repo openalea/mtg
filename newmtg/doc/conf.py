@@ -13,7 +13,7 @@ version, authors, release, project = read_metainfo('../metainfo.ini')
 latex_documents = [('contents', 'main.tex', project + ' documentation', authors, 'manual')]
 
 
-html_static_path = ['_static', os.path.join(os.environ['OPENALEA'], 'doc', '.static')]
+html_static_path = ['_static', os.path.join(os.environ['OPENALEA'], 'doc', '_static')]
 html_style = 'openalea.css'
 
 
