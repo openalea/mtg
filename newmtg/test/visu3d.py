@@ -8,7 +8,7 @@ import openalea.mtg.util as util
 from openalea.plantgl.all import *
 from math import sqrt
 
-dreload(util)
+reload(util)
 
 #io.debug = 1
 fn = r'data/mtg5.mtg'

@@ -1,7 +1,7 @@
 # Dressing file for apple trees
 
-SMBPath = D:/Documents/pradal/devlp/vplants/aml/databases/SMBFiles
-#SMBPath = ../../../databases/SMBFiles
+#SMBPath = D:/Documents/pradal/devlp/vplants/aml/databases/SMBFiles
+SMBPath = ../../../databases/SMBFiles
 
 SMBModel entrenoeud = nentn105
 SMBModel entrenoeud2 = nentn104
