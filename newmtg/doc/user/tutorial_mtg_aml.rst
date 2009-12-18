@@ -1,5 +1,3 @@
-.. module:: openalea.mtg.aml
-
 .. _newmtg_tutorial_mtg_aml:
 
 The :mod:`openalea.mtg.aml` module: Long Tour
