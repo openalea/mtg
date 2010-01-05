@@ -211,6 +211,39 @@ def iter_mtg(mtg, vtx_id):
         for node in iter_scale(mtg, vid, visited):
             yield node
         
+
+def iter_mtg3(mtg, vtx_id):
+    '''Traverse the Mtg in a pre_order way after having traversed all the components of each vertices.
+    '''
+
+    queue = deque([vtx_id])
+    
+    while queue:
+        v = queue.popleft()
+        yield v
+        l = list(mtg.components(v))
+        queue.extendleft(reversed(l))
+    
+def iter_mtg2(mtg, vtx_id):
+    visited = {vtx_id:True}
+    complex_id = vtx_id
+
+    max_scale = mtg.max_scale()
+
+    yield vtx_id
+    for vtx_id in mtg.component_roots_at_scale(complex_id, max_scale):
+        for vid in pre_order2(mtg, vtx_id):
+            for node in iter_scale2(mtg, vid, complex_id, visited):
+                yield node
+
+def iter_scale2(g, vtx_id, complex_id, visited):
+    if vtx_id is not None and vtx_id not in visited and g.complex_at_scale(vtx_id, g.scale(complex_id)) == complex_id:
+        for v in iter_scale2(g, g._complex.get(vtx_id), complex_id, visited):
+            yield v
+        visited[vtx_id] = True
+        yield vtx_id
+
+    
 def topological_sort(tree, vtx_id, visited = None):
     ''' 
     Topolofgical sort of a directed acyclic graph.

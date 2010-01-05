@@ -339,9 +339,11 @@ class MTG(PropertyTree):
            return self.component_roots(vtx_id)
         elif scale > cur_scale+1:
             gen = (vtx_id,)
-            for i in range(cur_scale+1, scale):
+            for i in range(cur_scale, scale):
                 gen = (vid for vtx in gen for vid in self.component_roots(vtx)) 
             return gen
+        else:
+            return iter([])
         
     def nb_components(self, vid):
         '''

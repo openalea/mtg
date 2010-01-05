@@ -173,3 +173,14 @@ def test_order():
     s = '/A/a<b<c[+d[+e<f][+g]]<h<i[+j<k][+l<m]'
     mtg = multiscale_edit(s)
 
+def test_iter_mtg():
+    g = read_mtg_file('data/test10_agraf.mtg')
+    l = list(iter_mtg(g,g.root))
+    assert len(l) == len(g)
+
+    l1 = list(iter_mtg2(g,g.root))
+    assert len(l1) == len(g)
+    assert l == l1
+
+    l2 = list(iter_mtg2(g, 2))
+    assert len(l2) == 59
