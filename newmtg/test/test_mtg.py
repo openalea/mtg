@@ -144,8 +144,8 @@ def test_properties():
     vid = random_tree(mtg, v1, nb_vertices=18)
 
     assert 'edge_type' in mtg.property_names()
-    assert (len(mtg.property('edge_type')) == 18*3, 
-           'len(mtg.property("edge_type")) == %d'%len(mtg.property('edge_type')))
+    assert len(mtg.property('edge_type')) == 18*3, \
+           'len(mtg.property("edge_type")) == %d'%len(mtg.property('edge_type'))
 
 def test_edition():
     s = '/A/a<b\<B/c[+d[+e<f][+g]]\<D/h\<C/i[+j<k][+l<m]\\\\'
@@ -184,3 +184,10 @@ def test_iter_mtg():
 
     l2 = list(iter_mtg2(g, 2))
     assert len(l2) == 59
+
+def test_sub_mtg():
+    g = read_mtg_file('data/test10_agraf.mtg')
+    g1 = g.sub_mtg(2)
+    g = g.sub_mtg(2,copy=False)
+
+    assert len(g1) == len(g) == 59

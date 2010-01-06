@@ -440,32 +440,90 @@ class MTG(PropertyTree):
 
         if not copy:
             # remove all vertices not in the sub_tree
-            bunch = set(pre_order_in_scale(self, vtx_id))
-            for vid in self:
-                if vid not in bunch:
-                    # remove vertex vid
-                    for vtx in self._components.get(vid):
-                        del self._complex[vtx]
-                    del self._components[vid]
-                    self.remove_vertex(vid)
 
-            self._root = vtx_id
-            self._parent[self._root] = None
+            bunch = set(traversal.pre_order_in_scale(self, vtx_id))
+            remove_bunch = set(self) - bunch
+
+            self.root = vtx_id
+
+            # remove vertices by removing the element and deleting all the deges.
+            # We do not use standard methods because the graph will not be functional
+            # until the removal of all vertices.
+
+            # force remove
+            for vid in remove_bunch:
+
+                # TODO: Build specific methods (_force_remove) to edit a MTG without
+                # any verification. The MTG/Tree/whatever will be temporary invalid.
+
+                # remove properties
+                self._remove_vertex_properties(vid)
+                del self._scale[vid]
+
+                # remove parent edge
+                pid = self.parent(vid)
+                if pid is not None:
+                    self._children[pid].remove(vid)
+                    del self._parent[vid]
+                # remove children edges
+                for cid in self.children(vid):
+                    self._parent[cid] = None
+                if vid in self._children:
+                    del self._children[vid]
+
+                # remove complex edges
+                complex_id = self._complex.get(vid)
+                if complex_id is not None:
+                    self._components[complex_id].remove(vid)
+                    del self._complex[vid]
+                # remove components edges
+                for cid in self.components(vid):
+                    del self._complex[cid]
+                if vid in self._components:
+                    del self._components[vid]
+
+            # Update the scale of the nodes
+            scale = self._scale
+            root_scale = self.scale(vtx_id)
+            for vid in scale:
+                scale[vid] = scale[vid]-root_scale
+
+            self._scale[self.root] = 0
+
             return self
         else:
             treeid_id = {}
-            tree = MTG()
-            tree.root = 0
-            treeid_id[vtx_id] = tree.root
-            subtree = pre_order_in_scale(self, vtx_id)
+            g = MTG()
+            g.root = 0
+
+            for name in self.properties():
+                g.add_property(name)
+
+            treeid_id[vtx_id] = g.root
+            subtree = traversal.iter_mtg2(self, vtx_id)
             
+            
+            # Skip the first vertex vtx_id
             subtree.next()
+            # Traverse all the sub_mtg.
+            # Every vertex has a complex in this sub_mtg.
+            # Complex vertices are traversed before there components and
+            # parent before the children.
+
             for vid in subtree:
-                complex = treeid_id[self.complex(vid)]
-                v = tree.add_component(parent)
+                complex_id = treeid_id[self.complex(vid)]
+                v = g.add_component(complex_id)
                 treeid_id[vid] = v
 
-            return tree
+                pid = self.parent(vid)
+                if pid is not None:
+                    parent = treeid_id[pid]
+                    v = g.add_child(parent, child=v)
+
+                # Copy the properties
+                g._add_vertex_properties(v, self.get_vertex_property(vid))
+
+            return g 
 
 
     #########################################################################
@@ -751,7 +809,7 @@ def display_mtg(mtg, vid):
     edge_type = mtg.property('edge_type')
     current_vertex = vid
     tab = 0
-    for vtx in traversal.iter_mtg(mtg, vid):
+    for vtx in traversal.iter_mtg2(mtg, vid):
         et = '/'
         if vtx != current_vertex:
             scale1 = mtg.scale(current_vertex)

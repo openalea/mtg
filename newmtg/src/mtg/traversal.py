@@ -210,20 +210,8 @@ def iter_mtg(mtg, vtx_id):
     for vid in pre_order2(mtg, vtx_id):
         for node in iter_scale(mtg, vid, visited):
             yield node
-        
 
-def iter_mtg3(mtg, vtx_id):
-    '''Traverse the Mtg in a pre_order way after having traversed all the components of each vertices.
-    '''
 
-    queue = deque([vtx_id])
-    
-    while queue:
-        v = queue.popleft()
-        yield v
-        l = list(mtg.components(v))
-        queue.extendleft(reversed(l))
-    
 def iter_mtg2(mtg, vtx_id):
     visited = {vtx_id:True}
     complex_id = vtx_id
