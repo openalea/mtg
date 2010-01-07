@@ -21,9 +21,48 @@ Different utilities such as plot2D, plot3D, and so on...
 from openalea.mtg import *
 from openalea.mtg.traversal import *
 
-def plot2d( g, image_name, scale=None ):
-    """
-    Compute an image of the tree via graphviz.
+
+"""def mtg_plot(g, scales=1):
+
+    uniq_scales = set(g._scale.values())
+
+    #cluster2.set_bgcolor('#000fff')
+    #pydot_graph = pydot.graph_from_edges(((f(x), f(y)) for x, y in g.iteredges(scale=scale)))
+    callgraph = pydot.Dot(graph_type='digraph',fontname="Verdana")
+
+    label = g.property('label')
+    scale = g._scale
+
+    for s in uniq_scales:
+        print s
+
+
+    #cluster2 = pydot.Cluster('U2')
+    #cluster2.add_edge(pydot.Edge('I4', 'I5'))
+    #callgraph.add_subgraph(cluster2)
+    #callgraph.write_png('cluster.png')
+    #if label:
+    #    f = lambda id: label.get(id, str(id))
+    #else:
+    #    f = str
+
+    callgraph.write_png('cluster.png')
+
+"""
+
+def plot2d(g, image_name, scale=None, orientation=90 ):
+    """Compute an image of the tree via graphviz.
+
+    :Parameters:
+
+        - `g` (int) : an MTG object
+        - `image_name` (str) : output filename e.g. test.png
+
+    :Optional parameters:
+
+        - `scale` (int): represents the MTG's scale to look at (default max)
+        - `orientation` (int): orientation angle (default 90)
+
     """
     import pydot
     if scale is None:
@@ -35,12 +74,12 @@ def plot2d( g, image_name, scale=None ):
         f = lambda id: label.get(id, str(id))
     else:
         f = str
-    pydot_graph= pydot.graph_from_edges(((f(x), f(y)) for x, y in g.iteredges(scale=scale)))
+    pydot_graph = pydot.graph_from_edges(((f(x), f(y)) for x, y in g.iteredges(scale=scale)))
 
     # Attributes
-    pydot_graph.set('orientation', 90.0)
+    pydot_graph.set('orientation', orientation)
 
-    ext= os.path.splitext(image_name)[1].strip('.')
+    ext = os.path.splitext(image_name)[1].strip('.')
     return pydot_graph.write(image_name, prog='dot',format=ext)
 
 
