@@ -8,5 +8,7 @@ Each data structure implement a set of specific interface.
 These interfaces define the name of the methods, their semantic,
 and sometime their complexity.
 
-See :ref:`openalea.mtg.mtg`
+See :mod:`openalea.mtg.mtg`
+
+
     

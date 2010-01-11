@@ -218,12 +218,12 @@ Output:
 #//////////////////////////////////////////////////////////////////////////////
 
 class TopoFunction( Node ):
-    """\
-TopoFunction(string) -> func on vertex
-Input:
-  Name of the function.
-Output:
-  function that can be applied on a vertex.
+    """TopoFunction(string) -> func on vertex
+
+    Input:
+        Name of the function.
+    Output:
+        function that can be applied on a vertex.
     """
     
     vtx_func= { "Father" : Father,
