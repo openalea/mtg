@@ -20,7 +20,7 @@ OpenAlea interface to the OpenAlea.MTG module.
 """
 
 __license__= "Cecill-C"
-__revision__=" $Id: $"
+__revision__=" $Id$"
 
 #//////////////////////////////////////////////////////////////////////////////
 

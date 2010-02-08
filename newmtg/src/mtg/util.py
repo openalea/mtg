@@ -21,8 +21,8 @@ Different utilities such as plot2D, plot3D, and so on...
 from openalea.mtg import *
 from openalea.mtg.traversal import *
 
-
-"""def mtg_plot(g, scales=1):
+def mtg_plot(g, scales=1):
+    import pydot
 
     uniq_scales = set(g._scale.values())
 
@@ -48,7 +48,7 @@ from openalea.mtg.traversal import *
 
     callgraph.write_png('cluster.png')
 
-"""
+
 
 def plot2d(g, image_name, scale=None, orientation=90 ):
     """Compute an image of the tree via graphviz.

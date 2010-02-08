@@ -21,7 +21,7 @@ Wralea for OpenAlea.Mtg package.
 from openalea.core import *
 
 __license__= "Cecill"
-__revision__=" $Id: $"
+__revision__=" $Id$"
 
 __name__ = "openalea.mtg"
 __version__ = '0.7.2'

@@ -346,7 +346,7 @@ class PlantFrame(object):
     def strahler_order(g, vid):
         strahler = {}
         for v in traversal.post_order(g, vid):
-            children_order = [strahler[c] for c in g.children(v)]
+            children_strahler = [strahler[c] for c in g.children(v)]
             if children_strahler:
                 m, M = min(children_strahler), max(children_strahler)
                 strahler[v] = M if m != M else M+1

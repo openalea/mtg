@@ -26,7 +26,7 @@ For interface definition, see :mod:`openalea.container.interface.tree`.
 
 __docformat__ = "restructuredtext"
 __license__ = "Cecill-C"
-__revision__ = " $Id: $ "
+__revision__ = " $Id$ "
 
 #from interface.tree import ITree, IMutableTree, IEditableTree
 #from interface.graph import IRootedGraph, InvalidVertex, InvalidEdge

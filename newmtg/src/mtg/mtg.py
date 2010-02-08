@@ -59,7 +59,10 @@ class MTG(PropertyTree):
         :param vid: vertex identifier
         :rtype: int
         '''
-        return self._scale[vid]
+        try:
+            return self._scale[vid]
+        except:
+            pass
 
     def nb_scales(self):
         '''
