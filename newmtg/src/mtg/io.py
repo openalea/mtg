@@ -392,6 +392,7 @@ def read_lsystem_string( string,
 
             mtg.property('index')[current_vertex] = index[name]
             if name in functional_symbol:
+                print node
                 features = eval(node, functional_symbol)
                 geom = features.get('geometry')
                 canlabel = features.get('label')
