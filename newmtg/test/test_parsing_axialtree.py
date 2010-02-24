@@ -1,6 +1,6 @@
 from openalea.mtg.io import axialtree2mtg, mtg2mss , lpy2mtg, mtg2lpy
 from openalea.lpy import AxialTree, generateScene, Lsystem
-#from openalea.plantgl.all import Scene, Viewer
+from openalea.plantgl.all import Scene, Viewer
 from openalea.core.path import path
 
 def str2mtg(s):
@@ -104,4 +104,37 @@ def test_mtglpy():
     assert True
     return mtg, tree
 
+def test_mtglpy_topvine():
+    fn = path('vinemtg_n.lpy')
+    if not fn.exists():
+        return
+
+    l = Lsystem(fn)
+    parameters = {}
+    parameters['carto_file'] = 'geom_n.dat'
+    parameters['picle_file'] = 'vine_n.dat'
+    parameters['TTfin'] = None
+
+    #l.context().updateNamespace(parameters)
+
+    c_iter = l.getLastIterationNb()
+    nbstep = l.derivationLength - c_iter
+    tree = l.iterate(c_iter,nbstep,l.axiom)
+
+    scene = l.sceneInterpretation(tree)
+
+    mtg = lpy2mtg(tree, l, scene)
+
+    print len(mtg)
+    axial_tree = AxialTree()
+    axial_tree = mtg2lpy(mtg, l, axial_tree)
+
+    g = lpy2mtg(axial_tree, l, scene)
+
+    assert len(g) == len(mtg)
+    #axial_tree = mtg2axialtree(mtg, scale, parameters, axial_tree)
+    
+    # Check
+    assert True
+    return mtg, tree, axial_tree
 

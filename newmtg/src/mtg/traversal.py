@@ -56,12 +56,62 @@ def pre_order(tree, vtx_id, complex=None, visitor_filter=None):
         visitor_filter.post_order(vtx_id)
 
     
+def pre_order2_with_filter(tree, vtx_id, complex=None, pre_order_filter=None, post_order_visitor=None):
+    ''' 
+    Same algorithm than pre_order2.
+    The goal is to replace the pre_order2 implementation.
+
+    The problem is for the pre_order filter when it is also a visitor
+    '''
+
+    edge_type = tree.property('edge_type')
+    
+    def order_children(vid):
+        ''' Internal function to retrieve the children in a correct order:
+            - Branch before successor.
+        '''
+        plus = []
+        successor = []
+        for v in tree.children(vid):
+            if complex is not None and tree.complex(v) != complex:
+                continue
+            if pre_order_filter and not pre_order_filter(v):
+                continue
+            
+            if edge_type.get(v) == '<':
+                successor.append(v)
+            else:
+                plus.append(v)
+        
+        plus.extend(successor)
+        child = plus
+        return list(reversed(child))
+
+
+    queue = deque()
+    queue.append( (vtx_id, order_children(vtx_id)) )
+
+    yield vtx_id
+    # 1. select first '+' edges
+
+    while queue:
+        vtx_id, children = queue[-1]
+        if children:
+            vid = children.pop()
+            yield vid
+            queue.append((vid,order_children(vid)))
+        else:
+            vtx_id, children = queue.pop()
+            if post_order_visitor:
+                post_order_visitor(vtx_id)
+
+
 def pre_order2(tree, vtx_id, complex=None, visitor_filter=None):
     ''' 
     Traverse a tree in a prefix way.
     (root then children)
 
-    This is a non recursive implementation.
+    This is an iterative implementation.
     '''
     if complex is not None and tree.complex(vtx_id) != complex:
         return
@@ -96,6 +146,7 @@ def pre_order2(tree, vtx_id, complex=None, visitor_filter=None):
         plus.extend(successor)
         child = plus
         queue.extend(reversed(child))
+
 
 def pre_order_in_scale(tree, vtx_id, visitor_filter=None):
     ''' 
@@ -201,8 +252,9 @@ def iter_scale(g, vtx_id, visited):
         yield vtx_id
 
 def iter_mtg(mtg, vtx_id):
-    visited = {}
+    visited = {vtx_id:True}
     loc = vtx_id
+    yield vtx_id
     while mtg._components.get(loc):
         loc = mtg._components[loc][0]
     vtx_id = loc
@@ -232,7 +284,7 @@ def iter_scale2(g, vtx_id, complex_id, visited):
         yield vtx_id
 
     
-def topological_sort(tree, vtx_id, visited = None):
+def topological_sort(g, vtx_id, visited = None):
     ''' 
     Topolofgical sort of a directed acyclic graph.
 
@@ -254,7 +306,7 @@ def pre_order_with_filter(tree, vtx_id, pre_order_filter=None, post_order_visito
     Traverse a tree in a prefix way.
     (root then children)
 
-    This is a non recursive implementation.
+    This is an iterative implementation.
     
     TODO: make the naming and the arguments more consistent and user friendly.
     pre_order_filter is a functor which has to return a boolean.
@@ -290,8 +342,13 @@ def pre_order_with_filter(tree, vtx_id, pre_order_filter=None, post_order_visito
     if post_order_visitor:
         post_order_visitor(vtx_id)
 
-def iter_mtg_with_filter(mtg, vtx_id, pre_order_filter, post_order_visitor):
+def iter_mtg_with_filter(mtg, vtx_id, pre_order_filter= None, post_order_visitor=None):
     visited = {}
+
+    cid = mtg.complex(vtx_id)
+    if cid is not None:
+        visited[cid] = True
+
     loc = vtx_id
     while mtg._components.get(loc):
 
@@ -306,4 +363,67 @@ def iter_mtg_with_filter(mtg, vtx_id, pre_order_filter, post_order_visitor):
     for vid in pre_order_with_filter(mtg, vtx_id, pre_order_filter, post_order_visitor):
         for node in iter_scale(mtg, vid, visited):
             yield node
+
+def iter_mtg2_with_filter(mtg, vtx_id, pre_order_filter=None, post_order_visitor=None):
+    if pre_order_filter is None:
+        pre_order_filter = lambda v: True
+    if post_order_visitor is None:
+        post_order_visitor = lambda x: None
+
+    visited = {vtx_id:True}
+    complex_id = vtx_id
+
+    max_scale = mtg.max_scale()
+
+    queue = [] #cpl
+
+    pre_order_filter(vtx_id)#cpl
+    yield vtx_id
+
+    queue.append(vtx_id) #cpl
+
+    for vtx_id in mtg.component_roots_at_scale(complex_id, max_scale):
+        for vid in pre_order2_with_filter(mtg, vtx_id, 
+                                          pre_order_filter=None, 
+                                          post_order_visitor=post_order_visitor,
+                                          complex=None):
+            for node in iter_scale2(mtg, vid, complex_id, visited):
+
+                scale = mtg.scale(node)
+                if scale != max_scale:
+                    # we need to manage the right order for the post order visitor
+                    prev_node = queue[-1]
+                    prev_scale = mtg.scale(prev_node)
+
+                    if prev_scale < scale:
+                        # Nothing to do
+                        queue.append(node)
+                    elif prev_scale == scale:
+                        # Test if the two vertices are connected
+                        if mtg.parent(node) != prev_node:
+                            post_order_visitor(prev_node)
+                            queue[-1] = node
+                        else:
+                            queue.append(node)
+                    else: # prev_scale > scale
+                        prev_node = queue.pop()
+                        while mtg.scale(prev_node) > scale:
+                            post_order_visitor(prev_node)
+                            prev_node = queue.pop()
+
+                        if mtg.parent(node) != prev_node:
+                            post_order_visitor(prev_node)
+                            queue.append(node)
+                        else:
+                            queue.append(node)
+
+                    
+                pre_order_filter(node)
+                yield node
+
+        while len(queue) > 1:
+            node = queue.pop()
+            post_order_visitor(node)
+
+
 
