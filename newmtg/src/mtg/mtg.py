@@ -186,7 +186,7 @@ class MTG(PropertyTree):
         super(MTG, self).clear()
 
         self._scale.clear()
-        self._scale = {0:0}
+        self._scale[0] = 0
 
         self._complex.clear()
         self._components.clear()
