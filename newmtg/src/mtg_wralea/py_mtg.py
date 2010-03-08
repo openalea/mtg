@@ -78,15 +78,15 @@ Ouput : MTG object if the parsing process succeeds.
     def __call__(self, inputs):
         """ inputs is the list of input values """
 
-	kwds = {}
-	for desc in self.input_desc:
-	    key = desc['name']
-	    x = self.get_input(key)
-	    if x is not None:  # selects the input arguments
-		kwds[key] = x
+        kwds = {}
+        for desc in self.input_desc:
+            key = desc['name']
+            x = self.get_input(key)
+            if x is not None:  # selects the input arguments
+                kwds[key] = x
 
-	obj = kwds.get('filename',None)
-	del kwds['filename']
+        obj = kwds.get('filename',None)
+        del kwds['filename']
 
         g = None
         if obj:
@@ -95,7 +95,7 @@ Ouput : MTG object if the parsing process succeeds.
             except Exception, e:
                 print e
 
-	return g
+        return g
 
 #//////////////////////////////////////////////////////////////////////////////
 
@@ -139,8 +139,8 @@ Output:
 #        max_scale= max_mtg_scale(g)
 
         vtxs= []
-	if scale == 0: vtxs = VtxList()
-	else : vtxs= VtxList(Scale=scale)
+        if scale == 0: vtxs = VtxList()
+        else : vtxs= VtxList(Scale=scale)
         
         return (vtxs,)
 
@@ -150,7 +150,7 @@ class py_Feature( Node ):
 
     def __init__(self):
 
-	Node.__init__(self)
+        Node.__init__(self)
 
         self.add_input( name = "MTG", interface = None) 
         self.add_input(name= "Vtx", interface= IInt )
@@ -384,27 +384,27 @@ Input:
         
         kwds={}
 
-	# input_desc contains a list of dictionaries for 
-	# each input port of the node
-	for desc in self.input_desc:
-	    key = desc['name']
-	    x = self.get_input(key)
-	    if x is not None:
-		kwds[key] = x
+        # input_desc contains a list of dictionaries for 
+        # each input port of the node
+        for desc in self.input_desc:
+            key = desc['name']
+            x = self.get_input(key)
+            if x is not None:
+                kwds[key] = x
 
-	g = kwds.get('MTG',None)
+        g = kwds.get('MTG',None)
 
         g = set_mtg(g)
         if not g:
             return (None,)
 
-	scale = kwds.get('Scale',None)
+        scale = kwds.get('Scale',None)
 
-	vtx = kwds.get('Vertex',None)
-	del kwds['Vertex']
-	if 'MTG' in kwds: del kwds['MTG']
+        vtx = kwds.get('Vertex',None)
+        del kwds['Vertex']
+        if 'MTG' in kwds: del kwds['MTG']
 
-	"""
+        """
         max_scale= max_mtg_scale(g)
         if scale > max_scale:
             scale = max_scale
@@ -472,27 +472,27 @@ Input:
         
         kwds={}
 
-	# input_desc contains a list of dictionaries for 
-	# each input port of the node
-	for desc in self.input_desc:
-	    key = desc['name']
-	    x = self.get_input(key)
-	    if x is not None:
-		kwds[key] = x
+        # input_desc contains a list of dictionaries for 
+        # each input port of the node
+        for desc in self.input_desc:
+            key = desc['name']
+            x = self.get_input(key)
+            if x is not None:
+                kwds[key] = x
 
-	g = kwds.get('patterntype',None)
+        g = kwds.get('patterntype',None)
 
         g = set_mtg(g)
         if not g:
             return (None,)
 
-	scale = kwds.get('Scale',None)
+        scale = kwds.get('Scale',None)
 
-	vtx = kwds.get('Vertex',None)
-	del kwds['Vertex']
-	if 'MTG' in kwds: del kwds['MTG']
+        vtx = kwds.get('Vertex',None)
+        del kwds['Vertex']
+        if 'MTG' in kwds: del kwds['MTG']
 
-	"""
+        """
         max_scale= max_mtg_scale(g)
         if scale > max_scale:
             scale = max_scale
