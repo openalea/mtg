@@ -15,10 +15,10 @@
 ###############################################################################
 
 '''
-:warning: Wrong documentation, there is not mtg interface described in
-    openalea.core.graph.interface.
 This module provides an implementation of Multiscale Tree Graph.
-For interface definition, see openalea.core.graph.interface.
+For interface definition, see openalea.container.interface package.
+
+:todo: MTG definition and usage.
 '''
 
 __docformat__ = "restructuredtext"
@@ -58,13 +58,13 @@ class MTG(PropertyTree):
     and Components as childs.
     An element of scale N is a complex of scale N+1 components.
     A component of scale N+1 belongs to a complex of scale N, eg:
-     - F \ T \ A \ U (complex decomposition is noted with "\")
+     - /F/T/A/U (complex decomposition is noted with "/")
     Each scale is itself described as a tree, eg:
      - F1<F2+F3
      - A1+A2<A3
      - ...
 
-     This class allows the manipulation of such a structure.
+    This class allows the manipulation of such a structure.
     '''
 
     def __init__(self):
@@ -93,12 +93,21 @@ class MTG(PropertyTree):
 
     def scale(self, vid):
         '''
-        Returns the scale of a vertex identifier.
+        Returns the scale of a vertex.
+
+	All vertices should belong to a given scale.
+
+	:Usage:
+
+	..code-block:: python
+
+	    g.scale(vid)
 
         :Parameters:
          - `vid` (int) - vertex identifier.
-        :Returns Type:
-            int
+
+        :Returns:
+            scale is a positive int in [0,g.max_scale()]
         '''
         try:
             return self._scale[vid]
@@ -520,6 +529,8 @@ class MTG(PropertyTree):
         :Parameters:
          - `complex_id`: The complex identifier.
          - `component_id`: Set the component identifier to this value if defined.
+
+	:Returns: The id of the new component or the component_id if given.
         '''
         if component_id is None:
             self._id += 1
@@ -541,7 +552,7 @@ class MTG(PropertyTree):
          - `parent`: The parent identifier.
          - `child`: Set the child identifier to this value if defined.
          - `complex`: Set the complex identifier to this value if defined.
-        :returns: (vid, vid)
+        :returns: (vid, vid): child and complex ids.
         '''
 
         if complex is None:
@@ -721,7 +732,7 @@ class MTG(PropertyTree):
 
         :Usage:
         .. code-block:: python
-            >>> Label(v)
+            g.label(v)
 
         :Parameters:
             - `vid` (int) : vertex of the MTG
@@ -735,6 +746,7 @@ class MTG(PropertyTree):
 
     def class_name(self, vid):
         """Class of a vertex.
+
         The Class of a vertex are the first characters of the label.
         The label of a vertex is the string defined by the concatenation
         of the class and its index.
@@ -742,7 +754,19 @@ class MTG(PropertyTree):
         The label thus provides general information about a vertex and
         enable to encode the plant components.
 
-        The class_name may be not defined. Then , an empty string is returned.
+        The class_name may be not defined. Then, an empty string is returned.
+
+        :Parameters:
+            - `vid` (int)
+
+        :Returns:
+            The class name of the vertex (str).
+
+        :Usage:
+        .. code-block:: python
+            g.class_name(1)
+
+        .. seealso:: :func:`MTG`, :func:`Index`, :func:`Class`
         """
         pattern = r'[a-zA-Z]+'
         label = self.property('label').get(vid)

@@ -9,12 +9,23 @@ Reference guide
 Class Inheritance diagram
 ==========================
 
-.. .. inheritance-diagram:: openalea.mtg.aml
-.. inheritance-diagram:: openalea.mtg.traversal
-.. inheritance-diagram:: openalea.mtg.io
-.. .. inheritance-diagram:: openalea.mtg.algo
-.. .. inheritance-diagram:: openalea.mtg.util
-.. inheritance-diagram:: openalea.mtg.interface.mtg
+.. .. inheritance-diagram:: openalea.mtg.mtg
+
+
+.. currentmodule:: openalea.mtg.mtg
+
+:mod:`openalea.mtg.mtg` module
+================================
+
+Download the source file :download:`../../src/mtg/mtg.py`.
+
+
+.. automodule:: openalea.mtg.mtg
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:
+    :synopsis: New Multi-scale Tree Graph (MTG) data-structure.
 
 
 .. currentmodule:: openalea.mtg.aml
