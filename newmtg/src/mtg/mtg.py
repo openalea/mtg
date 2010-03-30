@@ -68,8 +68,7 @@ class MTG(PropertyTree):
     '''
 
     def __init__(self):
-        '''
-        Create a new MTG object.
+        ''' Create a new MTG object.
         '''
 
         super(MTG, self).__init__()
@@ -92,8 +91,7 @@ class MTG(PropertyTree):
     #########################################################################
 
     def scale(self, vid):
-        '''
-        Returns the scale of a vertex.
+        ''' Returns the scale of a vertex.
 
 	All vertices should belong to a given scale.
 
@@ -175,6 +173,7 @@ class MTG(PropertyTree):
         :Usage:
 
         .. code-block:: python
+
             g = MTG()
             len(g) == len(list(g.vertices()))
             for vid in g.vertices(scale=2):
@@ -209,8 +208,9 @@ class MTG(PropertyTree):
         :Usage:
 
         .. code-block:: python
-            >>> for v in g:
-            >>>     print g.class_name(v)
+
+            for v in g:
+                print g.class_name(v)
 
         '''
         return self.vertices()
@@ -222,8 +222,9 @@ class MTG(PropertyTree):
         :Usage:
 
         .. code-block:: python
-            >>> if v in g:
-            >>>     print v, "is in the mtg."
+
+            if v in g:
+                print v, "is in the mtg."
         '''
         return self.has_vertex(vid)
 
@@ -350,8 +351,7 @@ class MTG(PropertyTree):
     # MutableTreeConcept methods.
     #########################################################################
     def add_child(self, parent, child=None, **properties):
-        '''
-        Add a child to a parent. Child is appended to the parent's child list.
+        ''' Add a child to a parent. Child is appended to the parent's child list.
 
         :Parameters:
          - `parent` (int) - The parent identifier.
@@ -732,6 +732,7 @@ class MTG(PropertyTree):
 
         :Usage:
         .. code-block:: python
+
             g.label(v)
 
         :Parameters:
@@ -764,6 +765,7 @@ class MTG(PropertyTree):
 
         :Usage:
         .. code-block:: python
+
             g.class_name(1)
 
         .. seealso:: :func:`MTG`, :func:`Index`, :func:`Class`

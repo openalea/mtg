@@ -367,13 +367,11 @@ def ClassScale(c):
     """
     Scale at which appears a given class of vertex
 
-    .. todo:: to be implemented
-
     Every vertex is associated with a unique class.
     Vertices from a given class only appear at a given scale
     which can be retrieved using this function.
 
-    :Usage:
+    :Usage: 
 
     .. code-block:: python
 
@@ -387,13 +385,14 @@ def ClassScale(c):
 
         int
 
-    .. todo:: re-implement the function more efficiently (remove the loop) 
-
     .. seealso:: :func:`MTG`, :func:`Class`, :func:`Scale`, :func:`Index`.
 
     """
     # non optimal way of writing  ClassScale function (loop is surely useless)
-    return Scale([x  for x in VtxList() if Class(x)=='I'][0])
+    global _g
+    for x in _g.vertices():
+        if Class(x) == c:
+            return Scale(c)
 
 def EdgeType(v1, v2):
     """
@@ -967,6 +966,8 @@ def Location(v, Scale=-1, ContainedIn=None):
 
     :Examples:
 
+    .. code-block:: python
+
         >>> Father(v, EdgeType='+')
         7
         >>> Complex(v)
@@ -1338,12 +1339,10 @@ def Path(v1, v2):
 
     .. image:: ../user/mtg_path.png
 
-    .. todo:: does not return a list but an iterator is this what we want ? 
-
     .. seealso:: :func:`MTG`, :func:`Axis`, :func:`Ancestors`.
     """
     global _g
-    return algo.path(_g, v1, v2)[0]
+    return list(algo.path(_g, v1, v2)[0])
 
 def Axis(v, Scale=-1):
     """

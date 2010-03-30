@@ -15,3 +15,5 @@ for key in compulsary_words:
 latex_documents = [('contents', 'main.tex', project + ' documentation', authors, 'manual')]
 
 project = project + '.' + package
+
+#autosummary_generate = True
