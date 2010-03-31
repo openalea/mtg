@@ -22,14 +22,24 @@ __docformat__ = "restructuredtext"
 
 import traversal
 
-def ancestors(g, v1, **kwds):
-    " Return the vertices from v1 to the root. "
-    v = v1
+def ancestors(g, vid, **kwds):
+    """ Return the vertices from vid to the root. 
+
+    :Parameters:
+        - `g`: a tree or an MTG
+        - `vid`: a vertex id which belongs to `g` 
+
+    :Returns: 
+        an iterator from `vid` to the root of the tree.
+
+    .. seealso: :func:`aml.Ancestors`
+    """
+    v = vid
     while v is not None:
         yield v
         v = g.parent(v)
 
-def path(g, v1, v2=None):
+def path(g, vid1, vid2=None):
     """
     Compute the vertices between v1 and v2.
     If v2 is None, return the path between v1 and the root.

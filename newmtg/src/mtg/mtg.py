@@ -41,34 +41,39 @@ class MTG(PropertyTree):
 
     MTGs describe tree structures at different levels
     of details, named scales.
-    For example, concerning plants :
-     - at scale 0, you're describing a forest.
-     - at scale 1, you're describing the tree.
-     - at scale 2, you're describing the axes of each tree.
-     - at scale 3, you're describing the growth units of each axis.
-    and so on.
+    For example, a botanist can described plants at different scales :
 
-    Each scale can have a label, eg :
-     - scale 0 : F(orest)
-     - scale 1 : T(ree)
+        - at scale 0, the wall scene.
+        - at scale 1, the individual plants.
+        - at scale 2, the axes of each plants.
+        - at scale 3, the growth units of each axis, and so on.
+
+    Each scale can have a label, e.g. :
+
+     - scale 1 : P(lant)
      - scale 2 : A(xis)
      - sclae 3 : U(nit of growth)
 
-    Compared to a classical tree, Complexes can be seen as parents
-    and Components as childs.
-    An element of scale N is a complex of scale N+1 components.
-    A component of scale N+1 belongs to a complex of scale N, eg:
-     - /F/T/A/U (complex decomposition is noted with "/")
-    Each scale is itself described as a tree, eg:
-     - F1<F2+F3
+    Compared to a classical tree, :func:`complex` can be seen as :func:`parent`
+    and :func:`components` as :func:`children`.
+    An element at :func:`scale` N belongs to a :func:`complex` at :func:`scale` N-1 and has :func:`components` at scale N+1:
+
+     - /P/A/U (decomposition is noted using "/")
+
+    Each scale is itself described as a tree or a forest (i.e. set of trees), e.g.:
+
+     - /P1/P2/P3
      - A1+A2<A3
      - ...
 
-    This class allows the manipulation of such a structure.
     '''
 
     def __init__(self):
         ''' Create a new MTG object.
+
+        :Usage:
+
+            >>> g = MTG()
         '''
 
         super(MTG, self).__init__()
@@ -97,15 +102,17 @@ class MTG(PropertyTree):
 
 	:Usage:
 
-	..code-block:: python
+	.. code-block:: python
 
 	    g.scale(vid)
 
         :Parameters:
-         - `vid` (int) - vertex identifier.
+
+            - `vid` (int) - vertex identifier.
 
         :Returns:
-            scale is a positive int in [0,g.max_scale()]
+            The scale of the vertex. 
+            It is a positive int in [0,g.max_scale()].
         '''
         try:
             return self._scale[vid]
@@ -115,26 +122,37 @@ class MTG(PropertyTree):
     def nb_scales(self):
         '''
         :Returns:
-            The number of scales.
+            The number of scales defined in the mtg..
         :Returns Type:
             int
+
+        .. note:: The complexity is :math:`O(n)`.
         '''
         return len(set(self._scale.itervalues()))
 
     def scales(self):
-        '''
+        '''Return the different scales of the mtg.
+
         :Returns:
             Iterator on scale identifiers (ints).
-        :Returns Type:
-            iter
+
+        .. note:: The complexity is :math:`O(n)`.
         '''
         return iter(set(self._scale.itervalues()))
 
     def max_scale(self):
-        '''
-        :Returns: the biggest scale identifier.
-        :Returns Type:
-            int
+        '''Return the max scale identifier.
+
+        By convention, the mtg contains scales in :math:`[0,max\_scale]`.
+
+        :Usage:
+            >>> print g.max_scale()
+
+        :Returns: 
+            S, the maximum scale identifier.
+
+        .. note:: The complexity is :math:`O(n)`.
+        .. seealso:: :func:`scale`, :func:`scales`
         '''
         return max(self._scale.itervalues())
 
@@ -146,15 +164,19 @@ class MTG(PropertyTree):
         '''
         Returns the number of vertices.
 
+        :Usage:
+            >>> g.nb_vertices()
+            100
+            >>> g.nb_vertices(scale=3)
+            68
+
         :Parameters:
          - `scale` (int) - Id of scale for which to count
            vertices.
 
         :Returns:
-            Number of vertices at "scale" or total
+            Number of vertices at `scale` or total
             number of vertices if scale < 0.
-        :Returns Type:
-            int
         '''
         if scale < 0:
             return len(self._scale)
@@ -282,23 +304,22 @@ class MTG(PropertyTree):
 
     def add_element(self, parent_id, edge_type = '/', scale_id=None):
         """
-        :warning: Wrong documentation.
-        :warning: Not Implemented.
         Add an element to the graph, if vid is not provided create a new vid ???
+        .. warning: Not Implemented.
 
         :Parameters:
-         - `parent_id` (int) - The id of the parent vertex
-         - `edge_type` (str) - The type of relation:
-                - "/" : component (default)
-                - "+" : branch
-                - "<" : successor.
-         - `scale_id` (int)  - The id of the scale in which to
-         add the vertex.
+        - `parent_id` (int) - The id of the parent vertex
+        - `edge_type` (str) - The type of relation:
+
+            - "/" : component (default)
+            - "+" : branch
+            - "<" : successor.
+        - `scale_id` (int)  - The id of the scale in which to
+            add the vertex.
 
         :Returns:
-            The id of the created vertex
-        :Returns Type:
-            int
+            The vid of the created vertex
+
         """
         raise NotImplementedError
 
@@ -731,9 +752,8 @@ class MTG(PropertyTree):
         """Label of a vertex.
 
         :Usage:
-        .. code-block:: python
 
-            g.label(v)
+            >>> g.label(v)
 
         :Parameters:
             - `vid` (int) : vertex of the MTG
@@ -741,7 +761,7 @@ class MTG(PropertyTree):
         :Returns:
             The class and Index of the vertex (str).
 
-        .. seealso:: :func:`MTG`, :func:`Index`, :func:`Class`
+        .. seealso:: :func:`MTG`, :func:`index`, :func:`class_name`
         """
         return self.property('label').get(vid, '')
 
@@ -757,18 +777,18 @@ class MTG(PropertyTree):
 
         The class_name may be not defined. Then, an empty string is returned.
 
+        :Usage:
+
+            >>> g.class_name(1)
+
         :Parameters:
+
             - `vid` (int)
 
         :Returns:
             The class name of the vertex (str).
 
-        :Usage:
-        .. code-block:: python
-
-            g.class_name(1)
-
-        .. seealso:: :func:`MTG`, :func:`Index`, :func:`Class`
+        .. seealso:: :func:`MTG`, :func:`openalea.mtg.aml.Index`, :func:`openalea.mtg.aml.Class`
         """
         pattern = r'[a-zA-Z]+'
         label = self.property('label').get(vid)
@@ -803,6 +823,30 @@ class MTG(PropertyTree):
                 return m.group(0)
             else:
                 return vid
+
+    #########################################################################
+    # Proxy node interface
+    #########################################################################
+    def node(self, vid):
+        """
+        Return a node associated to the vertex `vid`.
+
+        It allows to access to the properties with an object oriented interface.
+
+        :Example:
+        
+        .. code-block:: python
+
+            node = g.node(1)
+            print node.edge_type
+            print node.label
+            node.label = 'B'
+            print g.label(1)
+
+            print node.parent
+            print list(node.children)
+        """
+        return _ProxyNode(self,vid)
 
 ################################################################################
 # Graph generators
@@ -1036,4 +1080,33 @@ def display_mtg(mtg, vid):
         current_vertex = vtx
 
 
+class _ProxyNode(object):
+    def __init__(self, g, vid):
+        self._g = g
+        self._vid = vid
+
+    def __setattr__(self,name, value):
+        if name in ['_g', '_vid']:
+            super(_ProxyNode,self).__setattr__(name,value)
+            return
+
+        g = self._g; vid = self._vid
+        if name in g.property_names():
+            g.property(name)[vid] = value
+        else:
+            super(_ProxyNode,self).__setattr__(name,value)
+
+    def __getattr__(self, name):
+        if name in ['_g', '_vid']:
+           return super(_ProxyNode,self).__getattribute__(name)
+        g = self._g; vid = self._vid
+
+        if name in g.property_names():
+            return g.property(name).get(vid)
+        elif hasattr(g,name):
+            m = getattr(g,name)
+            if callable(m):
+                return m(vid)
+        else:
+            return super(_ProxyNode,self).__getattribute__(name)
 

@@ -1,10 +1,9 @@
 
 .. currentmodule:: openalea.mtg.traversal
 
-:mod:`traversal` module
+Traversal methods on tree and MTG
 ========================================
 
-Download the source file :download:`../../src/mtg/traversal.py`.
 
 .. automodule:: openalea.mtg.traversal
     :members:
@@ -13,3 +12,4 @@ Download the source file :download:`../../src/mtg/traversal.py`.
     :show-inheritance:
     :synopsis: Tree  and MTG Traversals
 
+Download the source file :download:`../../src/mtg/traversal.py`.

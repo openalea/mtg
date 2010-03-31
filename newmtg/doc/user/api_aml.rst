@@ -1,7 +1,7 @@
 .. currentmodule:: openalea.mtg.aml
 
 High level reporting function compatible with AML
-================================
+=================================================
 
 
 

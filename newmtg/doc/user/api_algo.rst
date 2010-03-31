@@ -1,9 +1,8 @@
 .. currentmodule:: openalea.mtg.algo
 
-:mod:`algo` module
-===================================
+Common algorithms
+======================================
 
-Download the source file :download:`../../src/mtg/algo.py`.
 
 .. automodule:: openalea.mtg.algo
     :members:
@@ -12,4 +11,5 @@ Download the source file :download:`../../src/mtg/algo.py`.
     :show-inheritance:
     :synopsis: Implementation of a set of algorithms for the MTG datastructure
 
+Download the source file :download:`../../src/mtg/algo.py`.
 

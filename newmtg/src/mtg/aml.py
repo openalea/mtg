@@ -479,13 +479,15 @@ def Order(v1, v2=None):
 
         int
 
-    :Note:
+    .. note::
 
         When the function takes two arguments, the order of the arguments is not important
         provided that one is an ancestor of the other.
         When the order is relevant, use function AlgOrder().
 
-        Warning: the value returned by function Order is 0 for trunks, 1 for branches etc.
+    .. warning:: 
+
+        The value returned by function Order is 0 for trunks, 1 for branches etc.
         This might be different with some botanical conventions where 1 is the order of the
         trunk, 2 the order of branches, etc.
 
@@ -556,7 +558,7 @@ def Height(v1, v2=None):
 
         int
 
-    :Note:
+    .. note::
 
         When the function takes two arguments, the order of the arguments is not important
         provided that one is an ancestor of the other. When the order is relevant, use
@@ -1060,7 +1062,7 @@ def Ancestors(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
     then contains the vertices on the path from `v` back to the root (in this order)
     and finishes by the tree root.
 
-    :Note: : The anscestor array always contains at least the argument vertex `v`.
+    .. note:: The anscestor array always contains at least the argument vertex `v`.
 
     :Usage:
 
@@ -1111,7 +1113,7 @@ def Descendants(v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None)
     that belong to the branching system starting at `v`.
     The order of the vertices in the array is not significant.
 
-    :Note: : The argument always belongs to the set of its descendants.
+    .. note:: The argument always belongs to the set of its descendants.
 
     :Usage:
 
