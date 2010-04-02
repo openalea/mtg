@@ -3,6 +3,19 @@
 Reading and writing MTG
 ==================================
 
+MTG
+----
+
+The MTG data structure can be read/write from/to a MTG file format.
+The functions :func:`read_mtg` , :func:`write_mtg` , :func:`read_mtg_file`.
+
+.. autofunction:: read_mtg
+
+.. autofunction:: read_mtg_file
+
+.. autofunction:: write_mtg
+
+
 LPy 
 ------------------------------------
 

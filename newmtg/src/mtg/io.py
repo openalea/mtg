@@ -208,8 +208,8 @@ def read_lsystem_string( string,
     :Optional parameters:
 
     - `functional_symbol`: A dict containing a function for specific symbols.
-    The args of the function have to be coherent with those in the string.
-    The return type of the functions have to be a dictionary of properties: dict(name, value)
+        The args of the function have to be coherent with those in the string.
+        The return type of the functions have to be a dictionary of properties: dict(name, value)
 
     :Return:
 
@@ -707,7 +707,7 @@ def mtg2lpy(g, lsystem, axial_tree=None):
 
 
 def mtg2mss(name, mtg, scene, envelop_type = 'CvxHull'):
-    """ Convert an MTG into the fractalysis data-structure.
+    """ Convert an MTG into the multi-scale structure implemented by fractalysis.
 
     :Parameters:
         - `name`: name of the structure
@@ -1107,11 +1107,38 @@ class Reader(object):
         #self.mtg = multiscale_edit(self._new_code, {}, self._features)
 
 def read_mtg(s):
+    """ Create an MTG from its string representation in the MTG format.
+    
+    :Parameter:
+        - s (string) - a multi-lines string
+
+    :Return: an MTG
+
+    :Example:
+
+    .. code-block:: python
+
+        f = open('test.mtg')
+        txt = f.read()
+
+        g = read_mtg(txt)
+
+    .. seealso:: :func:`read_mtg_file`.
+
+    """
     reader = Reader(s)
     g = reader.parse()
     return g
 
 def read_mtg_file(fn):
+    """ Create an MTG from a filename.
+
+    :Usage:
+
+        >>> g = read_mtg_file('test.mtg')
+
+    .. seealso:: :func:`read_mtg`.
+    """
     f = open(fn)
     txt = f.read()
     f.close()
@@ -1412,11 +1439,43 @@ class Writer(object):
         return symbols 
 
 def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12):
-    """
-    Returns a list of strings.
-    g is a MTG.
-    class_at_scale is a dict : scale -> [symbol])
-    properties is a list of the property names wth their associated type to be written.
+    """ Transform an MTG into a multi-line string in the MTG format.
+
+    This method build a eneric header, then traverses the MTG and transform
+    each vertex into a line with its label, topoloical relationship and 
+    specific `properties`.
+
+    :Parameters:
+
+        - `g` (MTG)
+        - `properties` (list): a list of tuples associating a property name with its type. 
+            Only these properties will be written in the out file.
+
+
+    :Optional Parameters:
+
+        - `class_at_scale` (dict(name->int)): a map between a class name and its scale.
+            If `class _at_scale` is None, its value will be computed from `g`.
+        - `nb_tab` (int): the number of tabs used to write the code.
+
+    :Returns: a list of strings.
+
+    :Example:
+
+    .. code-block:: python
+
+        # Export all the properties defined in `g`. 
+        # We consider that all the properties are real numbers.
+
+        properties = [(p, 'REAL') for p in g.property_names() if p not in ['edge_type', 'index', 'label']]
+        mtg_lines = write_mtg(g, properties)
+
+        # Write the result into a file example.mtg
+
+        filename = 'example.mtg'
+        f = open(filename, 'w')
+        f.write(mtg_lines)
+        f.close()
     """
 
     w = Writer(g)
