@@ -245,6 +245,10 @@ class Visitor(object):
 #             yield node
 
 def iter_scale(g, vtx_id, visited):
+    """ Internal method used by :func:`iter_mtg` and :func:`iter_mtg_with_visitor`.
+
+    .. warning:: Do not use. This function may be removed in other version.
+    """
     if vtx_id is not None and vtx_id not in visited:
         for v in iter_scale(g, g._complex.get(vtx_id), visited):
             yield v
@@ -252,6 +256,40 @@ def iter_scale(g, vtx_id, visited):
         yield vtx_id
 
 def iter_mtg(mtg, vtx_id):
+    """Iterate on an MTG by traversiong `vtx_id` and all its components.
+    
+    This function traverse a complex before its components 
+    and a parent before its children.
+
+    :Usage: 
+
+    ::
+        
+        for vid in iter_mtg(g,g.root):
+            print vid
+
+
+    :Parameters:
+
+        - `mtg`: the multi-scale graph
+        - `vtx_id`: the root of the sub-mtg which is traversed.
+
+    :Returns: iter of vid.
+
+        Traverse all the vertices contained in the sub_mtg defined by `vtx_id`.
+
+    .. seealso:: :func:`iter_mtg2`, :func:`iter_mtg_with_filter`, :func:`iter_mtg2_with_filter`.
+
+    .. note:: 
+
+        Do not use this function. Use :func:`iter_mtg2` instead. 
+        If several trees belong to `vtx_id`, only the first one will be traversed.
+
+    .. note:: 
+        
+        This is a recursive implementation. It can be problematic for large MTG 
+        with lots of scales (e.g. >40).
+    """
     visited = {vtx_id:True}
     loc = vtx_id
     yield vtx_id
@@ -265,6 +303,32 @@ def iter_mtg(mtg, vtx_id):
 
 
 def iter_mtg2(mtg, vtx_id):
+    """Iterate on an MTG by traversiong `vtx_id` and all its components.
+    
+    This function traverse a complex before its components 
+    and a parent before its children.
+
+    :Usage: 
+
+    ::
+        
+        for vid in iter_mtg2(g,g.root):
+            print vid
+
+
+    :Parameters:
+
+        - `mtg`: the multi-scale graph
+        - `vtx_id`: the root of the sub-mtg which is traversed.
+
+    :Returns: iter of vid.
+
+        Traverse all the vertices contained in the sub_mtg defined by `vtx_id`.
+
+    .. seealso:: :func:`iter_mtg`, :func:`iter_mtg_with_filter`, :func:`iter_mtg2_with_filter`
+        
+    .. note:: Use this function instead of :func:`iter_mtg`
+    """
     visited = {vtx_id:True}
     complex_id = vtx_id
 
@@ -277,7 +341,13 @@ def iter_mtg2(mtg, vtx_id):
                 yield node
 
 def iter_scale2(g, vtx_id, complex_id, visited):
-    if vtx_id is not None and vtx_id not in visited and g.complex_at_scale(vtx_id, g.scale(complex_id)) == complex_id:
+    """ Internal method used by :func:`iter_mtg` and :func:`iter_mtg_with_visitor`.
+
+    .. warning:: Do not use. This function may be removed in other version.
+    """
+    if vtx_id is not None and \
+       vtx_id not in visited and \
+       g.complex_at_scale(vtx_id, g.scale(complex_id)) == complex_id:
         for v in iter_scale2(g, g._complex.get(vtx_id), complex_id, visited):
             yield v
         visited[vtx_id] = True
@@ -286,9 +356,9 @@ def iter_scale2(g, vtx_id, complex_id, visited):
     
 def topological_sort(g, vtx_id, visited = None):
     ''' 
-    Topolofgical sort of a directed acyclic graph.
+    Topological sort of a directed acyclic graph.
 
-    This is a non recursive implementation.
+    This is not a fully recursive implementation.
     '''
     if visited is None:
         visited = {}
@@ -343,7 +413,50 @@ def pre_order_with_filter(tree, vtx_id, pre_order_filter=None, post_order_visito
         post_order_visitor(vtx_id)
 
 def iter_mtg_with_filter(mtg, vtx_id, pre_order_filter= None, post_order_visitor=None):
+    """Iterate on an MTG by traversiong `vtx_id` and all its components.
+    
+    If defined, apply the two visitor functions before and after 
+    having visited all the successor of a vertex.
+    
+    This function traverse a complex before its components 
+    and a parent before its children.
+
+    :Usage: 
+
+    .. code-block:: python
+
+        def pre_order_visitor(vid): 
+            print vid
+            return True
+        def post_order_visitor(vid):
+            print vid
+        for vid in iter_mtg_with_filter(g,g.root, pre_order_visitor, post_order_visitor):
+            pass
+
+
+    :Parameters:
+
+        - `mtg`: the multi-scale graph
+        - `vtx_id`: the root of the sub-mtg which is traversed.
+
+    :Optional Parameters:
+
+        - `pre_order_visitor`: function called before traversing the children or components.
+            This function returns a boolean. If False, the sub-mtg rooted on the vertex is skipped.
+        - `post_order_visitor` : function called after the traversal of all the children and components.
+
+    :Returns: iter of vid.
+
+        Traverse all the vertices contained in the sub_mtg defined by `vtx_id`.
+
+    .. seealso:: :func:`iter_mtg`, :func:`iter_mtg2`, :func:`iter_mtg2_with_filter`
+        
+    .. note:: Do not use this function. Instead use :func:`iter_mtg2_with_filter`
+
+    """
+
     visited = {}
+
 
     cid = mtg.complex(vtx_id)
     if cid is not None:
@@ -365,6 +478,47 @@ def iter_mtg_with_filter(mtg, vtx_id, pre_order_filter= None, post_order_visitor
             yield node
 
 def iter_mtg2_with_filter(mtg, vtx_id, pre_order_filter=None, post_order_visitor=None):
+    """Iterate on an MTG by traversiong `vtx_id` and all its components.
+    
+    If defined, apply the two visitor functions before and after 
+    having visited all the successor of a vertex.
+    
+    This function traverse a complex before its components 
+    and a parent before its children.
+
+    :Usage: 
+
+    .. code-block:: python
+
+        def pre_order_visitor(vid): 
+            print vid
+            return True
+        def post_order_visitor(vid):
+            print vid
+        for vid in iter_mtg_with_filter(g,g.root, pre_order_visitor, post_order_visitor):
+            pass
+
+
+    :Parameters:
+
+        - `mtg`: the multi-scale graph
+        - `vtx_id`: the root of the sub-mtg which is traversed.
+
+    :Optional Parameters:
+
+        - `pre_order_visitor`: function called before traversing the children or components.
+            This function returns a boolean. If False, the sub-mtg rooted on the vertex is skipped.
+        - `post_order_visitor` : function called after the traversal of all the children and components.
+
+    :Returns: iter of vid.
+
+        Traverse all the vertices contained in the sub_mtg defined by `vtx_id`.
+
+    .. seealso:: :func:`iter_mtg`, :func:`iter_mtg2`, :func:`iter_mtg2_with_filter`
+        
+    .. note:: Use this function instead of :func:`iter_mtg_with_filter`
+
+    """
     if pre_order_filter is None:
         pre_order_filter = lambda v: True
     if post_order_visitor is None:

@@ -48,6 +48,7 @@ def path(g, vid1, vid2=None):
     Else, sign is negative.
     """
     sign = 1
+    v1, v2 = vid1, vid2
     if v2 is None:
         return ancestors(g,v1), sign
 

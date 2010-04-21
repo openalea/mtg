@@ -61,7 +61,7 @@ def get_float(s):
 def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
 
     def get_properties(name):
-        _type = dict([('INT', int), ('REAL', float), ('ALPHA', str)])
+        _type = dict([('INT', int), ('REAL', float), ('ALPHA', str), ('DD/MM/YY', str)])
         args = {}
         l = name.strip().split('(')
         label = get_label(name)
@@ -80,6 +80,9 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
         return args
 
     implicit_scale = bool(symbol_at_scale)
+
+    if debug:
+        print symbol_at_scale.keys()
 
     mtg = MTG()
 
@@ -101,7 +104,12 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
         mtg.add_property(k)
 
     for edge_type in symbols:
-        s = s.replace(edge_type, '\n%s'%edge_type)
+        if edge_type != '/':
+            s = s.replace(edge_type, '\n%s'%edge_type)
+        else:
+            # do not consider the date format
+            for klass in symbol_at_scale.keys():
+                s = s.replace('/%s'%klass, '\n/%s'%klass)
     s = s.replace('<\n<', '<<')
     l = filter( None, s.split('\n'))
 
@@ -391,7 +399,6 @@ def read_lsystem_string( string,
 
             mtg.property('index')[current_vertex] = index[name]
             if name in functional_symbol:
-                print node
                 features = eval(node, functional_symbol)
                 geom = features.get('geometry')
                 canlabel = features.get('label')

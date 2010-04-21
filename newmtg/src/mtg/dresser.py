@@ -169,11 +169,11 @@ class DressingData(object):
 
         self.nb_whorl = kwds.get('Whorl', 2)
         
-        # Symbols is a dict etween a name and a geom object
+        # Symbols is a dict between a name and a geom object
         self.symbols = {}
         # TODO: finish all the possible args.
         # Refactor on smaller elements build separetly:
-            # - geometric properties by organs (leaves, flower, fruits.
+            # - geometric properties by organs (leaves, flower, fruits).
             # - geometric parameters for the plant
             # - phyllotaxy, position between plants, ...
 
