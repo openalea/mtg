@@ -104,7 +104,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
         mtg.add_property(k)
 
     for edge_type in symbols:
-        if edge_type != '/':
+        if edge_type != '/' or not symbol_at_scale:
             s = s.replace(edge_type, '\n%s'%edge_type)
         else:
             # do not consider the date format

@@ -36,6 +36,31 @@ except ImportError:
     from tree import PropertyTree, InvalidVertex
 
 
+class _ProxyNode(object):
+    def __init__(self, g, vid):
+        self.__dict__['_g'] = g
+        self.__dict__['_vid'] = vid
+
+    def __setattr__(self,name, value):
+        g = self._g; vid = self._vid
+        if name in g.property_names():
+            g.property(name)[vid] = value
+        else:
+            super(_ProxyNode,self).__setattr__(name,value)
+
+    def __getattr__(self, name):
+        g = self._g; vid = self._vid
+
+        if name in g.property_names():
+            return g.property(name).get(vid)
+        elif hasattr(g,name):
+            m = getattr(g,name)
+            if callable(m):
+                return m(vid)
+        else:
+            return super(_ProxyNode,self).__getattribute__(name)
+
+
 class MTG(PropertyTree):
     ''' A Multiscale Tree Graph (MTG) class.
 
@@ -827,7 +852,7 @@ class MTG(PropertyTree):
     #########################################################################
     # Proxy node interface
     #########################################################################
-    def node(self, vid):
+    def node(self, vid, klass=_ProxyNode):
         """
         Return a node associated to the vertex `vid`.
 
@@ -846,7 +871,7 @@ class MTG(PropertyTree):
             print node.parent
             print list(node.children)
         """
-        return _ProxyNode(self,vid)
+        return klass(self,vid)
 
 ################################################################################
 # Graph generators
@@ -1080,33 +1105,4 @@ def display_mtg(mtg, vid):
         current_vertex = vtx
 
 
-class _ProxyNode(object):
-    def __init__(self, g, vid):
-        self._g = g
-        self._vid = vid
-
-    def __setattr__(self,name, value):
-        if name in ['_g', '_vid']:
-            super(_ProxyNode,self).__setattr__(name,value)
-            return
-
-        g = self._g; vid = self._vid
-        if name in g.property_names():
-            g.property(name)[vid] = value
-        else:
-            super(_ProxyNode,self).__setattr__(name,value)
-
-    def __getattr__(self, name):
-        if name in ['_g', '_vid']:
-           return super(_ProxyNode,self).__getattribute__(name)
-        g = self._g; vid = self._vid
-
-        if name in g.property_names():
-            return g.property(name).get(vid)
-        elif hasattr(g,name):
-            m = getattr(g,name)
-            if callable(m):
-                return m(vid)
-        else:
-            return super(_ProxyNode,self).__getattribute__(name)
 

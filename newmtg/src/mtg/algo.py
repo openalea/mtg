@@ -314,7 +314,7 @@ def descendants(g, vtx_id, scale=-1, **kwds):
         return True
 
 
-    return traversal.pre_order_with_filter(g, vtx_id, pre_order_filter=visitor)
+    return traversal.pre_order2_with_filter(g, vtx_id, pre_order_filter=visitor)
         
 def extremities(g, vid, **kwds):
     """ TODO see aml doc

@@ -67,6 +67,9 @@ def test_iter_mtg_nplants():
     simple_tree(g, a2)
 
     print len(list(iter_mtg(g, g.root))), len(g)
+    print len(list(iter_mtg2(g, g.root))), len(g)
+    print len(list(iter_mtg_with_filter(g, g.root))), len(g)
+    print len(list(iter_mtg2_with_filter(g, g.root))), len(g)
     #assert len(list(iter_mtg(g, g.root))) == len(g)
     assert len(list(iter_mtg(g, p1))) ==  22
     assert len(list(iter_mtg(g, p2))) ==  22

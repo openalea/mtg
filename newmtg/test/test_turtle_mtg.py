@@ -56,3 +56,4 @@ def run(fn):
 def test1():
     fn = r'data/mtg1.mtg'
     return run(fn)
+
