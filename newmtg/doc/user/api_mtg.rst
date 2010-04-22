@@ -1,4 +1,4 @@
-.. _MTG:
+.. _MTG_datastruct:
 
 MTG - Mutlti-scale Tree Graph
 ================================
