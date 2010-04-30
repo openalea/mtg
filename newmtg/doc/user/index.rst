@@ -32,6 +32,8 @@ Finally, once the MTG format is understood, you may want to create your own MTG 
     visualea.rst
     syntax.rst
 
+    tutorial_plantframe.rst
+
 .. toctree::
     :hidden:
 

@@ -34,33 +34,8 @@ try:
     from openalea.container.tree import PropertyTree, InvalidVertex
 except ImportError:
     from tree import PropertyTree, InvalidVertex
-
-
-class _ProxyNode(object):
-    def __init__(self, g, vid):
-        self.__dict__['_g'] = g
-        self.__dict__['_vid'] = vid
-
-    def __setattr__(self,name, value):
-        g = self._g; vid = self._vid
-        if name in g.property_names():
-            g.property(name)[vid] = value
-        else:
-            super(_ProxyNode,self).__setattr__(name,value)
-
-    def __getattr__(self, name):
-        g = self._g; vid = self._vid
-
-        if name in g.property_names():
-            return g.property(name).get(vid)
-        elif hasattr(g,name):
-            m = getattr(g,name)
-            if callable(m):
-                return m(vid)
-        else:
-            return super(_ProxyNode,self).__getattribute__(name)
-
-
+    
+    
 class MTG(PropertyTree):
     ''' A Multiscale Tree Graph (MTG) class.
 
@@ -123,13 +98,13 @@ class MTG(PropertyTree):
     def scale(self, vid):
         ''' Returns the scale of a vertex.
 
-	All vertices should belong to a given scale.
+        All vertices should belong to a given scale.
 
-	:Usage:
+        :Usage:
 
-	.. code-block:: python
+        .. code-block:: python
 
-	    g.scale(vid)
+            g.scale(vid)
 
         :Parameters:
 
@@ -271,7 +246,7 @@ class MTG(PropertyTree):
         .. code-block:: python
 
             if v in g:
-                print v, "is in the mtg."
+                print v, " is in the mtg."
         '''
         return self.has_vertex(vid)
 
@@ -852,7 +827,7 @@ class MTG(PropertyTree):
     #########################################################################
     # Proxy node interface
     #########################################################################
-    def node(self, vid, klass=_ProxyNode):
+    def node(self, vid, klass=None):
         """
         Return a node associated to the vertex `vid`.
 
@@ -871,7 +846,11 @@ class MTG(PropertyTree):
             print node.parent
             print list(node.children)
         """
-        return klass(self,vid)
+        if klass is None:
+            klass = _ProxyNode
+        if vid is not None:
+            return klass(self,vid)
+
 
 ################################################################################
 # Graph generators
@@ -1105,4 +1084,112 @@ def display_mtg(mtg, vid):
         current_vertex = vtx
 
 
+
+def return_proxy(f):
+    mtg_f = getattr(MTG, f.func_name)
+
+    def new_f(self, *args, **kwds):
+        id = mtg_f(self._g,self._vid,*args,**kwds)
+        if id is not None:
+            return self.__class__(self._g, id)
+        else:
+            return
+    new_f.func_name = f.func_name
+    new_f.__doc__ = mtg_f.__doc__
+    return new_f
+
+def proxy(f):
+    mtg_f = getattr(MTG, f.func_name)
+    def new_f(self, *args, **kwds):
+        return mtg_f(self._g,self._vid,*args,**kwds)
+    new_f.func_name = f.func_name
+    new_f.__doc__ = mtg_f.__doc__
+    return new_f
+
+def return_iter_proxy(f):
+    mtg_f = getattr(MTG, f.func_name)
+    def new_f(self, *args, **kwds):
+        return iter(self.__class__(self._g, id) for id in mtg_f(self._g,self._vid,*args,**kwds))
+    new_f.func_name = f.func_name
+    new_f.__doc__ = mtg_f.__doc__
+    return new_f
+
+def return_tuple_proxy(f):
+    mtg_f = getattr(MTG, f.func_name)
+    def new_f(self, *args, **kwds):
+        return tuple(self.__class__(self._g, id) for id in mtg_f(self._g,self._vid,*args,**kwds))
+    new_f.func_name = f.func_name
+    new_f.__doc__ = mtg_f.__doc__
+    return new_f
+
+class _ProxyNode(object):
+    def __init__(self, g, vid):
+        self.__dict__['_g'] = g
+        self.__dict__['_vid'] = vid
+
+    def __setattr__(self,name, value):
+        g = self._g; vid = self._vid
+        if name not in g.property_names():
+            g.add_property(name)
+        g.property(name)[vid] = value
+
+    def __getattr__(self, name):
+        g = self._g; vid = self._vid
+
+        if name in g.property_names():
+            return g.property(name).get(vid)
+        else:
+            raise AttributeError(name) 
+
+    def __eq__(self, other):
+        return self._vid == other._vid
+    def __hash__(self):
+        return hash(self._vid)
+
+    def __str__(self):
+        return '_ProxyNode(%d)'%self._vid
+    def __repr__(self):
+        return '_ProxyNode(%d)'%self._vid
+
+    # Wrappers for MTG methods.
+    @proxy
+    def scale(): pass
+    @proxy
+    def edge_type(): pass
+    @proxy
+    def index(): pass
+    @return_proxy
+    def parent(): pass
+    @return_iter_proxy
+    def children(): pass
+    @proxy
+    def nb_children(): pass
+    @return_iter_proxy
+    def siblings(): pass
+    @proxy
+    def nb_siblings(): pass
+    @return_proxy
+    def complex(): pass
+    @return_iter_proxy
+    def components(): pass
+    @proxy
+    def nb_components(): pass
+    @return_proxy
+    def complex_at_scale(): pass
+    @return_iter_proxy
+    def components_at_scale(): pass
+    @return_iter_proxy
+    def component_roots(): pass
+    @return_iter_proxy
+    def component_roots_at_scale(): pass
+    @return_proxy
+    def add_child(): pass
+    @return_tuple_proxy
+    def add_child_and_complex(): pass
+    @return_proxy
+    def insert_parent(): pass
+    @return_proxy
+    def insert_sibling(): pass
+    @return_proxy
+    def add_component(): pass
 

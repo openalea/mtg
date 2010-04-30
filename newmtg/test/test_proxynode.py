@@ -9,9 +9,9 @@ def test1():
     print list(g.property_names())
     for v in g.vertices():
         n = g.node(v)
-        print n.edge_type
+        print n.edge_type()
         print n.label
         print n._line
-        print n.parent, n.complex
-        print n.scale
+        print n.parent(), n.complex()
+        print n.scale()
         print n.XX, n.YY, n.ZZ
