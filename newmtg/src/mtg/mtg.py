@@ -346,9 +346,20 @@ class MTG(PropertyTree):
             'Use remove_tree instead.'%vid)
 
     def clear(self):
-        """
-        Remove all vertices and edges.
-        Don't change references to object
+        """Remove all vertices and edges from the MTG.
+
+        This also removes all vertex properties.
+        Don't change references to object such as internal dictionaries.
+
+        :Example: ::
+
+            >>> g.clear()
+            >>> g.nb_vertices()
+            0
+            >>> len(g)
+            0
+
+
         """
         super(MTG, self).clear()
 
@@ -357,6 +368,15 @@ class MTG(PropertyTree):
 
         self._complex.clear()
         self._components.clear()
+
+    def copy(self):
+        """ Return a copy of the graph.
+
+        :Returns:
+            - `g` (MTG) - A copy of the MTG
+
+        """
+        return g.sub_mtg(g.root)
 
     def roots(self, scale=0):
         '''
@@ -848,8 +868,11 @@ class MTG(PropertyTree):
         """
         if klass is None:
             klass = _ProxyNode
-        if vid is not None:
+        if vid in g:
             return klass(self,vid)
+        else:
+            # TODO: retunr an error
+            return None
 
 
 ################################################################################

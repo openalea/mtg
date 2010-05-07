@@ -22,6 +22,12 @@ __docformat__ = "restructuredtext"
 
 import traversal
 
+try:
+    from openalea.container.tree import InvalidVertex
+except ImportError:
+    from tree import InvalidVertex
+
+
 def ancestors(g, vid, **kwds):
     """ Return the vertices from vid to the root. 
 
@@ -386,3 +392,55 @@ def trunk(g, vtx_id, scale=-1, **kwds):
 
     return local_axis(g, v, scale, **kwds)
 
+def union(g1, g2, vid1=None, vid2=None, edge_type='<'):
+    """ Return the union of the MTGs g1 and g2.
+
+    :Parameters:
+
+        - g1, g2 (MTG) : An MTG graph
+        - vid1 : the anchor vertex identid=fier that belong to `g1`
+        - vid2 : the root of the sub_mtg that belong to `g2` which will be added to g1.
+        - edge_type (str) : the type of the edge which will connect vid1 to vid2
+    """
+
+    v1 = vid1 if vid1 is not None else g1.root
+    if v1 not in g1:
+        raise InvalidVertex(v2)
+    v2 = vid2 if vid2 is not None else g2.root
+    if v2 not in g2:
+        raise InvalidVertex(v2)
+
+    
+    g = g1.sub_mtg(g1.root)
+
+    #n2 = g._id+1
+
+    treeid_id = {}
+    subtree = traversal.iter_mtg2(g2, v2)
+    if v1 is g1.root and v2 is g2.root:
+        treeid_id[v2] = v1
+        subtree.next()
+    else:
+        v2 = subtree.next()
+        v = g.add_child(v1)
+        treeid_id[v2] = v
+        g._add_vertex_properties(v,g2.get_vertex_property(v2))
+        g.node(v).edge_type = edge_type
+
+    for vid in subtree:
+        complex_id = treeid_id[g2.complex(vid)]
+        v = g.add_component(complex_id)
+        treeid_id[vid] = v
+        
+        pid = g2.parent(vid)
+        if pid is not None:
+            parent = treeid_id[pid]
+            v = g.add_child(parent, child=v)
+
+            # Copy the properties
+            g._add_vertex_properties(v, g2.get_vertex_property(vid))
+
+
+    return g
+        
+    
