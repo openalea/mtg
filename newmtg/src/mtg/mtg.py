@@ -600,13 +600,18 @@ class MTG(PropertyTree):
             self._id += 1
             complex = self._id
 
-        child = super(MTG, self).add_child(parent, child, **properties)
+        if child in self._children.get(parent, []):
+            # add only the properties
+            self._add_vertex_properties(child, properties)
+        else:
+            child = self.add_child(parent, child, **properties)
         self._scale[child] = self._scale[parent]
 
 
         parent_complex = self.complex(parent)
 
-        super(MTG, self).add_child(parent_complex, complex)
+        if complex not in self._children.get(parent_complex):
+            self.add_child(parent_complex, complex)
         self._scale[complex] = self._scale[parent_complex]
 
         self._components.setdefault(complex,[]).append(child)
@@ -868,7 +873,7 @@ class MTG(PropertyTree):
         """
         if klass is None:
             klass = _ProxyNode
-        if vid in g:
+        if vid in self:
             return klass(self,vid)
         else:
             # TODO: retunr an error
