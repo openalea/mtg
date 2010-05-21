@@ -610,7 +610,7 @@ class MTG(PropertyTree):
 
         parent_complex = self.complex(parent)
 
-        if complex not in self._children.get(parent_complex):
+        if complex not in self._children.get(parent_complex, []):
             self.add_child(parent_complex, complex)
         self._scale[complex] = self._scale[parent_complex]
 
