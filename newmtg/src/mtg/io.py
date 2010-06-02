@@ -1261,7 +1261,7 @@ class Writer(object):
         prev_scale = 0
 
         sym_at_col = []
-        for vtx in traversal.iter_mtg(self.g, self.g.root):
+        for vtx in traversal.iter_mtg2(self.g, self.g.root):
             
 
             cur_scale = self.g.scale(vtx)
@@ -1304,7 +1304,9 @@ class Writer(object):
                                 tab = i
                         break
                 else:
-                    print sy
+                    #print sy
+                    print tab
+                    print sym_at_col
                     raise Exception("Error in the MTG for vertex %d"%vtx)
 
             if tab >= nb_tab:
