@@ -25,7 +25,7 @@ Documentation
 =============
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     user/index.rst
     user/autosum.rst
