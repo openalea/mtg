@@ -275,7 +275,10 @@ def read_lsystem_string( string,
             s = s.replace('f(', '\nf(')
     l = s.split()
 
-    plant_name = [s for s in symbol_at_scale.keys() if 'plant' in s.lower()][0]
+    try:
+		plant_name = [s for s in symbol_at_scale.keys() if 'plant' in s.lower()][0]
+	except:
+        ValueError("""Incorrect plant name (should be plant)""")
 
     for node in l:
         # Check if node is a module
@@ -480,7 +483,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
                     shape.id = mtg_id
                 mtg.property('geometry')[mtg_id]=geoms[axial_id]
             else:
-                #print 'Be carefull : no id ', axial_id
+                #print 'Be careful : no id ', axial_id
                 pass
 
     # The string represented by the axial tree...
@@ -628,7 +631,7 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
         for p in parameters.get(name, []):
             arg = g.property(p).get(vid)
             if arg is None:
-                 # Be Carefull, the argument is skipped if not defined.
+                 # Be Careful, the argument is skipped if not defined.
                 continue
             l.append(arg)
 
@@ -1450,7 +1453,7 @@ class Writer(object):
 def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12):
     """ Transform an MTG into a multi-line string in the MTG format.
 
-    This method build a eneric header, then traverses the MTG and transform
+    This method build a generic header, then traverses the MTG and transform
     each vertex into a line with its label, topoloical relationship and 
     specific `properties`.
 
