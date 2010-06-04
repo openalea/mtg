@@ -1285,7 +1285,7 @@ class Writer(object):
                     et = '^'+et
 
             else:
-                et = edge_type[vtx]
+                et = edge_type.get(vtx,'/')
                 parent = self.g.parent(vtx)
 
                 for i in range(tab, -1, -1):
@@ -1306,6 +1306,10 @@ class Writer(object):
                                 et = '^'+et
                                 tab = i
                         break
+                    elif self.g.complex(v) == self.g.complex(vtx)==self.g.root:
+                        tab = 0
+                        break
+                        
                 else:
                     #print sy
                     print tab
