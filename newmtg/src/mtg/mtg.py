@@ -43,7 +43,7 @@ class MTG(PropertyTree):
     of details, named scales.
     For example, a botanist can described plants at different scales :
 
-        - at scale 0, the wall scene.
+        - at scale 0, the whole scene.
         - at scale 1, the individual plants.
         - at scale 2, the axes of each plants.
         - at scale 3, the growth units of each axis, and so on.
@@ -90,6 +90,19 @@ class MTG(PropertyTree):
         # add default properties
         self.add_property('edge_type')
         self.add_property('label')
+
+    def __getitem__(self, vtx_id):
+        """A simple getitem to extract relevant information on a vertex
+
+        """
+        return {"vid":vtx_id,
+                "label":self.label(vtx_id),
+                "index":self.index(vtx_id),
+                "complex":self.complex(vtx_id),
+                "scale":self._scale.get(vtx_id)}
+
+
+
 
     #########################################################################
     # Querying scale infos
