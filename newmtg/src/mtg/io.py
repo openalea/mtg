@@ -276,15 +276,15 @@ def read_lsystem_string( string,
     l = s.split()
 
     try:
-		plant_name = [s for s in symbol_at_scale.keys() if 'plant' in s.lower()][0]
-	except:
+        plant_name = [s for s in symbol_at_scale.keys() if 'plant' in s.lower()][0]
+    except:
         ValueError("""Incorrect plant name (should be plant)""")
 
     for node in l:
         # Check if node is a module
 
         tag = node[0]
-        
+
         if tag == '[':
             branching_stack.append(vid)
             turtle.push()
