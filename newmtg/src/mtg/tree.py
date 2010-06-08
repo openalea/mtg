@@ -48,15 +48,19 @@ class Tree(object):
     with methods to add and remove vertex.
     '''
 
-    def __init__(self, tree= None):
+    def __init__(self, root = 0, tree= None):
         '''
         Tree constructor.
+        :Parameters:
+            - `root` is the root id which is by default 0
+        :Returns:
+            - `tree` : a tree with one node.
         '''
-        self._root = 0
-        self._id = 0
+        self._root = root
+        self._id = root
         # Tree structure
         # Parent is a dict for DAG implementation
-        self._parent = {self._root : None}
+        self._parent = {root : None}
         self._children = {}
 
 
@@ -132,9 +136,10 @@ class Tree(object):
             raise InvalidVertex('Removing the root node %d is forbidden.'% vid)
 
         elif self.nb_children(vid) == 0:
-            p = self._parent[vid]
-            self._children[p].remove(vid)
-            del self._parent[vid]
+            p = self.parent(vid)
+            if p is not None:
+                self._children[p].remove(vid)
+                del self._parent[vid]
             if vid in self._children:
                 del self._children[vid]
         else:
@@ -222,7 +227,10 @@ class Tree(object):
         :returns: iter of vertex identifier
         '''
         parent = self.parent(vtx_id)
-        return (vid for vid in self._children[parent] if vid != vtx_id)
+        if parent is None:
+            return iter([])
+        else:
+            return (vid for vid in self._children[parent] if vid != vtx_id)
 
 
     def nb_siblings(self, vtx_id):
@@ -232,7 +240,8 @@ class Tree(object):
         :returns: int
         '''
         parent = self.parent(vtx_id)
-        return self.nb_children(parent)-1
+        n = self.nb_children(parent)
+        return n-1 if n > 0 else 0
 
 
     def is_leaf(self, vtx_id):
@@ -246,7 +255,7 @@ class Tree(object):
     #########################################################################
     # MutableTreeConcept methods.
     #########################################################################
-    
+
     def add_child(self, parent, child=None, **properties):
         '''
         Add a child at the end of children
@@ -304,12 +313,14 @@ class Tree(object):
             parent_id = self._id
 
         old_parent = self.parent(vtx_id)
-        children = self._children[old_parent]
+        if old_parent is not None:
+            children = self._children[old_parent]
 
         self.add_child(parent_id, vtx_id)
         # replace vtx_id by parent_id in children of old_parent
-        index = children.index(vtx_id)
-        children[index] = parent_id
+        if old_parent is not None:
+            index = children.index(vtx_id)
+            children[index] = parent_id
         return parent_id
 
 
@@ -366,7 +377,7 @@ class Tree(object):
 
             return tree
 
-    def insert_sibling_tree(self, vid, tree ): 
+    def insert_sibling_tree(self, vid, tree ):
         """
         Insert a tree before the vid.
         vid and the root of the tree are siblings.
@@ -388,9 +399,8 @@ class Tree(object):
             treeid_id[vtx_id] = v
 
         return treeid_id
-        
 
-    def add_child_tree(self, parent, tree): 
+    def add_child_tree(self, parent, tree):
         """
         Add a tree after the children of the parent vertex.
         Complexity has to be O(1) if tree == sub_tree()
@@ -410,6 +420,8 @@ class Tree(object):
 
         # pre_order traversal from root and renumbering
         for vtx_id in pre_order(tree, root):
+            if vtx_id == root:
+               continue 
             parent = treeid_id[tree.parent(vtx_id)]
             vid = self.add_child(parent)
             treeid_id[vtx_id] = vid
@@ -425,8 +437,8 @@ class Tree(object):
         vid = vtx_id
 
         vertices = []
-
-        for vtx_id in post_order(self, vid):
+        
+        for vtx_id in list(post_order(self, vid)):
             self.remove_vertex(vtx_id)
             vertices.append(vtx_id)
 
@@ -529,10 +541,22 @@ class PropertyTree(Tree):
         if not copy:
             # remove all vertices not in the sub_tree
             bunch = set(pre_order(self, vtx_id))
-            for vid in self:
-                if vid not in bunch:
-                    self.remove_vertex(vid)
-                    self._remove_vertex_properties(vid)
+            remove_bunch = set(self) - bunch
+
+            for vid in remove_bunch:
+                self._remove_vertex_properties(vid)
+
+                #self.remove_vertex(vid)
+                # remove parent edge
+                pid = self.parent(vid)
+                if pid is not None:
+                    self._children[pid].remove(vid)
+                    del self._parent[vid]
+                # remove children edges
+                for cid in self.children(vid):
+                    self._parent[cid] = None
+                if vid in self._children:
+                    del self._children[vid]
 
             self.root = vtx_id
             return self
@@ -540,23 +564,23 @@ class PropertyTree(Tree):
             treeid_id = {}
             tree = self.__class__()
             tree.root = 0
+
+            for name in self.properties():
+                tree.add_property(name)
+            
             treeid_id[vtx_id] = tree.root
-            subtree = pre_order(tree, vtx_id)
+            subtree = pre_order(self, vtx_id)
             subtree.next()
             for vid in subtree:
                 parent = treeid_id[self.parent(vid)]
                 v = tree.add_child(parent)
                 treeid_id[vid] = v
 
-            for tid, vid in treeid_id.iteritems():
-                for name in self.properties():
-                    v = self.property(name).get(tid)
-                    if v is not None:
-                        tree._properties[name][vid] = v
+                tree._add_vertex_properties(v, self.get_vertex_property(vid))
 
             return tree
 
-    def insert_sibling_tree(self, vid, tree ): 
+    def insert_sibling_tree(self, vid, tree ):
         """
         Insert a tree before the vid.
         vid and the root of the tree are siblings.
@@ -576,7 +600,8 @@ class PropertyTree(Tree):
         return treeid_id
         
 
-    def add_child_tree(self, parent, tree): 
+
+    def add_child_tree(self, parent, tree):
         """
         Add a tree after the children of the parent vertex.
         Complexity have to be O(1) if tree == sub_tree()
@@ -645,10 +670,13 @@ class PropertyTree(Tree):
     def _add_vertex_properties(self, vid, properties):
         """
         Add a set of properties for a vertex identifier.
+        For properties that do not belong to the graph, 
+        create a new property.
         """
         for name in properties:
-            if name in self._properties:
-                self._properties[name][vid] = properties[name]
+            if name not in self._properties:
+                self.add_property(name)
+            self._properties[name][vid] = properties[name]
 
     def _remove_vertex_properties(self, vid):
         """
@@ -658,6 +686,13 @@ class PropertyTree(Tree):
             p = self.property(name)
             if vid in p:
                 del p[vid]
+    
+	def get_vertex_property(self, vid):
+        """ Returns all the properties defined on a vertex.
+        """
+        p = self.properties()
+        return dict((name,p[name][vid]) for name in p if vid in p[name])
+
 
 
 def pre_order(tree, vtx_id, edge_type_property = None):
