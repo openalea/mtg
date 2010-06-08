@@ -79,7 +79,6 @@ def extract_vectors(g, vids, variables=[], **kwds):
     check_variables(g, variables)
     #check_vids(g, vids)
     vectors = [property_list(g, vid, variables) for vid in vids]
-    print vectors
     return Vectors(vectors, Identifiers=vids, **kwds)
 
 def build_sequences(g, vid_sequences, variables=[], **kwds):
@@ -115,7 +114,6 @@ def build_sequences(g, vid_sequences, variables=[], **kwds):
     #check_vids(g, vids)
     vertex_ids = [vids for vids in vid_sequences if vids ]
     sequences = [[property_list(g, vid, variables) for vid in vids ] for vids in vertex_ids]
-    print sequences
     return Sequences(sequences, VertexIdentifiers=vertex_ids)
 
 

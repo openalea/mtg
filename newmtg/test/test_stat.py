@@ -37,7 +37,7 @@ def test_mtg_vector():
     nfe = g.property('NFe')
 
     vids = [vid for vid in g.vertices(scale=3) if vid in topdia and vid in nfe]
-    vectors = extract_vectors(g, vids, ['TopDia', 'NFe'], Types=[1,0])
+    vectors = extract_vectors(g, vids, ['TopDia', 'NFe'])
     assert vectors.nb_vector == len(vids)
     assert vectors.nb_variable == 2
     # Plot(vectors)
