@@ -29,31 +29,50 @@ def test_sequence_ctor():
     assert max(seqs.get_length(i) for i in range(seqs.nb_sequence)) == 5
     return seqs
 
-def test_mtg_vector():
-    fn = r'data/test8_boutdenoylum2.mtg'
-    g = read_mtg_file(fn)
+class TestMtg2Stat:
+    def setUp(self):
+        self.g = read_mtg_file(r'data/test8_boutdenoylum2.mtg')
 
-    topdia = g.property('TopDia')
-    nfe = g.property('NFe')
+    def test_mtg_vector(self):
+        g = self.g
 
-    vids = [vid for vid in g.vertices(scale=3) if vid in topdia and vid in nfe]
-    vectors = extract_vectors(g, vids, ['TopDia', 'NFe'])
-    assert vectors.nb_vector == len(vids)
-    assert vectors.nb_variable == 2
-    # Plot(vectors)
-    return vectors
+        topdia = g.property('TopDia')
+        nfe = g.property('NFe')
+
+        vids = [vid for vid in g.vertices(scale=3) if vid in topdia and vid in nfe]
+        vectors = extract_vectors(g, vids, ['TopDia', 'NFe'])
+        assert vectors.nb_vector == len(vids)
+        assert vectors.nb_variable == 2
+        # Plot(vectors)
+        return vectors
 
 
-def test_mtg_sequences():
-    fn = r'data/test8_boutdenoylum2.mtg'
-    g = read_mtg_file(fn)
+    def test_mtg_sequences(self):
+        g = self.g
+        topdia = g.property('TopDia')
+        nfe = g.property('NFe')
 
-    topdia = g.property('TopDia')
-    nfe = g.property('NFe')
+        vid = g.component_roots_at_scale(g.root, g.max_scale()).next()
+        leaves = algo.extremities(g,vid)
+        seqs = [list(reversed([vid for vid in algo.ancestors(g, lid) if vid in topdia and vid in nfe])) for lid in leaves]
 
-    leaves = (vid for vid in g.vertices(scale=3) if g.is_leaf(vid))
-    seqs = [list(reversed([vid for vid in algo.ancestors(g, lid) if vid in topdia and vid in nfe])) for lid in leaves]
+        sequences = build_sequences(g,seqs,['TopDia', 'NFe'])
+        return sequences
 
-    sequences = build_sequences(g,seqs,['TopDia', 'NFe'])
-    return sequences
+    def test_mtg2seq1(self):
+        g = self.g
+
+        sequences = extract_sequences(g, variables=['TopDia'])
+        assert len(sequences) == 63
+        assert sequences.nb_variable == 1
+        return sequences
+
+    def test_mtg2seq2(self):
+        g = self.g
+
+        sequences = extract_sequences(g, variables=['TopDia', 'phi'])
+        assert len(sequences) == 63
+        assert sequences.nb_variable == 2
+        
+        return sequences
 

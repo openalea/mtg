@@ -82,7 +82,7 @@ def topological_path(g,v1, v2=None, edge=None):
     if edge is None:
         return sum(1 for v in p), sign
     else: 
-        return sum(1 for v in p if edge_type(g,v)==edge), sign
+        return sum(1 for v in p if g.edge_type(v)==edge), sign
         
 def order(g, v1, v2=None):
     return topological_path(g, v1, v2, '+')[0]
