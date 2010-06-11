@@ -142,6 +142,6 @@ The above functions can be combined together using the Python language to extrac
     .. sectionauthor:: Thomas Cokelaer <Thomas.Cokelaer@inria.fr>, Dec 2009
 
     Documentation adapted from the AMAPmod user manual version 1.8 Dec 2009.
-    
+
     Documentation to be revised
 

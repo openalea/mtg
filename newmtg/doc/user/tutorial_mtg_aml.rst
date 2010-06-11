@@ -400,3 +400,11 @@ Comparison Functions
 TreeMatching(e1)
 MatchingExtract(e1)
 
+
+.. topic:: documentation status: 
+
+    .. sectionauthor:: Thomas Cokelaer <Thomas.Cokelaer@inria.fr>, Dec 2009
+
+    Documentation adapted from the AMAPmod user manual version 1.8 Dec 2009.
+    
+    Documentation to be revised

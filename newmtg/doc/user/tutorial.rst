@@ -15,7 +15,7 @@ and should show you the contents and potential of the **openalea.mtg** library.
 All the examples can be tested in a Python interpreter.
 
 MTG creation
-------------
+================
 
     Let us consider the following example:
 
@@ -42,7 +42,7 @@ MTG creation
 
 
 Simple edition
---------------
+================
 
 We add a component `root1` to the root node, which will be the root node of the tree 
 at the scale 1.
@@ -63,7 +63,8 @@ at the scale 1.
     v3 in g.siblings(v1)
 
 Traversing the mtg at one scale
---------------------------------
+=================================
+
 
 The mtg can be traversed at any scales like a regular tree.
 Their are three traversal algorithms working on Tree data structures (:ref:`container_algo_traversal`):
@@ -107,4 +108,23 @@ They will return an iterator on the traversed vertices.
         >>> print components #doctest: +SKIP
         [1, 2, 3, 4]
 
-.. sectionauthor:: Christophe Pradal <christophe pradal __at__ cirad fr>
+
+Full example: how to create an MTG
+======================================
+
+.. figure:: fig3_4.png
+    :width: 50%
+
+    **Figure 1:** Graphical representation of the MTG file code_file2.mtg used as an input file to all examples contained in this page
+
+
+.. literalinclude:: create_mtg.py
+    :linenos:
+    :language: python
+
+
+
+
+
+
+:Authors: Christophe Pradal <christophe pradal __at__ cirad fr>, Thomas Cokelaer <thomas cokelaer __at__ sophia inria fr>
