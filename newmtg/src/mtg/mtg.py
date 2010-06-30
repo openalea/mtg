@@ -638,7 +638,7 @@ class MTG(PropertyTree):
 
         edge_type = self.property('edge_type')
         label = self.property('label')
-        while v is not None:
+        while v is not None and self.scale(v) is not None:
             l.append("\nScale %d"%self.scale(v))
             l.extend(display_tree(self,v, edge_type=edge_type, labels=label))
             compo = self._components.get(v,[None])

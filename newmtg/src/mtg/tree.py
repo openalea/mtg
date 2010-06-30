@@ -625,7 +625,7 @@ class PropertyTree(Tree):
 
         :returns: bool
         """
-        vids = super(PropertyTree, self).remove_tree(vids)
+        vids = super(PropertyTree, self).remove_tree(vtx_id)
         for vid in vids:
             self._remove_vertex_properties(vid)
         return vids
