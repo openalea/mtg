@@ -2,7 +2,7 @@ from openalea.mtg import *
 from openalea.mtg.io import *
 from openalea.mtg.stat import *
 import openalea.mtg.algo as algo
-from vplants.sequence_analysis import *
+from openalea.sequence_analysis import *
 from numpy.random import random_integers
 from numpy import *
 

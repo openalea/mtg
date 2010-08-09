@@ -27,7 +27,7 @@
 '''
 from itertools import chain, ifilter, imap
 
-from vplants.sequence_analysis import *
+from openalea.sequence_analysis import *
 from openalea.mtg import algo
 
 
