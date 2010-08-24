@@ -353,6 +353,13 @@ class MTG(PropertyTree):
             if vid in self._scale:
                 del self._scale[vid]
             if vid in self._complex:
+                cid = self._complex[vid]
+                l = self._components[cid]
+                try:
+                    i = l.index(vid)
+                    del l[i]
+                except ValueError, e:
+                    pass 
                 del self._complex[vid]
         else:
             raise InvalidVertex('Can not remove vertex %d with components.'
@@ -463,6 +470,45 @@ class MTG(PropertyTree):
 
         return parent_id
 
+    def replace_parent(self, vtx_id, new_parent_id, **properties):
+        '''
+        Change the parent of vtx_id to new_parent_id.
+        The new parent of vtx_id is new_parent_id.
+        vtx_id and new_parent_id must have the same scale.
+
+        This function do not change the edge_type between vtx_id and its parent.
+        
+        Inherit of the complex of the parent of vtx_id.
+
+        :Parameters:
+         - `vtx_id` (int): a vertex identifier
+         - `new_parent_id` (int): a vertex identifier
+
+        :Returns:
+            Identifier of the inserted vertex (parent_id).
+        :Returns Type:
+            int
+        '''
+        if new_parent_id not in self:
+            raise ""
+        if self.scale(vtx_id) != self.scale(new_parent_id):
+            raise ""
+
+        old_parent = self.parent(vtx_id)
+        old_complex = self._complex.get(vtx_id)
+        old_components = self._components.get(vtx_id)
+
+        if old_components is not None:
+            raise "Unable to replace the parent for a vertex with components"
+        self.add_child(new_parent_id, vtx_id)
+        if old_parent is not None:
+            children = self._children[old_parent]
+            index = children.index(vtx_id)
+            del children[index]
+
+        if old_complex is not None:
+            self.replace_parent(old_complex, self.complex(new_parent_id))
+        
     #########################################################################
     # Mutable Multiscale Tree Concept methods.
     #########################################################################
@@ -547,7 +593,7 @@ class MTG(PropertyTree):
 
         for ci in components:
             p = self.parent(ci)
-            if p is None or self.complex(p) != vtx_id: #?????? Why "or" ????????
+            if p is None or self.complex(p) != vtx_id: 
                 yield ci
 
     def component_roots_at_scale(self, vtx_id, scale):
@@ -1233,4 +1279,9 @@ class _ProxyNode(object):
     def insert_sibling(): pass
     @return_proxy
     def add_component(): pass
+    @proxy
+    def remove_vertex(): pass
+    @return_iter_proxy
+    def remove_tree(): pass
+    
 
