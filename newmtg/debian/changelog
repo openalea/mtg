@@ -1,0 +1,11 @@
+openalea-mtg (0.9.0-1~ppa2) lucid; urgency=low
+
+  * add openalea-container as dependency 
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Tue, 28 Sep 2010 08:40:59 +0200
+
+openalea-mtg (0.9.0-1~ppa1) lucid; urgency=low
+
+  * source package automatically created by stdeb 0.6.0
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Mon, 27 Sep 2010 19:32:59 +0200
