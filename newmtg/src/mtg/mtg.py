@@ -336,7 +336,7 @@ class MTG(PropertyTree):
         """
         raise NotImplementedError
 
-    def remove_vertex(self, vid):
+    def remove_vertex(self, vid, reparent_child=False):
         """
         Remove a specified vertex of the graph and
         remove all the edges attached to it.
@@ -485,29 +485,20 @@ class MTG(PropertyTree):
          - `new_parent_id` (int): a vertex identifier
 
         :Returns:
-            Identifier of the inserted vertex (parent_id).
-        :Returns Type:
-            int
+            None
         '''
-        if new_parent_id not in self:
-            raise ""
+        #if new_parent_id not in self:
+            #    raise ""
         if self.scale(vtx_id) != self.scale(new_parent_id):
             raise ""
 
-        old_parent = self.parent(vtx_id)
         old_complex = self._complex.get(vtx_id)
-        old_components = self._components.get(vtx_id)
 
-        if old_components is not None:
-            raise "Unable to replace the parent for a vertex with components"
-        self.add_child(new_parent_id, vtx_id)
-        if old_parent is not None:
-            children = self._children[old_parent]
-            index = children.index(vtx_id)
-            del children[index]
+        super(MTG, self).replace_parent(vtx_id, new_parent_id, **properties)
 
         if old_complex is not None:
             self.replace_parent(old_complex, self.complex(new_parent_id))
+
         
     #########################################################################
     # Mutable Multiscale Tree Concept methods.
