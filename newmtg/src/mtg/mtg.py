@@ -336,18 +336,24 @@ class MTG(PropertyTree):
         """
         raise NotImplementedError
 
-    def remove_vertex(self, vid, reparent_child=False):
+    def remove_vertex(self, vid, reparent=False):
         """
         Remove a specified vertex of the graph and
         remove all the edges attached to it.
 
         :Parameters:
             - `vid` (int) : the id of the vertex to remove
+            - `reparent` (bool) : reparent the children of `vid` to its parent.
         :Returns: None
         """
 
+        if reparent:
+            new_parent_id = self.parent(vid)
+            for cid in self.children(vid):
+                self.replace_parent(cid, new_parent_id)
+
         if self.nb_components(vid) == 0:
-            super(MTG, self).remove_vertex(vid)
+            super(MTG, self).remove_vertex(vid, reparent=reparent)
             if vid in self._components:
                 del self._components[vid]
             if vid in self._scale:
