@@ -24,6 +24,11 @@
 
 :Examples:
 
+
+:TODO: 
+    - Extract sequence identifier as a property and add it as input of the sequence
+    - explicit identifier for sequence (e.g. year of growth or date of observation)
+
 '''
 from itertools import chain, ifilter, imap
 

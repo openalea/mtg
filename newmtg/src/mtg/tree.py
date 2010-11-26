@@ -324,6 +324,31 @@ class Tree(object):
             children[index] = parent_id
         return parent_id
 
+    def replace_parent(self, vtx_id, new_parent_id, **properties):
+        '''
+        Change the parent of vtx_id to new_parent_id.
+        The new parent of vtx_id is new_parent_id.
+        
+        This function do not change the edge_type between vtx_id and its parent.
+        
+
+        :Parameters:
+         - `vtx_id` (int): a vertex identifier
+         - `new_parent_id` (int): a vertex identifier
+
+        :Returns:
+            None
+        '''
+        if new_parent_id not in self:
+            raise ""
+
+        old_parent = self.parent(vtx_id)
+
+        self.add_child(new_parent_id, vtx_id)
+        if old_parent is not None:
+            children = self._children[old_parent]
+            index = children.index(vtx_id)
+            del children[index]
 
     def __str__(self):
         l = ["Tree : nb_vertices=%d"%(self.nb_vertices())]
