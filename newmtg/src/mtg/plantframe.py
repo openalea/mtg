@@ -117,10 +117,10 @@ class PlantFrame(object):
 
         # User define axes: Return True or False
         self.new_axe = self._extract_properties('Axe', kwds)
+        if not self.new_axe:
+            self.new_axe = dict((vid, True) for vid in g.vertices() if g.edge_type(vid) == '+')
         self.axes = {}
 
-        
- 
         self._compute_global_data()
         self.propagate_constraints()
 
