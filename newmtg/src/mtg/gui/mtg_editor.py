@@ -55,36 +55,39 @@ class ObservableMTG(GraphAdapterBase, Observed):
             print "woooo create an edge"
             self.notify_listeners(("edge_added", ("default", (pid,vid), pid, vid)))
 
-    def remove_vertex(self, vertex):
-        g = self.graph
-        edges = g.edges([vertex])
-        for src, tgt in edges:
-            self.remove_edge(src, tgt)
-        g.remove_node(vertex)
-        self.notify_listeners(("vertex_removed", ("vertex",vertex)))
+    ######################
+    # -- NOT USED YET -- #
+    ######################
+    # def remove_vertex(self, vertex):
+    #     g = self.graph
+    #     edges = g.edges([vertex])
+    #     for src, tgt in edges:
+    #         self.remove_edge(src, tgt)
+    #     g.remove_node(vertex)
+    #     self.notify_listeners(("vertex_removed", ("vertex",vertex)))
 
-    def add_edge(self, src_vertex, tgt_vertex, **kwargs):
-        g = self.graph
-        edge = [src_vertex, tgt_vertex]
-        edge.sort(lambda x, y: cmp(id(x), id(y)))
-        edge = tuple(edge)
-        print "add", edge
-        if g.has_edge(*edge):
-            return
-        else:
-            g.add_edge(*edge, **kwargs)
-            self.notify_listeners(("edge_added", ("default", edge, src_vertex, tgt_vertex)))
+    # def add_edge(self, src_vertex, tgt_vertex, **kwargs):
+    #     g = self.graph
+    #     edge = [src_vertex, tgt_vertex]
+    #     edge.sort(lambda x, y: cmp(id(x), id(y)))
+    #     edge = tuple(edge)
+    #     print "add", edge
+    #     if g.has_edge(*edge):
+    #         return
+    #     else:
+    #         g.add_edge(*edge, **kwargs)
+    #         self.notify_listeners(("edge_added", ("default", edge, src_vertex, tgt_vertex)))
 
-    def remove_edge(self, src_vertex, tgt_vertex):
-        edge =  [src_vertex, tgt_vertex]
-        edge.sort(lambda x, y: cmp(id(x), id(y)))
-        edge = tuple(edge)
-        print "remove", edge
-        self.graph.remove_edge(edge[0], edge[1])
-        self.notify_listeners(("edge_removed", ("default",edge)))
+    # def remove_edge(self, src_vertex, tgt_vertex):
+    #     edge =  [src_vertex, tgt_vertex]
+    #     edge.sort(lambda x, y: cmp(id(x), id(y)))
+    #     edge = tuple(edge)
+    #     print "remove", edge
+    #     self.graph.remove_edge(edge[0], edge[1])
+    #     self.notify_listeners(("edge_removed", ("default",edge)))
 
-    def remove_edges(self, edges):
-        GraphAdapterBase.remove_edges(self, (e for e in edges))
+    # def remove_edges(self, edges):
+    #     GraphAdapterBase.remove_edges(self, (e for e in edges))
 
 
 
@@ -99,9 +102,9 @@ from PyQt4 import QtGui, QtCore
 
 class Vertex( qt.DefaultGraphicalVertex ):
     max_scale = 6
+
     def _mtg(self):
         return self.graph().graph
-
     mtg = property(_mtg)
 
     def initialise_from_model(self):
@@ -109,7 +112,7 @@ class Vertex( qt.DefaultGraphicalVertex ):
         from the vertex model"""
         g = self.mtg
 
-        # -- set the color --
+        # -- set the color based on the scale of this vertex and the HSV wheel--
         scale = g.scale(self.vertex())
         s = (scale%self.max_scale)/float(self.max_scale)
         color = QtGui.QColor.fromHsvF(s, 1,1)
@@ -127,19 +130,22 @@ class Vertex( qt.DefaultGraphicalVertex ):
         vid = self.vertex()
         return self.mtg.property(key).get(vid)
 
-    def notify(self, sender, event):
-        """Handle notifications from the vertex model"""
-        qt.DefaultGraphicalVertex.notify(self, sender, event)
+    # -- Extend this if you want to handle more notifications
+    # -- but be sure to call the one from the superclass too
+    # def notify(self, sender, event):
+    #     """Handle notifications from the vertex model"""
+    #     qt.DefaultGraphicalVertex.notify(self, sender, event)
 
     def default_position(self):
-        print "Vertex.default_position"
+        """If there is no position obtained by get_view_data("position"),
+        use the return value from this one"""
         return [rint(0,200)]*2
 
     ########################################################
     # The following methods are meant to modify the model! #
     ########################################################
     def add_child(self, *args):
-        """ This methods modifies the model vertex by adding a child to it.
+        """ This methods modifies the mtg by adding a child to this vertex.
         The view will be updated through the graph's notifications.
         """
         gm = self.graph()
@@ -147,11 +153,12 @@ class Vertex( qt.DefaultGraphicalVertex ):
         gm.new_vertex(parent=self.vertex(), position=[pos[0]+rint(-20,20),pos[1]-40.] )
 
         # -- this is required to correctly display the edges right from the start --
+        # -- it's a bug in grapheditor --
         self.notify_position_change()
         print "Vertex.add_child", pos
 
     def add_component(self, *args):
-        """ This methods modifies the model vertex by adding a component to it.
+        """ This methods modifies the mtg by adding a component to this vertex.
         The view will be updated through the graph's notifications.
         """
         print "called add_component"
@@ -161,16 +168,6 @@ class Vertex( qt.DefaultGraphicalVertex ):
     ##########################
     def mouseDoubleClickEvent(self, event):
         self.add_child()
-
-        modifiers = event.modifiers()
-        if modifiers == QtCore.Qt.ControlModifier:
-            self.add_child([])
-        elif modifiers == QtCore.Qt.ShiftModifier:
-            self.add_component([])
-
-
-
-
 
 
 
@@ -278,13 +275,13 @@ def initialise_graph_view_from_model(graphView, graphModel):
 
 
 
-
-GraphicalMtg = qt.QtGraphStrategyMaker( graphView            = MtgView,
-                                        vertexWidgetMap      = {"vertex":Vertex},
-                                        edgeWidgetMap        = {"default":qt.DefaultGraphicalEdge,
-                                                                "floating-default":qt.DefaultGraphicalFloatingEdge},
-                                        graphViewInitialiser = initialise_graph_view_from_model
-                                                             )
+# -- This creates a GraphicalMtg factory, a class that creates views for MTGS --
+GraphicalMtgFactory = qt.QtGraphStrategyMaker( graphView            = MtgView,
+                                               vertexWidgetMap      = {"vertex":Vertex},
+                                               edgeWidgetMap        = {"default":qt.DefaultGraphicalEdge,
+                                                                       "floating-default":qt.DefaultGraphicalFloatingEdge},
+                                               graphViewInitialiser = initialise_graph_view_from_model
+                                               )
 
 
 
@@ -302,7 +299,7 @@ if __name__ == "__main__":
 
             self.setMinimumSize(800,600)
             self.__graph = ObservableMTG()
-            self.__graphView = GraphicalMtg.create_view(self.__graph, parent=self)
+            self.__graphView = GraphicalMtgFactory.create_view(self.__graph, parent=self)
 
             for p in range(1):
                 print "got here!"
