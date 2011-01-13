@@ -34,8 +34,8 @@ try:
     from openalea.container.tree import PropertyTree, InvalidVertex
 except ImportError:
     from tree import PropertyTree, InvalidVertex
-    
-    
+
+
 class MTG(PropertyTree):
     ''' A Multiscale Tree Graph (MTG) class.
 
@@ -124,7 +124,7 @@ class MTG(PropertyTree):
             - `vid` (int) - vertex identifier.
 
         :Returns:
-            The scale of the vertex. 
+            The scale of the vertex.
             It is a positive int in [0,g.max_scale()].
         '''
         try:
@@ -161,7 +161,7 @@ class MTG(PropertyTree):
         :Usage:
             >>> print g.max_scale()
 
-        :Returns: 
+        :Returns:
             S, the maximum scale identifier.
 
         .. note:: The complexity is :math:`O(n)`.
@@ -365,7 +365,7 @@ class MTG(PropertyTree):
                     i = l.index(vid)
                     del l[i]
                 except ValueError, e:
-                    pass 
+                    pass
                 del self._complex[vid]
         else:
             raise InvalidVertex('Can not remove vertex %d with components.'
@@ -483,7 +483,7 @@ class MTG(PropertyTree):
         vtx_id and new_parent_id must have the same scale.
 
         This function do not change the edge_type between vtx_id and its parent.
-        
+
         Inherit of the complex of the parent of vtx_id.
 
         :Parameters:
@@ -496,7 +496,7 @@ class MTG(PropertyTree):
         #if new_parent_id not in self:
             #    raise ""
         if self.scale(vtx_id) != self.scale(new_parent_id):
-            raise ""
+            raise InvalidVertex("Can not replace vertex %d by vertex %d from a different scale"%(vtx_id, new_parent_id))
 
         old_complex = self._complex.get(vtx_id)
 
@@ -505,7 +505,7 @@ class MTG(PropertyTree):
         if old_complex is not None:
             self.replace_parent(old_complex, self.complex(new_parent_id))
 
-        
+
     #########################################################################
     # Mutable Multiscale Tree Concept methods.
     #########################################################################
@@ -590,7 +590,7 @@ class MTG(PropertyTree):
 
         for ci in components:
             p = self.parent(ci)
-            if p is None or self.complex(p) != vtx_id: 
+            if p is None or self.complex(p) != vtx_id:
                 yield ci
 
     def component_roots_at_scale(self, vtx_id, scale):
@@ -915,7 +915,7 @@ class MTG(PropertyTree):
         It allows to access to the properties with an object oriented interface.
 
         :Example:
-        
+
         .. code-block:: python
 
             node = g.node(1)
@@ -1223,7 +1223,7 @@ class _ProxyNode(object):
         if name in g.property_names():
             return g.property(name).get(vid)
         else:
-            raise AttributeError(name) 
+            raise AttributeError(name)
 
     def __eq__(self, other):
         return self._vid == other._vid
@@ -1280,5 +1280,5 @@ class _ProxyNode(object):
     def remove_vertex(): pass
     @return_iter_proxy
     def remove_tree(): pass
-    
+
 
