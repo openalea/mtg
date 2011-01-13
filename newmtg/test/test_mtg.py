@@ -191,3 +191,18 @@ def test_sub_mtg():
     g = g.sub_mtg(2,copy=False)
 
     assert len(g1) == len(g) == 59
+
+def test_remove_vertex():
+    mtg = MTG()
+    root = mtg.root
+    # scale 1
+    root1 = mtg.add_component(root)
+    v1 = mtg.add_child(root1)
+    v2 = mtg.add_child(root1)
+    v3 = mtg.add_child(root1)
+    v4 = mtg.add_child(v1)
+    v5 = mtg.add_child(v1)
+    n = len(mtg)
+    mtg.remove_vertex(v5)
+    mtg.remove_vertex(v1, reparent_child=True)
+    assert len(mtg) == n-2
