@@ -125,7 +125,7 @@ class Tree(object):
     # MutableVertexGraphConcept methods.
     #########################################################################
 
-    def remove_vertex(self, vid):
+    def remove_vertex(self, vid, reparent_child=False):
         """
         remove a specified vertex of the graph
         remove all the edges attached to it
@@ -136,7 +136,12 @@ class Tree(object):
         if vid == self.root:
             raise InvalidVertex('Removing the root node %d is forbidden.'% vid)
 
-        elif self.nb_children(vid) == 0:
+        if reparent_child:
+            new_parent_id = self.parent(vid)
+            for cid in self.children(vid):
+                self.replace_parent(cid, new_parent_id)
+
+        if self.nb_children(vid) == 0:
             p = self.parent(vid)
             if p is not None:
                 self._children[p].remove(vid)
@@ -495,7 +500,7 @@ class PropertyTree(Tree):
         :param vid: the id of the vertex to remove
         :type vid: vid
         """
-        vid = super(PropertyTree, self).remove_vertex(vid)
+        vid = super(PropertyTree, self).remove_vertex(vid, reparent_child=reparent_child)
         self._remove_vertex_properties(vid)
 
     def add_child(self, parent, child=None, **properties):
