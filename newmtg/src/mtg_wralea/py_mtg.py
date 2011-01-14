@@ -3,14 +3,14 @@
 #
 #       amlPy function implementation
 #
-#       Copyright or (C) or Copr. 2006 INRIA - CIRAD - INRA  
+#       Copyright or (C) or Copr. 2006 INRIA - CIRAD - INRA
 #
 #       File author(s): Christophe Pradal <christophe.prada@cirad.fr>
 #
 #       Distributed under the Cecill-C License.
 #       See accompanying file LICENSE.txt or copy at
 #           http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-# 
+#
 #       OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
 ###############################################################################
@@ -31,7 +31,7 @@ from openalea.mtg.aml import *
 def max_mtg_scale(g):
     if not g:
         return 0
-    
+
     g_str= str(g)
     scale= (g_str.split(',')[2]).strip()
     max_scale= int(scale.strip("levelnb="))
@@ -70,10 +70,10 @@ Ouput : MTG object if the parsing process succeeds.
         #self.add_input( name = "OuputFile", interface = IFileStr, value=None,hide=True)
         #self.add_input( name = "HeaderFile", interface = IFileStr, value=None,hide=True)
         #self.add_input( name = "DiscardSymbols", interface = ISequence, value=None,hide=True)
-            
-        self.add_output( name = "MTG", interface = None) 
 
-        
+        self.add_output( name = "MTG", interface = None)
+
+
 
     def __call__(self, inputs):
         """ inputs is the list of input values """
@@ -99,6 +99,28 @@ Ouput : MTG object if the parsing process succeeds.
 
 #//////////////////////////////////////////////////////////////////////////////
 
+class py_MTGEditor(Node):
+    """
+MTG( filename, ErrorNb= 10, VtxNumber= 10000 ) -> MTG
+
+Input: filename
+Ouput : MTG object if the parsing process succeeds.
+    """
+
+    def __init__(self):
+
+        Node.__init__(self)
+
+        self.add_input( name = "mtg" )
+        self.add_output( name = "mtg")
+
+
+    def __call__(self, inputs):
+        """ inputs is the list of input values """
+        return inputs[0]
+
+#//////////////////////////////////////////////////////////////////////////////
+
 class py_VtxList(Node):
     """\
 VtxList( mtg, Scale= 2 ) -> [vtx]
@@ -115,12 +137,12 @@ Output:
 
         Node.__init__(self)
 
-        self.add_input( name = "MTG", interface = None) 
+        self.add_input( name = "MTG", interface = None)
         self.add_input( name = "Scale", interface = IInt, value= 0)
-            
-        self.add_output( name = "VtxList", interface = None) 
 
-        
+        self.add_output( name = "VtxList", interface = None)
+
+
 
     def __call__(self, inputs):
         """ inputs is the list of input values """
@@ -133,7 +155,7 @@ Output:
         g = set_mtg(g)
         if not g:
             return ([],)
-        
+
         scale = self.get_input("Scale")
 
 #        max_scale= max_mtg_scale(g)
@@ -141,7 +163,7 @@ Output:
         vtxs= []
         if scale == 0: vtxs = VtxList()
         else : vtxs= VtxList(Scale=scale)
-        
+
         return (vtxs,)
 
 #//////////////////////////////////////////////////////////////////////////////
@@ -152,7 +174,7 @@ class py_Feature( Node ):
 
         Node.__init__(self)
 
-        self.add_input( name = "MTG", interface = None) 
+        self.add_input( name = "MTG", interface = None)
         self.add_input(name= "Vtx", interface= IInt )
         self.add_input(name= "FeatureName", interface= IStr, value= "" )
 
@@ -165,7 +187,7 @@ class py_Feature( Node ):
         g = set_mtg(g)
         if not g:
             return None
- 
+
         vtx = self.get_input("Vtx")
         name = self.get_input("FeatureName")
 
@@ -183,23 +205,23 @@ Input:
 Output:
   function that can be applied on a vertex.
     """
-    
+
     vtx_func= { "Class" : Class,
                 "Index" : Index,
                 "Scale" : Scale,
                 "Order" : Order,
                 "Rank" : Rank,
                 "Height" : Height }
-    
-    
+
+
     def __init__(self):
-    
+
         Node.__init__(self)
 
         funs= self.vtx_func.keys()
         funs.sort()
-        self.add_input( name = "Name", interface = IEnumStr(funs), value = funs[0]) 
-        self.add_input( name = "Vtx" ) 
+        self.add_input( name = "Name", interface = IEnumStr(funs), value = funs[0])
+        self.add_input( name = "Vtx" )
         self.add_output( name = "VtxFunction", interface = None)
 
     def __call__(self, inputs):
@@ -225,7 +247,7 @@ class TopoFunction( Node ):
     Output:
         function that can be applied on a vertex.
     """
-    
+
     vtx_func= { "Father" : Father,
                 "Successor" : Successor,
                 "Predecessor" : Predecessor,
@@ -233,23 +255,23 @@ class TopoFunction( Node ):
                 "Complex" : Complex,
                 "Location" : Location,
                 "Sons" : Sons,
-                "Ancestors" : Ancestors, 
+                "Ancestors" : Ancestors,
                 "Descendants" : Descendants,
                 "Extremities" : Extremities,
                 "Components" : Components,
                 "ComponentRoots" : ComponentRoots,
                 "Axis" : Axis,
                 "Trunk" :Trunk}
-    
-    
+
+
     def __init__(self):
-    
+
         Node.__init__(self)
 
         funs= self.vtx_func.keys()
         funs.sort()
-        self.add_input( name = "name", interface = IEnumStr(funs), value = funs[0]) 
-        self.add_input( name = "Vtx" ) 
+        self.add_input( name = "name", interface = IEnumStr(funs), value = funs[0])
+        self.add_input( name = "Vtx" )
         self.add_output( name = "f", interface = None)
 
     def __call__(self, inputs):
@@ -267,12 +289,12 @@ class TopoFunction( Node ):
 #//////////////////////////////////////////////////////////////////////////////
 
 class UnaryVtxFunc( Node ):
-    
+
     def __init__(self,f):
-    
+
         Node.__init__(self)
         self.f= f
-        
+
         self.add_output( name = "f", interface = IFunction)
 
     def __call__(self, inputs):
@@ -347,14 +369,14 @@ class py_PlantFrame( Node ):
 Plot(aml object) -> Plot the object
 Input:
   aml object
-  
+
     """
-    
+
     def __init__(self):
-    
+
         Node.__init__(self)
 
-        self.add_input( name = "MTG", interface = None) 
+        self.add_input( name = "MTG", interface = None)
         self.add_input( name = "Vertex", interface = IInt, value= 0)
         self.add_input( name = "Scale", interface = IInt, value= 0,hide=True)
         self.add_input( name = "VoxelDist", interface = IFloat, value=None,hide=True)
@@ -381,10 +403,10 @@ Input:
         self.add_output(name = "plantframe")
 
     def __call__(self, inputs):
-        
+
         kwds={}
 
-        # input_desc contains a list of dictionaries for 
+        # input_desc contains a list of dictionaries for
         # each input port of the node
         for desc in self.input_desc:
             key = desc['name']
@@ -434,20 +456,20 @@ def py_dressingdata(g,filename):
         return (d,)
 
 #//////////////////////////////////////////////////////////////////////////////
-        
+
 class py_virtualpatterns( Node ):
     """\
 Plot(aml object) -> Plot the object
 Input:
   aml object
-  
+
     """
-    
+
     def __init__(self):
-    
+
         Node.__init__(self)
 
-        self.add_input( name = "patterntype", interface = IStr) 
+        self.add_input( name = "patterntype", interface = IStr)
 
         self.add_input( name = "Class", interface = IInt, value= 0,hide=True)
         self.add_input( name = "WhorlSize", interface = IInt, value= 0,hide=True)
@@ -469,10 +491,10 @@ Input:
         self.add_input( name = "ZZ", interface = IFunction,hide=True)
 
     def __call__(self, inputs):
-        
+
         kwds={}
 
-        # input_desc contains a list of dictionaries for 
+        # input_desc contains a list of dictionaries for
         # each input port of the node
         for desc in self.input_desc:
             key = desc['name']
@@ -514,37 +536,37 @@ class py_PlotPlantFrame( Node ):
 Plot(aml object) -> Plot the object
 Input:
   aml object
-  
+
     """
-    
+
     def __init__(self):
-    
+
         Node.__init__(self)
 
-        self.add_input( name = "obj", interface = None) 
-        self.add_input( name = "Simplification", interface = IInt,value=None,hide=True) 
-        self.add_input( name = "Show", interface = IFunction,hide=True) 
-        self.add_input( name = "Display", interface = IEnumStr(['SHOW','HIDE']), value = 'SHOW',hide=True) 
-        self.add_input( name = "Color", interface = IFunction,hide=True) 
-        self.add_input( name = "ColorRGB", interface = IFunction,hide=True) 
-        self.add_input( name = "Appearance", interface = IFunction,hide=True) 
-        self.add_input( name = "Geometry", interface = IFunction,hide=True) 
-        self.add_input( name = "DressindData",hide=True) 
-        self.add_input( name = "Symbols", interface = IFunction,hide=True) 
-        self.add_input( name = "VirtualFruits",hide=True) 
-        self.add_input( name = "VirtualFlowers",hide=True) 
-        self.add_input( name = "VirtualLeaves",hide=True) 
-        self.add_input( name = "Interpol", interface = IFunction,hide=True) 
-        self.add_input( name = "LineFile", interface = IFileStr,value=None,hide=True) 
-        self.add_input( name = "MaxThreshold", interface = IFloat,value=None,hide=True) 
-        self.add_input( name = "MinThreshold", interface = IFloat,value=None,hide=True) 
-        self.add_input( name = "MediumThreshold", interface = IFloat,value=None,hide=True) 
+        self.add_input( name = "obj", interface = None)
+        self.add_input( name = "Simplification", interface = IInt,value=None,hide=True)
+        self.add_input( name = "Show", interface = IFunction,hide=True)
+        self.add_input( name = "Display", interface = IEnumStr(['SHOW','HIDE']), value = 'SHOW',hide=True)
+        self.add_input( name = "Color", interface = IFunction,hide=True)
+        self.add_input( name = "ColorRGB", interface = IFunction,hide=True)
+        self.add_input( name = "Appearance", interface = IFunction,hide=True)
+        self.add_input( name = "Geometry", interface = IFunction,hide=True)
+        self.add_input( name = "DressindData",hide=True)
+        self.add_input( name = "Symbols", interface = IFunction,hide=True)
+        self.add_input( name = "VirtualFruits",hide=True)
+        self.add_input( name = "VirtualFlowers",hide=True)
+        self.add_input( name = "VirtualLeaves",hide=True)
+        self.add_input( name = "Interpol", interface = IFunction,hide=True)
+        self.add_input( name = "LineFile", interface = IFileStr,value=None,hide=True)
+        self.add_input( name = "MaxThreshold", interface = IFloat,value=None,hide=True)
+        self.add_input( name = "MinThreshold", interface = IFloat,value=None,hide=True)
+        self.add_input( name = "MediumThreshold", interface = IFloat,value=None,hide=True)
 
-        self.add_output( name = "Linetree") 
+        self.add_output( name = "Linetree")
 
     def __call__(self, inputs):
         kwds={}
-        # input_desc contains a list of dictionaries for 
+        # input_desc contains a list of dictionaries for
         # each input port of the node
         for desc in self.input_desc:
             key = desc['name']
@@ -553,38 +575,38 @@ Input:
                 kwds[key] = x
         obj = kwds.get('obj',None)
         del kwds['obj']
-        
+
         if obj:
             return Plot(obj, **kwds)
 
 #//////////////////////////////////////////////////////////////////////////////
-        
+
 class py_PlotLineTree( Node ):
     """\
 Plot(aml object) -> Plot the object
 Input:
   aml object
-  
+
     """
-    
+
     def __init__(self):
-    
+
         Node.__init__(self)
 
-        self.add_input( name = "obj", interface = None) 
-        self.add_input( name = "Color", interface = IFunction,hide=True) 
-        self.add_input( name = "Geometry", interface = IFunction,hide=True) 
-        self.add_input( name = "Symbol", interface = IFunction,hide=True) 
-        self.add_input( name = "Appearance", interface = IFunction,hide=True) 
-        self.add_input( name = "Show", interface = IFunction,hide=True) 
-        self.add_input( name = "ShowMacro", interface = IFunction,hide=True) 
-        self.add_input( name = "Display", interface = IEnumStr(['All','MicroOnly', 'MacroOnly','HIDE']), value = 'All') 
-        self.add_output( name = "linetree") 
+        self.add_input( name = "obj", interface = None)
+        self.add_input( name = "Color", interface = IFunction,hide=True)
+        self.add_input( name = "Geometry", interface = IFunction,hide=True)
+        self.add_input( name = "Symbol", interface = IFunction,hide=True)
+        self.add_input( name = "Appearance", interface = IFunction,hide=True)
+        self.add_input( name = "Show", interface = IFunction,hide=True)
+        self.add_input( name = "ShowMacro", interface = IFunction,hide=True)
+        self.add_input( name = "Display", interface = IEnumStr(['All','MicroOnly', 'MacroOnly','HIDE']), value = 'All')
+        self.add_output( name = "linetree")
 
     def __call__(self, inputs):
         kwds={}
-        
-        # input_desc contains a list of dictionaries for 
+
+        # input_desc contains a list of dictionaries for
         # each input port of the node
         for desc in self.input_desc:
             key = desc['name']
@@ -593,7 +615,7 @@ Input:
                 kwds[key] = x
         obj = kwds.get('obj',None)
         del kwds['obj']
-        
+
         if obj:
             return Plot(obj, **kwds)
 
@@ -614,28 +636,28 @@ def quotient_rep(lt,quotient,args):
     Plot(lt,Quotient=quotient,**args)
     ms_scene = py_Linetree2Scene(lt,'Macro')
     ms_graph = Extract(lt,Data='QuotientedGraph')
-    return (ms_scene,ms_graph)    
+    return (ms_scene,ms_graph)
 
 class py_Quotient( Node ):
     """\
 Quotient(linetree) -> Quotient the linetree
 Input:
   linetree
-  
+
     """
-    
+
     def __init__(self):
-    
+
         Node.__init__(self)
 
-        self.add_input( name = "obj", interface = None) 
-        self.add_input( name = "Quotient", interface = IFunction, value = None) 
-        self.add_input( name = "Geometry", interface = IFunction, value = None ,hide = True) 
-        self.add_input( name = "Appearance", interface = IFunction, value = None ,hide = True) 
-        self.add_input( name = "Consider", interface = IFunction, value = None ,hide = True) 
+        self.add_input( name = "obj", interface = None)
+        self.add_input( name = "Quotient", interface = IFunction, value = None)
+        self.add_input( name = "Geometry", interface = IFunction, value = None ,hide = True)
+        self.add_input( name = "Appearance", interface = IFunction, value = None ,hide = True)
+        self.add_input( name = "Consider", interface = IFunction, value = None ,hide = True)
 
-        self.add_output( name = "Scene") 
-        self.add_output( name = "Graph") 
+        self.add_output( name = "Scene")
+        self.add_output( name = "Graph")
 
     def __call__(self, inputs):
         obj = self.get_input("obj")
@@ -657,31 +679,31 @@ Input:
                 return (lambda x : quotient_rep(obj,x,args),None)
         else:
             return (lambda x : quotient_rep(x,quotient,args),None)
-    
+
 #//////////////////////////////////////////////////////////////////////////////
 class py_Compress( Node ):
     """\
 Compress(linetree) -> Compress a linetree
 Input:
   linetree
-  
+
     """
-    
+
     def __init__(self):
-    
+
         Node.__init__(self)
 
-        self.add_input( name = "obj", interface = None) 
-        self.add_input( name = "rate", interface = IFloat, value = 0) 
-        self.add_input( name = "sort", interface = IEnumStr(['DECREASINGSIZE','INCREASINGSIZE', 'DECREASINGORDER','INCREASINGORDER','NONE']),value='DECREASINGSIZE',hide=True) 
-        self.add_output( name = "scene") 
+        self.add_input( name = "obj", interface = None)
+        self.add_input( name = "rate", interface = IFloat, value = 0)
+        self.add_input( name = "sort", interface = IEnumStr(['DECREASINGSIZE','INCREASINGSIZE', 'DECREASINGORDER','INCREASINGORDER','NONE']),value='DECREASINGSIZE',hide=True)
+        self.add_output( name = "scene")
     def __call__(self,inputs):
         obj = self.get_input("obj")
         rate = self.get_input("rate")
         sort = self.get_input("sort")
         Plot(obj,Compress=rate,Display='Hide',Sort=sort)
         return py_Linetree2Scene(obj,'Macro')
-    
+
 
 #//////////////////////////////////////////////////////////////////////////////
 

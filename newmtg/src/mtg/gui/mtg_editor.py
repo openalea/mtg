@@ -2,7 +2,7 @@
 #
 #       Template grapheditor definitions for MTG Edition.
 #
-#       Copyright 2006-2010 INRIA - CIRAD - INRA
+#       Copyright 2006-2011 INRIA - CIRAD - INRA
 #
 #       File author(s): Daniel Barbeau <daniel.barbeau@sophia.inria.fr>
 #
@@ -34,10 +34,10 @@ from openalea.mtg import algo
 class ObservableMTG(GraphAdapterBase, Observed):
     """An adapter to vplants.newmtg.mtg.MTG. It has the role to
     add notifications to actions performed on the underlying graph"""
-    def __init__(self):
+    def __init__(self, graph=None):
         GraphAdapterBase.__init__(self)
         Observed.__init__(self)
-        self.set_graph(MTG())
+        self.set_graph(MTG() if graph is None else graph)
 
     def new_vertex(self, **kwargs):
         self.graph._id += 1
@@ -281,13 +281,15 @@ class MtgView( qt.View ):
     #########################
     def mouseDoubleClickEvent(self, event):
         qt.View.mouseDoubleClickEvent(self, event)
+        self.dropHandler(event)
 
     def dropHandler(self, event):
         position = self.mapToScene(event.pos())
         position = [position.x(), position.y()]
         # -- the new_vertex call is forwarded to the graph or to the
         # -- graph_adapter if available with *args and **kwargs
-        self.scene().new_vertex(position=position)
+        if self.scene().get_graph():
+            self.scene().new_vertex(position=position)
 
     # -- implement this to customize mouse motion handler.
     # -- !!! Be sure to call the parent's implementation somewhere inside! --
@@ -319,6 +321,7 @@ def initialise_graph_view_from_model(graphView, graphModel):
     """
     g = graphModel.graph
     gm = graphModel
+    print g, gm
     for v in g:
         gm.notify_listeners(("vertex_added", ("vertex", v)))
 
@@ -334,7 +337,6 @@ GraphicalMtgFactory = qt.QtGraphStrategyMaker( graphView            = MtgView,
                                                                        "floating-default":qt.DefaultGraphicalFloatingEdge},
                                                graphViewInitialiser = initialise_graph_view_from_model
                                                )
-
 
 
 
