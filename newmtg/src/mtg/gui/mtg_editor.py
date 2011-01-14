@@ -75,30 +75,48 @@ class ObservableMTG(GraphAdapterBase, Observed):
 
         self.notify_listeners(("vertex_added", ("vertex",vid)))
 
-        for src, tgt in edge_added:
-            self.add_edge( src, tgt)
+        self.notify_edge_additions(edge_added)
 
     def remove_vertex(self, vertex):
         g = self.graph
         pid = g.parent(vertex)
         children = list(g.children(vertex))
-        self.remove_edge(pid,vertex)
-        for cid in children:
-            self.remove_edge(vertex,cid)
-            self.add_edge(pid,cid)
+        nchildren = len(children)
+
+        # -- refresh the graphical edges to --
+        # -- reparent children to parent of vertex --
+        edges_to_remove = [(pid,vertex)]+ [None]*nchildren
+        edges_to_add    = [None]*nchildren
+        for n, cid in enumerate(children):
+            edges_to_remove[n+1] = vertex, cid
+            edges_to_add[n] = pid, cid
+        self.notify_edge_removals(edges_to_remove)
+        self.notify_edge_additions(edges_to_add)
+
         g.remove_vertex(vertex, reparent_child=True)
         self.notify_listeners(("vertex_removed", ("vertex",vertex)))
 
     def add_edge(self, src_vertex, tgt_vertex, **kwargs):
-        g = self.graph
-        edge = src_vertex, tgt_vertex
-        self.notify_listeners(("edge_added", ("default", edge, src_vertex, tgt_vertex)))
-        self.notify_listeners(("vertex_event", (src_vertex, "refresh")))
-        self.notify_listeners(("vertex_event", (tgt_vertex, "refresh")))
+        """ This method should really do add edge operations on graph
+        and do notifications. It acts as the translator for the view to the model
+        If it only does notifications, better put those in another method."""
+        pass
 
     def remove_edge(self, src_vertex, tgt_vertex):
-        edge = src_vertex, tgt_vertex
-        self.notify_listeners(("edge_removed", ("default",edge)))
+        """ This method should really do remove edge operations on graph
+        and do notifications. It acts as the translator for the view to the model
+        If it only does notifications, better put those in another method."""
+        pass
+
+    def notify_edge_additions(self, edges):
+        for edge in edges:
+            src, tgt = edge
+            self.notify_listeners(("edge_added", ("default", edge, src, tgt)))
+
+    def notify_edge_removals(self, edges):
+        for edge in edges:
+            self.notify_listeners(("edge_removed", ("default",edge)))
+
 
     # def remove_edges(self, edges):
     #     GraphAdapterBase.remove_edges(self, (e for e in edges))
@@ -138,12 +156,12 @@ class Vertex( qt.DefaultGraphicalVertex ):
         brush = QtGui.QBrush(color)
         self.setBrush(brush)
         self._label.setText(str(self.vertex()))
-        self._label.setPos(self.boundingRect().center()-self._label.boundingRect().bottomRight()/2)
+        self._label.setPos(self.boundingRect().center()- \
+                           self._label.boundingRect().bottomRight()/2)
 
         # -- call to parent handles the position --
         qt.DefaultGraphicalVertex.initialise_from_model(self)
-        self.setFocus()
-        self.setSelected(True)
+        self.select()
 
     def store_view_data(self, **kwargs):
         vid = self.vertex()
@@ -153,18 +171,15 @@ class Vertex( qt.DefaultGraphicalVertex ):
         vid = self.vertex()
         return self.mtg.property(key).get(vid)
 
-    # -- Extend this if you want to handle more notifications
-    # -- but be sure to call the one from the superclass too
-    def notify(self, sender, event):
-        """Handle notifications from the vertex model"""
-        if event == "refresh":
-            self.notify_position_change()
-        qt.DefaultGraphicalVertex.notify(self, sender, event)
-
     def default_position(self):
         """If there is no position obtained by get_view_data("position"),
         use the return value from this one"""
         return [rint(0,200)]*2
+
+    def select(self):
+        self.setFocus()
+        self.scene().clearSelection()
+        self.setSelected(True)
 
     ########################################################
     # The following methods are meant to modify the model! #
@@ -198,116 +213,74 @@ class Vertex( qt.DefaultGraphicalVertex ):
 
         gm.new_vertex(parent=self.vertex(), position=[x,y], edge_type=edge_type )
 
-        # -- this is required to correctly display the edges right from the start --
-        # -- it's a bug in grapheditor --
-        self.notify_position_change()
-        print "Vertex.add_child", x, y
 
-    def add_component(self, *args):
-        """ This methods modifies the mtg by adding a component to this vertex.
-        The view will be updated through the graph's notifications.
-        """
-        print "called add_component"
+    #######################################
+    # Handle notifications from the model #
+    #######################################
+    def notify(self, sender, event):
+        if event=="select":
+            self.select()
+        else:
+            qt.DefaultGraphicalVertex.notify(self, sender, event)
 
     ##########################
     # Some Qt Event handling #
     ##########################
     def keyPressEvent(self, event):
         k = event.key()
-        edge_type = "<"
-        to_add = True
-        if k == QtCore.Qt.Key_Less:
-            edge_type="<"
-            print "succesor"
-        elif k == QtCore.Qt.Key_Plus :
-            edge_type="+"
-            print "branch"
-        elif k == QtCore.Qt.Key_Slash :
-            edge_type="/"
-            print "component"
-        elif k == QtCore.Qt.Key_Backslash :
-            edge_type="\\"
-            print "complex"
-        elif k == QtCore.Qt.Key_Delete :
-            to_add=False
+        if k in [QtCore.Qt.Key_Up, QtCore.Qt.Key_Down,
+                 QtCore.Qt.Key_Left, QtCore.Qt.Key_Right]:
+            g = self.mtg
+            vid = self.vertex()
+            if k == QtCore.Qt.Key_Up:
+                cpx_id = g.complex(vid)
+                if cpx_id is not None:
+                    self.graph().notify_listeners(("vertex_event", (cpx_id, "select")))
+            elif k == QtCore.Qt.Key_Down:
+                cids = list(g.components(vid))
+                if len(cids) > 0:
+                    self.graph().notify_listeners(("vertex_event", (cids[0], "select")))
+            elif k == QtCore.Qt.Key_Left:
+                pid = g.parent(vid)
+                if pid is not None:
+                    self.graph().notify_listeners(("vertex_event", (pid, "select")))
+            else:
+                chids = list(g.children(vid))
+                for chid in chids:
+                    if g.edge_type(chid) == "<":
+                        self.graph().notify_listeners(("vertex_event", (chid, "select")))
+                        break
         else:
-            return
-        event.accept()
-        if to_add:
-            self.add_child(edge_type=edge_type)
-        else:
-            self.graph().remove_vertex(self.vertex())
-
-
-    def mouseDoubleClickEvent(self, event):
-        self.add_child()
-
+            edge_type = "<"
+            to_add = True
+            if k == QtCore.Qt.Key_Less:
+                edge_type="<"
+            elif k == QtCore.Qt.Key_Plus :
+                edge_type="+"
+            elif k == QtCore.Qt.Key_Slash :
+                edge_type="/"
+            elif k == QtCore.Qt.Key_Backslash :
+                edge_type="\\"
+            elif k == QtCore.Qt.Key_Delete :
+                to_add=False
+            else:
+                return
+            event.accept()
+            if to_add:
+                self.add_child(edge_type=edge_type)
+            else:
+                self.graph().remove_vertex(self.vertex())
 
 
 
 
 class MtgView( qt.View ):
 
-    def __init__(self, parent):
-        qt.View.__init__(self, parent)
-
-        self.copyRequest.connect(self.on_copy_request)
-        self.cutRequest.connect(self.on_cut_request)
-        self.pasteRequest.connect(self.on_paste_request)
-        self.deleteRequest.connect(self.on_delete_request)
-
-
-
-    def on_copy_request(self, view, scene, a):
-        """Implements the mtg copy operation.
-        View is a subclass of QGraphicsView (MtgView in this case)
-        scene is a subclass of QGraphicsScene (openalea.grapheditor.qtgraphview.Scene).
-        You can copy whatever you want: vertices, edges: you handle it!
-        You also handle where stuff is copied to.
-        If event evaluation should stop set a.accept=True.
-        """
-        print "on_copy_request"
-
-    def on_cut_request(self, view, scene, a):
-        """Implements the mtg cut operation.
-        View is a subclass of QGraphicsView (MtgView in this case)
-        scene is a subclass of QGraphicsScene (openalea.grapheditor.qtgraphview.Scene)
-        You can cut whatever you want: vertices, edges: you handle it!
-        You also handle where stuff is cut to.
-        If event evaluation should stop set a.accept=True.
-        """
-        print "on_cut_request"
-
-    def on_paste_request(self, view, scene, a):
-        """Implements the mtg paste operation.
-        View is a subclass of QGraphicsView (MtgView in this case)
-        scene is a subclass of QGraphicsScene (openalea.grapheditor.qtgraphview.Scene)
-        You can paste whatever you want: vertices, edges: you handle it!
-        You also handle where stuff is pasted from.
-        If event evaluation should stop set a.accept=True.
-        """
-        print "on_paste_request"
-
-    def on_delete_request(self, view, scene, a):
-        """Implements the mtg delete operation.
-        View is a subclass of QGraphicsView (MtgView in this case)
-        scene is a subclass of QGraphicsScene (openalea.grapheditor.qtgraphview.Scene)
-        You can delete whatever you want: vertices, edges: you handle it!
-        If event evaluation should stop set a.accept=True.
-        """
-        # scene = self.scene()
-        # selectedItem = scene.get_selected_items(
-        # self.scene().graph().remove_vertex(
-        print "on_delete_request"
-
-
     #########################
     # Handling mouse events #
     #########################
     def mouseDoubleClickEvent(self, event):
         qt.View.mouseDoubleClickEvent(self, event)
-        if not event.isAccepted():
-            self.dropHandler(event)
 
     def dropHandler(self, event):
         position = self.mapToScene(event.pos())
@@ -379,11 +352,6 @@ if __name__ == "__main__":
             self.setMinimumSize(800,600)
             self.__graph = ObservableMTG()
             self.__graphView = GraphicalMtgFactory.create_view(self.__graph, parent=self)
-
-            # for p in range(1):
-            #     print "got here!"
-            #     self.__graph.new_vertex(position=[10.0, 10.0],
-            #                             color=QtGui.QColor(rint(0,255),rint(0,255),rint(0,255)))
 
             self.setCentralWidget(self.__graphView)
 
