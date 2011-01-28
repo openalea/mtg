@@ -250,6 +250,10 @@ class Vertex( qt.DefaultGraphicalVertex ):
                     if g.edge_type(chid) == "<":
                         self.graph().notify_listeners(("vertex_event", (chid, "select")))
                         break
+                else:
+                    if chids:
+                        chid = chids[0]
+                        self.graph().notify_listeners(("vertex_event", (chid, "select")))
         else:
             edge_type = "<"
             to_add = True
@@ -331,14 +335,14 @@ def initialise_graph_view_from_model(graphView, graphModel):
 
 
 # -- This creates a GraphicalMtg factory, a class that creates views for MTGS --
-GraphicalMtgFactory = qt.QtGraphStrategyMaker( graphView            = MtgView,
-                                               vertexWidgetMap      = {"vertex":Vertex},
-                                               edgeWidgetMap        = {"default":qt.DefaultGraphicalEdge,
-                                                                       "floating-default":qt.DefaultGraphicalFloatingEdge},
-                                               graphViewInitialiser = initialise_graph_view_from_model
-                                               )
-
-
+GraphicalMtgFactory = qt.QtGraphStrategyMaker( 
+    graphView = MtgView,
+    vertexWidgetMap = {"vertex":Vertex},
+    edgeWidgetMap = {
+        "default":qt.DefaultGraphicalEdge,
+        "floating-default":qt.DefaultGraphicalFloatingEdge },
+    graphViewInitialiser = initialise_graph_view_from_model,
+    )
 
 
 
