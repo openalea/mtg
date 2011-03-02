@@ -437,8 +437,8 @@ def union(g1, g2, vid1=None, vid2=None, edge_type='<'):
             parent = treeid_id[pid]
             v = g.add_child(parent, child=v)
 
-            # Copy the properties
-            g._add_vertex_properties(v, g2.get_vertex_property(vid))
+        # Copy the properties
+        g._add_vertex_properties(v, g2.get_vertex_property(vid))
 
 
     return g

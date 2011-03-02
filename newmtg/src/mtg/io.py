@@ -23,11 +23,17 @@ from warnings import warn
 from mtg import *
 from traversal import iter_mtg, iter_mtg_with_filter
 
+from openalea.core.logger import get_logger, logging
+
+logger = get_logger('openalea.mtg')
+_ch = logging.StreamHandler()
+logger.addHandler(_ch)
 debug = 0
 
 def log(*args):
     if debug:
-        print '  '.join(map(str, args))
+        logger.debug('  '.join(map(str, args)))
+        #print '  '.join(map(str, args))
 
 ################## UTILS
 def get_expr(s, expr):
@@ -580,7 +586,6 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
 
       - `axial_tree`: The axial tree managed by the L-system. 
         Use an empty AxialTree if you do not want to concatenate this axial_tree with previous results.
-      - `scene`: The scene containing the geometry.
       - `parameters`: list of parameter names for each module.
     
     :Return: mtg
@@ -593,7 +598,7 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
         params ['P'] = []
         params['A'] = ['length', radius']
         params['GU']=['nb_flower']
-        tree = mtg2axialtree(g)
+        tree = mtg2axialtree(g, params)
 
     .. seealso:: :func:`axialtree2mtg`, :func:`mtg2lpy`
     """
@@ -622,7 +627,7 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
         if et in ('+', '/'):
             tree += '['
 
-        name = label.get(vid)
+        name = g.class_name(vid)
         if not name: 
             return False
 
@@ -662,8 +667,8 @@ def lpy2mtg(axial_tree, lsystem, scene = None):
     scales = {}
     for m in modules:
         label = m.name
-        parameters[m.name] = m.parameterNames
-        scales[m.name] = m.scale
+        parameters[label] = m.parameterNames
+        scales[label] = m.scale
 
     tree = axial_tree
     if scene is None:
@@ -1265,7 +1270,8 @@ class Writer(object):
 
         sym_at_col = []
         for vtx in traversal.iter_mtg2(self.g, self.g.root):
-            
+
+            log('Process ',vtx, self.g.node(vtx).label)
 
             cur_scale = self.g.scale(vtx)
             if vtx == current_vertex:
@@ -1283,19 +1289,32 @@ class Writer(object):
                 et = '/'
                 if current_vertex != self.g.root:
                     et = '^'+et
+                
+                log('  ','Cas / ',self.g.node(current_vertex).label, vtx, et)
 
             else:
                 et = edge_type.get(vtx,'/')
                 parent = self.g.parent(vtx)
-
+                possible_et = possible_tab = None
+                log('  ','Cas 2:', et, 'parent:',parent, 'sym_at_col: ',sym_at_col)
                 for i in range(tab, -1, -1):
-                    v = sym_at_col[i]
+                    vc = v = sym_at_col[i]
                     vscale = self.g.scale(v)
-                    if vscale > cur_scale:
-                        for j in range(vscale-cur_scale):
-                            v = self.g.complex(v)
+                    log('    col '+str(i),cur_scale, v,'scale',vscale)
 
-                    if v == parent:
+                    vtx_proj = vtx
+                    parent_proj = parent
+                    if vscale > cur_scale:
+                        # up
+                        for j in range(vscale-cur_scale):
+                            vc = self.g.complex(vc)
+                        #down
+                        # Even if the complex are linked together, several solution can coexist
+                        vtx_proj = self.g.component_roots_at_scale(vtx,scale=vscale).next()
+                        parent_proj = self.g.parent(vtx_proj)
+                        
+                    if vc == parent and v == parent_proj:
+                        log('   ==> cas 1')
                         if et == '<':
                             et = '^'+et
                             tab = i
@@ -1306,20 +1325,37 @@ class Writer(object):
                                 et = '^'+et
                                 tab = i
                         break
-                    elif self.g.complex(v) == self.g.complex(vtx)==self.g.root:
-                        tab = 0
-                        break
+                    elif vc == parent:
+                        log('   ==> cas 2')
+                        if et == '<':
+                            possible_et = '^'+et
+                            possible_tab = i
+                        else:
+                            if i+1 < nb_tab:
+                                possible_tab = i+1
+                            else:
+                                possible_et = '^'+et
+                                possible_tab = i
+                    elif i == 0 and self.g.complex(vc) == self.g.complex(vtx)==self.g.root:
+                        if not possible_et:
+                            tab = 0
+                            break
                         
                 else:
                     #print sy
-                    print tab
-                    print sym_at_col
-                    raise Exception("Error in the MTG for vertex %d"%vtx)
+                    log('    Possible Error. Use hypothetic state if possible.')
+                    if possible_et and possible_tab:
+                        et = possible_et
+                        tab = possible_tab
+                    else:
+                        print tab
+                        print sym_at_col
+                        raise Exception("Error in the MTG for vertex %d"%vtx)
 
             if tab >= nb_tab:
                 msg = """There is not enough tabs to store the MTG code.
                 Increase the nb_tab variable to at least %d"""
-                raise Exception(msg%(nb_tab+2))
+                raise Exception(msg%(nb_B2tab+2))
 
 
             # Create a valid line with properties.
@@ -1327,6 +1363,8 @@ class Writer(object):
             name = '%s%s'%(et,get_label(label))
             line = ['']*nb_tab
             line[tab] = name
+
+            log(' -> Add vertex', line[:tab+1], '(%d)'%tab )
 
             for pname in property_names:
                 if properties[pname].has_key(vtx):
