@@ -1085,7 +1085,7 @@ def colored_tree(tree, colors):
     if isinstance(tree, MTG):
         max_scale = tree.max_scale()
         g._parent.update(dict(((index_scale[k], index_scale[v])
-                                for k, v in tree._parent.iteritems() if v and tree.scale(v) == max_scale)))
+                                for k, v in tree._parent.iteritems() if v is not None and tree.scale(v) == max_scale)))
         for parent, children in tree._children.iteritems():
 
             if tree.scale(parent) == max_scale:
