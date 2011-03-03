@@ -23,17 +23,23 @@ from warnings import warn
 from mtg import *
 from traversal import iter_mtg, iter_mtg_with_filter
 
-from openalea.core.logger import get_logger, logging
+try:
+    from openalea.core.logger import get_logger, logging
+    
+    logger = get_logger('openalea.mtg')
+    _ch = logging.StreamHandler()
+    logger.addHandler(_ch)
+except:
+    logger = None
 
-logger = get_logger('openalea.mtg')
-_ch = logging.StreamHandler()
-logger.addHandler(_ch)
 debug = 0
 
 def log(*args):
     if debug:
-        logger.debug('  '.join(map(str, args)))
-        #print '  '.join(map(str, args))
+        if logger:
+            logger.debug('  '.join(map(str, args)))
+        else:
+            print '  '.join(map(str, args))
 
 ################## UTILS
 def get_expr(s, expr):
