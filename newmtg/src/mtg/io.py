@@ -505,7 +505,8 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
     mtg = MTG()
     if scene:
         mtg.add_property('geometry')
-        mtg.add_property('_axial_id')
+        
+    mtg.add_property('_axial_id')
     
     if parameters is None:
         parameters = {}
