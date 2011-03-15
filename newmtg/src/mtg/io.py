@@ -489,6 +489,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
         """
         Change the id of the shape in the scene by the id of the mtg element.
         """
+        mtg.property('_axial_id')[mtg_id] = axial_id
         if geoms:
             if geoms.has_key(axial_id):
                 for shape in geoms[axial_id]:
@@ -504,6 +505,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
     mtg = MTG()
     if scene:
         mtg.add_property('geometry')
+        mtg.add_property('_axial_id')
     
     if parameters is None:
         parameters = {}
@@ -578,8 +580,8 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
 
             #assert mtg.scale(current_vertex) == _scale
 
-            if max_scale == _scale:
-                change_id(aid,current_vertex)
+            #if max_scale == _scale:
+            change_id(aid,current_vertex)
 
     mtg = fat_mtg(mtg)
     return mtg
