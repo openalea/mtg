@@ -70,10 +70,26 @@ def get_float(s):
     num = get_expr(s, args)
     return float(num)
 
-def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
+def replace_date(s, format):
+    """
+    Replace the date / by -
+    """
+    import re
+    if format == 'DD/MM/YY':
+        rawstr = r"""(?P<day>3[01]|[0-2]{0,1}\d)/(?P<month>1[012]|0\d)/(?P<year>\d\d)"""
+    else:
+        rawstr = r"""(?P<day>3[01]|[0-2]{0,1}\d)/(?P<month>1[012]|0\d)/(?P<year>19\d\d|20\d\d)"""
+
+    def change_date(match_obj):
+        day, month, year = match_obj.group('day'), match_obj.group('month'), match_obj.group('year')
+        return '-'.join((day, month, year))
+
+    return re.sub(rawstr, change_date, s)
+
+def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False):
 
     def get_properties(name):
-        _type = dict([('INT', int), ('REAL', float), ('ALPHA', str), ('DD/MM/YY', str)])
+        _type = dict([('INT', int), ('REAL', float), ('ALPHA', str), ('DD/MM/YY', str), ('DD/MM/YYYY', str)])
         args = {}
         l = name.strip().split('(')
         label = get_label(name)
@@ -82,13 +98,16 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
             args['index'] = int(index)
         args['label'] = label
         if len(l) > 1:
-            arg_string = l[1][:-1]
+            arg_string = l[1].strip()[:-1]
             if arg_string:
-                l = arg_string.split(',')
-                for arg in l:
-                    k, v = arg.split('=')
-                    klass = _type[class_type[k]]
-                    args[k] = klass(v)
+                ln = arg_string.split(',')
+                try:
+                    for arg in ln:
+                        k, v = arg.split('=')
+                        klass = _type[class_type[k]]
+                        args[k] = klass(v)
+                except:
+                    print name
         return args
 
     implicit_scale = bool(symbol_at_scale)
@@ -115,6 +134,15 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
     for k in class_type:
         mtg.add_property(k)
 
+    # remove from the date format the /
+    if has_date:
+        print 'replace all the date format by -'
+        if 'DD/MM/YY' in class_type.values():
+            date_format = 'DD/MM/YY'
+        else:
+            date_format = 'DD/MM/YYYY'
+        s = replace_date(s, format)
+
     for edge_type in symbols:
         if edge_type != '/' or not symbol_at_scale:
             s = s.replace(edge_type, '\n%s'%edge_type)
@@ -123,12 +151,17 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
             for klass in symbol_at_scale.keys():
                 s = s.replace('/%s'%klass, '\n/%s'%klass)
     s = s.replace('<\n<', '<<')
+    s = s.replace(')(', ')\n(')
+
     l = filter( None, s.split('\n'))
 
     for node in l:
         if node.startswith('<<'):
             tag = '<<'
             name = node[2:]
+        elif node.startswith('(') and has_date:
+            tag = '*'
+            name = node[:]
         else:
             tag = node[0]
             name = node[1:]
@@ -140,6 +173,9 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
             vid = branching_stack.pop()
             current_vertex = vid
             scale = mtg.scale(vid)
+        elif tag == '*':
+            args = get_properties(name)
+            #print args
         else:
             if class_type:
                 args = get_properties(name)
@@ -152,7 +188,10 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}):
 
             if implicit_scale:
                 symbol_class = get_name(name)
-                new_scale = symbol_at_scale[symbol_class]
+                try:
+                    new_scale = symbol_at_scale[symbol_class]
+                except:
+                    print 'NODE ',node, bool(tag=='*')
                 if tag == '/' and new_scale <= scale:
                     new_scale -= 1
                     pending_edge = '/'
@@ -778,6 +817,7 @@ class Reader(object):
         self._symbols = {}
         self._description = None
         self._features = {}
+        self.has_date = False
 
         # debug
         self._no_line = 0
@@ -944,6 +984,9 @@ class Reader(object):
                 self.warnings.append((self._no_line, "FEATURE description error."))
                 continue
             name, _type = line
+            if '/' in _type and name.lower() == 'date':
+                self.has_date = True
+                print 'HAS DATE'
             self._features[name] = _type
 
         if l.startswith('MTG'):
@@ -1026,7 +1069,7 @@ class Reader(object):
                                                                                str(edge_type), 
                                                                                str(indent)) 
         if diff_space == 0:
-            if s.startswith('^'):
+            if s.startswith('^') or s.startswith('*'):
                 s = s[1:]
             elif edge_type:
                 elt = ''
@@ -1127,7 +1170,7 @@ class Reader(object):
     def build_mtg(self):
         """
         """
-        self.mtg = multiscale_edit(self._new_code, self._symbols, self._features)
+        self.mtg = multiscale_edit(self._new_code, self._symbols, self._features, self.has_date)
         #self.mtg = multiscale_edit(self._new_code, {}, self._features)
 
 def read_mtg(s):
