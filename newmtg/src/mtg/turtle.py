@@ -7,11 +7,13 @@ from vplants.plantgl.all import *
 def visitor(g, v, turtle):
         if g.edge_type(v) == '+':
             turtle.down()
+        turtle.setId(v)
         turtle.F()
         turtle.rollL()
 
-def traverse_with_turtle(g, vid, visitor=visitor):
-    turtle = PglTurtle()
+def traverse_with_turtle(g, vid, visitor=visitor, turtle=None):
+    if turtle is None:
+        turtle = PglTurtle()
 
     def push_turtle(v):
         if g.edge_type(v) == '+':

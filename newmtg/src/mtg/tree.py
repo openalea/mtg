@@ -492,7 +492,7 @@ class PropertyTree(Tree):
         super(PropertyTree, self).__init__(*args, **kwds)
         self._properties = {}
 
-    def remove_vertex(self, vid):
+    def remove_vertex(self, vid, reparent_child=False):
         """
         remove a specified vertex of the graph
         remove all the edges attached to it
@@ -600,12 +600,15 @@ class PropertyTree(Tree):
                 tree.add_property(name)
             
             treeid_id[vtx_id] = tree.root
+            tree._add_vertex_properties(tree.root, self.get_vertex_property(vtx_id))
             subtree = pre_order(self, vtx_id)
             subtree.next()
             for vid in subtree:
-                parent = treeid_id[self.parent(vid)]
-                v = tree.add_child(parent)
-                treeid_id[vid] = v
+                pid = self.parent(vid)
+                if pid is not None:
+                    parent = treeid_id[pid]
+                    v = tree.add_child(parent)
+                    treeid_id[vid] = v
 
                 tree._add_vertex_properties(v, self.get_vertex_property(vid))
 
