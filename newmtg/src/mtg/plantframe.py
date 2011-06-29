@@ -385,7 +385,7 @@ class PlantFrame(object):
 
     def default_algo_diameter(self, power):
         """ 
-        Compute the paipe model on the entire mtg.
+        Compute the pipe model on the entire mtg.
         When a node has no values, take the deafult value.
         """
         g = self.g

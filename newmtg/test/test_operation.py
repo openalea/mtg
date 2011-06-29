@@ -18,3 +18,7 @@ def test_replace_parent():
     assert g.parent(45) == 33
     assert len(g) == n
     g.replace_parent(49,35)
+
+def test_insert_parent():
+    g= aml.MTG('data/test7.mtg')
+    

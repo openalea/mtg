@@ -11,25 +11,31 @@ def visitor(g, v, turtle):
         turtle.F()
         turtle.rollL()
 
-def traverse_with_turtle(g, vid, visitor=visitor, turtle=None):
+def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
     if turtle is None:
         turtle = PglTurtle()
 
     def push_turtle(v):
         if g.edge_type(v) == '+':
             turtle.push()
+            if gc:
+                turtle.startGC()
+            turtle.setId(v)
         return True
 
     def pop_turtle(v):
         if g.edge_type(v) == '+':
+            if gc:
+                turtle.stopGC()
             turtle.pop()
 
-    visitor(g,vid,turtle)
     turtle.push()
+    if gc: turtle.startGC()
+    visitor(g,vid,turtle)
     for v in pre_order2_with_filter(g, vid, None, push_turtle, pop_turtle):
         if v == vid: continue
         visitor(g,v,turtle)
-
+    if gc: turtle.stopGC()
     return turtle.getScene()
 
 def TurtleFrame(g, visitor=visitor):
