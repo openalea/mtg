@@ -52,7 +52,7 @@ from math import sqrt
 
 from vplants.plantgl.all import * 
 
-error = False
+error = True
 epsilon = 1e-5
 
 class PlantFrame(object):
@@ -121,6 +121,9 @@ class PlantFrame(object):
             self.new_axe = dict((vid, True) for vid in g.vertices() if g.edge_type(vid) == '+')
         self.axes = {}
 
+        # Exclude some elements depending on their class
+        self.exclude = kwds.get('Exclude', [])
+
         self._compute_global_data()
         self.propagate_constraints()
 
@@ -132,13 +135,15 @@ class PlantFrame(object):
         d = {}
 
         func = kwds.get(name)
-        if func:
+        if callable(func):
             # Compute the value for all vertices
             all_values = ((vid,func(vid)) for vid in self.g.vertices())
             # Select only those which are defined
             values = ( (vid, fvid) for vid, fvid in all_values if fvid is not None)
 
             d = dict(values)
+        elif isinstance(func, str):
+            d = self.g.property(func)
             
         name_property = self.g.property(name).copy()
         name_property.update(d)
@@ -181,7 +186,7 @@ class PlantFrame(object):
                 continue
         
         if not self.new_axe:
-            self.new_axe = [v for v in g.vertices(scale = self.max_scale) if g.edge_type(v) == '+']
+            self.new_axe = [v for v in g.vertices(scale = self.max_scale) if (g.edge_type(v) == '+' or g.parent(v) is None) or g.class_name(v) in self.exclude]
 
         # Method to compute the axes and their order.
         self._compute_axes()
@@ -199,14 +204,15 @@ class PlantFrame(object):
         marked = {}
         axes = self.axes
         new_axe = self.new_axe
-
+        exclude = self.exclude
         self.max_order_axes = 0
 
         def ancestors(v):
             while v is not None:
+
                 yield v
                 marked[v] = True
-                if g.parent(v) is None or v in new_axe:
+                if v in new_axe:
                     break
                 v = g.parent(v)
                 
@@ -220,7 +226,7 @@ class PlantFrame(object):
 
         for root in g.roots(scale=max_scale):
             for vid in traversal.post_order(g, root):
-                if vid in marked:
+                if vid in marked or g.class_name(vid) in exclude:
                     continue
                 _axe = list(reversed(list(ancestors(vid))))
                 _order = order(_axe[0])
@@ -577,6 +583,7 @@ class PlantFrame(object):
         g = self.g
         max_scale = g.max_scale()
         dresser = self.dresser
+        exclude = self.exclude
 
         n = 0
 
@@ -614,10 +621,15 @@ class PlantFrame(object):
                     root_diameter = max(diameters.get(g.parent(pid), 0), 
                                     bottom_diameter.get(root,0)**power)
 
+            # Exclude some nodes
             for vid in traversal.post_order(tree, root):
                 assert vid not in diameters
 
-                children_diam = [diameters[v] for v in g.children(vid) if v in diameters]
+                if g.class_name(vid) in exclude:
+                    continue
+
+
+                children_diam = [diameters[v] for v in g.children(vid) if v in diameters and g.class_name(v) not in exclude]
                 diam = sum(children_diam)
 
                 if has_root_diameter and diam > root_diameter:
@@ -634,7 +646,7 @@ class PlantFrame(object):
                 if diam > 0:
                     diameters[vid] = diam
 
-                strand = sum(strands.get(v,0) for v in g.children(vid))
+                strand = sum(strands.get(v,0) for v in g.children(vid) if  g.class_name(v) not in exclude)
                 if strand > 0:
                     strands[vid] = strand
                 elif diam == 0:
@@ -672,10 +684,13 @@ class PlantFrame(object):
                     assert root in diameters
                     continue
                 
+                def special_leaf(v):
+                    return not any(cid for cid in g.children(v) if g.class_name(cid) not in exclude)
+
                 if root not in diameters:
                     strands_diameter = default_diameter
                 else:
-                    nb_leaves = len([v for v in traversal.pre_order2(g, root) if g.is_leaf(v)])
+                    nb_leaves = len([v for v in traversal.pre_order2(g, root) if special_leaf(v)])
                     strands_diameter = diameters[root] / (nb_leaves - strands[root])
 
                 for vid, nb_strands in strands.iteritems():
@@ -693,7 +708,68 @@ class PlantFrame(object):
 
         return diameters
 
+    def __interpolate_diameter(self, axe, top_dia, default, order):
+        top_diameter = self.top_diameter
+        bottom_diameter = self.bottom_diameter
+        n = len(axe)
+        
+        indices = [(i,vid) for i, vid in enumerate(axe) if vid in top_diameter]
 
+        # set the default value for the lase node in the axis
+        last_id = axe[-1]
+        if last_id not in top_diameter:
+            klass = self.g.class_name(last_id)
+            dd = self.dresser.min_topdia.get(klass, default)
+            indices.append((n-1,last_id))
+            top_dia[last_id] = dd
+        if len(indices) > 1:
+            for i in range(len(indices)-1):
+                (a, va), (b,vb) = indices[i], indices[i+1]
+                da, db = top_dia[va], top_dia[vb]
+                d_step = (db-da)/(b-a)
+                for index in range(a+1, b):
+                    top_dia[axe[index]] = da + d_step * (index-a)
+
+        # Constant interpolation
+        first_dia = top_dia[indices[0][1]]
+        for i in range(indices[0][0]):
+            top_dia[axe[i]] = first_dia
+
+
+    def linear_diameter(self, power=2):
+        """ Traverse all the axes order by order.
+        The higher order are traversed first.
+
+        Retrieve all the defined radius on an axis.
+        Define a parrameter for each define radius.
+        Then interpolate and extrapolate
+        
+        """
+
+        default_diameter = 1 if not self.dresser.min_topdia else min(self.dresser.min_topdia.values())
+        default_diameter *= 1./self.dresser.diameter_unit
+
+
+        axes = self.axes
+        top_diameter = self.top_diameter.copy()
+
+        if not self.top_diameter and not self.bottom_diameter:
+            diameter = self.default_algo_diameter(power)
+            return diameter
+
+        orders = list(self.axes)
+        orders = sorted(orders, reverse=True)
+        for order in orders:
+            for axe in self.axes[order]:
+                self.__interpolate_diameter(axe, top_diameter, default_diameter, order)
+
+        return top_diameter 
+
+
+        
+        
+        
+        
 
     def build_mtg_from_radius(self):
         """ Decompose the tree (mtg at finest scale) into sub systems
@@ -735,12 +811,16 @@ class PlantFrame(object):
         g = self.g
         bd = self.bottom_diameter
         td = self.top_diameter
+        exclude = self.exclude
+        
+        def exclude_vertex(vid):
+            return g.class_name(vid) not in exclude
 
         tree_id = {}
         trees = {}
         max_scale = g.max_scale()
         for tree_root in g.roots(scale=max_scale):
-            for vid in traversal.pre_order(g, tree_root):
+            for vid in traversal.pre_order2_with_filter(g, tree_root, pre_order_filter=exclude_vertex):
                 if vid not in td:
                     pid = g.parent(vid)
                     if pid in tree_id:
@@ -1077,6 +1157,27 @@ def compute_diameter(g, v, radius, default_value):
 
     return all_r
 
+def compute_diameter2(g, diameters, property_name='radius', 
+                      default_values=None, exclude_symbols=None):
+    """ Compute the default diameter values of an MTG.
+
+    In this algorithm, the MTG is splited into axes. If there are two values for an exis,
+    these values are interpolated and extrapolated. The interpolation may depends on the
+    relative position of each internode in the MTG or the length between the internodes.
+    The default value allows to consider the top of the axis. At the base of the axis, 
+    the extrapolation is linear.
+
+    :Properties:
+        - `g` : the MTG data structure
+        - `diameters`: a dict containing the diameters for the MTG  vertices intially 
+        - `radius`: 3 point to indicate the position of the base of the Tree
+        - `points`: a dict containing all the 3D coordiantes of the MTG vertices
+        - `default_radius`: default radius value when there is no diameter given for a given vertex
+        - `option`: draw all the axes as extrusion shapes or using cylinder
+        - `colors`: a function returning (r, g, b) values in [0,255]
+
+    """
+
 def build_scene(g, origin, axes, points, diameters, default_radius, option='axe', colors = None, hide=None):
     """ Build a scene from the  `MTG` g and properties.
 
@@ -1084,13 +1185,13 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
     Return the 3D PlantGL scene.
 
     :Properties:
-        - g : MTG data structure
-        - origin: 3 point to indicate the position of the base of the Tree
-        - points: a dict containing all the 3D coordiantes of the MTG vertices
-        - diameters: a dict containing the iameters for the MTG  vertices
-        - default_radius: default radius value when there is no diameter given for a given vertex
-        - option: draw all the axes as extrusion shapes or using cylinder
-        - colors: a function returning (r, g, b) values in [0,255]
+        - `g` : MTG data structure
+        - `origin`: 3 point to indicate the position of the base of the Tree
+        - `points`: a dict containing all the 3D coordiantes of the MTG vertices
+        - `diameters`: a dict containing the iameters for the MTG  vertices
+        - `default_radius`: default radius value when there is no diameter given for a given vertex
+        - `option`: draw all the axes as extrusion shapes or using cylinder
+        - `colors`: a function returning (r, g, b) values in [0,255]
 
     """
 
@@ -1122,7 +1223,7 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
 
             if vid not in rad or parent not in rad:
                 rad_vid = rad.get(vid, default_radius)
-                rad_parent = rad.get(parent, rad_vid)
+                rad_parent = rad.get(parent, rad_vid) if g.edge_type(vid) == '<' else rad_vid
                 radius = [[rad_parent]*2, [rad_vid]*2]
                 
                 color = colors(vid)
@@ -1132,8 +1233,8 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
                 shape.id = vid
                 scene += shape
             else:
-                rad_vid = rad.get(vid, 1)
-                rad_parent = rad.get(parent, rad_vid)
+                rad_vid = rad.get(vid, default_radius)
+                rad_parent = rad.get(parent, rad_vid) if g.edge_type(vid) == '<' else rad_vid
                 radius = [[rad_parent]*2, [rad_vid]*2]
                 color = colors(vid)
                 if color:
@@ -1170,7 +1271,7 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
             eps = 1
             curve = Polyline(poly)
 
-            radius = [[rad.get(vid, 1.)]*2 for vid in axe if vid in points]
+            radius = [[rad.get(vid, default_radius)]*2 for vid in axe if vid in points]
             if len(radius)>1:
                 radius[0] = radius[1]
 
