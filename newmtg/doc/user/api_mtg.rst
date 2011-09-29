@@ -44,6 +44,17 @@ Adding and removing vertices
     MTG.add_child_tree
     MTG.clear
 
+Some usefull functions
+-----------------------
+
+.. autosummary::
+
+    simple_tree
+    random_tree
+    random_mtg
+    colored_tree
+    display_tree
+    display_mtg
 
 All
 ---
@@ -54,6 +65,13 @@ All
     :undoc-members:
     :inherited-members:
     :show-inheritance:
+
+.. autofunction:: simple_tree
+.. autofunction:: random_tree
+.. autofunction:: random_mtg
+.. autofunction:: colored_tree
+.. autofunction:: display_tree
+.. autofunction:: display_mtg
 
 Download the source file :download:`../../src/mtg/mtg.py`.
 

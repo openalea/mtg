@@ -91,15 +91,18 @@ class MTG(PropertyTree):
         self.add_property('edge_type')
         self.add_property('label')
 
+
     def __getitem__(self, vtx_id):
-        """A simple getitem to extract relevant information on a vertex
+        """A simple getitem to extract relevant information on a vertex.
 
         """
-        return {"vid":vtx_id,
-                "label":self.label(vtx_id),
+        d = self.get_vertex_property(vtx_id)
+        d.update({"vid":vtx_id,
                 "index":self.index(vtx_id),
                 "complex":self.complex(vtx_id),
-                "scale":self._scale.get(vtx_id)}
+                "parent":self.parent(vtx_id),
+                "scale":self._scale.get(vtx_id)})
+        return d
 
 
 
@@ -377,13 +380,14 @@ class MTG(PropertyTree):
         This also removes all vertex properties.
         Don't change references to object such as internal dictionaries.
 
-        :Example: ::
+        :Example: 
+            .. code-block:: python
 
-            >>> g.clear()
-            >>> g.nb_vertices()
-            0
-            >>> len(g)
-            0
+                >>> g.clear()
+                >>> g.nb_vertices()
+                0
+                >>> len(g)
+                0
 
 
         """
@@ -405,11 +409,22 @@ class MTG(PropertyTree):
         return g.sub_mtg(g.root)
 
     def roots(self, scale=0):
-        '''
+        ''' Returns the roots of the tree graphs at a given scale.
+        
+        In an MTG, the MTG root vertex, namely the vertex `g.root`, 
+        can be decomposed into several, non-connected, tree graphs at a given scale. 
+        This is for example the case of an MTG containing the description of several plants.
+        
+        :Usage: ::
+
+            roots = list(g.roots(scale=g.max_scale())
+
         :Returns:
             iterator on vertex identifiers of root vertices at a given `scale`.
         :Returns Type:
             iter
+
+        .. image:: ../user/mtg_componentroots.png
         '''
         return (vid for vid in self.vertices(scale=scale) if self.parent(vid) is None)
 
@@ -999,6 +1014,35 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
 ################################################################################
 
 def simple_tree(tree, vtx_id, nb_children=3, nb_vertices=20):
+    """ Generate and add a regular tree to an existing one at a given vertex.
+
+    Add a regular tree at a given vertex id position `vtx_id`.
+    The length of the sub_tree is `nb_vertices`. Each new vertex has
+    at most `nb_children` children.
+
+    :Parameters:
+        - `tree`: the tree thaat will be modified
+        - `vtx_id` (id): vertex on which the sub tree will be added.
+        - `nb_children` (int) : number of children that are added to each vertex
+        - `nb_vertices` (int) : number of vertices to add
+
+    :Returns:
+
+        The modified `tree`
+
+    :Examples:
+
+        .. code-block:: python
+            
+            g = MTG()
+            vid = g.add_component(g.root)
+            simple_tree(g, vid, nb_children=2, nb_vertices=20)
+            print len(g) # 22
+            
+    .. seealso:: :func:`random_tree`, :func:`random_mtg`
+
+    """
+    
     vid = vtx_id
     l=[vid]
     while nb_vertices > 0:
@@ -1011,6 +1055,32 @@ def simple_tree(tree, vtx_id, nb_children=3, nb_vertices=20):
     return tree
 
 def random_tree(mtg, root, nb_children=3, nb_vertices=20):
+    """ Generate and add a random tree to an existing one.
+
+    Add a random sub tree at a given vertex id position `root`.
+    The length of the sub_tree is `nb_vertices`. Each new vertex has
+    at most `nb_children` children.
+
+    :Parameters:
+        - `mtg`: the mtg to modified
+        - `root` (id): vertex id on which the sub tree will be added.
+
+    :Returns:
+
+        The last added vid.
+
+    :Examples:
+
+        .. code-block:: python
+            
+            g = MTG()
+            vid = g.add_component(g.root)
+            random_tree(g, vid, nb_children=2, nb_vertices=20)
+            print len(g) # 22
+            
+    .. seealso:: :func:`simple_tree`, :func:`random_mtg`
+
+    """
     from random import randint
     vid = root
     l=[vid]
@@ -1028,6 +1098,32 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
     return l[-1]
 
 def random_mtg(tree, nb_scales):
+    """ Convert a tree into an MTG of `nb_scales`.
+
+    Add a random sub tree at a given vertex id position `root`.
+    The length of the sub_tree is `nb_vertices`. Each new vertex has
+    at most `nb_children` children.
+
+    :Parameters:
+        - `mtg`: the mtg to modified
+        - `root` (id): vertex id on which the sub tree will be added.
+
+    :Returns:
+
+        The last added vid.
+
+    :Examples:
+
+        .. code-block:: python
+            
+            g = MTG()
+            random_tree(g, g.root, nb_children=2, nb_vertices=20)
+            print len(g) # 21
+            
+    .. seealso:: :func:`simple_tree`, :func:`random_tree`
+
+    """
+
     n = len(tree)
     # colors contained the colored vertices at each scale
     # based on the vertex of the initial tree
@@ -1048,6 +1144,29 @@ def random_mtg(tree, nb_scales):
 def colored_tree(tree, colors):
     """
     Compute a mtg from a tree and the list of vertices to be quotiented.
+
+    .. note:: The tree has to be a real tree and not an MTG
+
+    :Example:
+
+    .. code-block:: python
+
+        from random import randint, sample
+        g = MTG()
+        random_tree(g, g.root, nb_vertices=200)
+        
+        # At each scale, define the vertices which will define a complex
+        nb_scales=4
+        colors = {}
+        colors[3] = g.vertices()
+        colors[2] = random.sample(colors[3], randint(1,len(g)))
+        colors[2].sort()
+        if g.root not in colors[2]:
+            colors[2].insert(0, g.root)
+        colors[1] = [g.root]
+
+        g, mapping = colored_tree(g, colors)
+        
     """
 
     nb_scales = max(colors.keys())+1
@@ -1133,6 +1252,10 @@ def display_tree(tree, vid, tab = "", labels = {}, edge_type = {}):
             tab=tab[:-1]
 
 def display_mtg(mtg, vid):
+    """ Display an MTG
+    
+    ..todo:: Write doc.
+    """
     label = mtg.property('label')
     edge_type = mtg.property('edge_type')
     current_vertex = vid
