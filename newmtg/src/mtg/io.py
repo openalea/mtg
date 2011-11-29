@@ -588,6 +588,10 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
                     edge_type = '+'
                 else:
                     edge_type = '<'
+                #check if the edge_type is a good one:
+                if edge_type == '+' and current_vertex != branching_stack[-1]:
+                    edge_type = '<'
+
                 params['edge_type'] = edge_type
                 vid = mtg.add_child(vid, **params)
                 current_vertex = vid
@@ -617,6 +621,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
                     current_vertex = mtg.complex(current_vertex)
                 assert mtg.scale(current_vertex) == _scale - 1
                 current_vertex = mtg.add_component(current_vertex, **params)
+                pending_edge = ''
 
             #assert mtg.scale(current_vertex) == _scale
 
