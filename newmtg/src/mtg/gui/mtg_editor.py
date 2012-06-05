@@ -20,7 +20,9 @@ __revision__ = " $Id$ "
 from random import randint as rint
 from math import sin, cos, radians
 
-from openalea.grapheditor import qt, GraphAdapterBase
+from openalea.grapheditor import *
+from openalea.grapheditor.all import *
+from openalea.grapheditor import qt
 from openalea.core.observer import Observed
 
 from openalea.mtg import MTG

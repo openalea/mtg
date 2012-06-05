@@ -38,10 +38,10 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
     if gc: turtle.stopGC()
     return turtle.getScene()
 
-def TurtleFrame(g, visitor=visitor):
+def TurtleFrame(g, visitor=visitor, turtle=None, gc=True):
     n = g.max_scale()
     v = g.component_roots_at_scale(g.root, scale=n).next()
-    return traverse_with_turtle(g,v, visitor)
+    return traverse_with_turtle(g,v, visitor, turtle=turtle, gc=gc)
 
 def Plot(scene):
     Viewer.display(scene)
