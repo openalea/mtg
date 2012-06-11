@@ -169,22 +169,8 @@ def pre_order_in_scale(tree, vtx_id, visitor_filter=None):
                 continue
             queue.append(vid)
 
-def post_order(tree, vtx_id, complex=None):
-    ''' 
-    Traverse a tree in a postfix way.
-    (from leaves to root)
-    '''
-    if complex is not None and tree.complex(vtx_id) != complex:
-        return
-    for vid in tree.children(vtx_id):
-        if complex is not None and tree.complex(vid) != complex:
-            continue
-        for node in post_order(tree, vid, complex=complex):
-            yield node
-    yield vtx_id
 
-
-def post_order2(tree, vtx_id, complex=None, visitor_filter=None):
+def post_order(tree, vtx_id, complex=None, visitor_filter=None):
     ''' 
     Traverse a tree in a postfix way.
     (from leaves to root)
@@ -204,6 +190,85 @@ def post_order2(tree, vtx_id, complex=None, visitor_filter=None):
         visitor_filter.post_order(vtx_id)
     yield vtx_id
 
+def post_order2(tree, vtx_id, complex=None, visitor_filter=None):
+    ''' 
+    Traverse a tree in a postfix way.
+    (from leaves to root)
+
+    This is a non recursive implementation
+    '''
+    if complex is not None and tree.complex(vtx_id) != complex:
+        return
+    if visitor_filter and not visitor_filter.pre_order(vtx_id):
+        return
+    
+    for vid in tree.children(vtx_id):
+
+        for node in post_order2(tree, vid, complex, visitor_filter):
+            yield node
+
+
+    if visitor_filter:
+        visitor_filter.post_order(vtx_id)
+    yield vtx_id
+
+def post_order2(tree, vtx_id, complex=None, pre_order_filter=None, post_order_visitor=None):
+    ''' 
+    Traverse a tree in a postfix way.
+    (from leaves to root)
+
+    Same algorithm than post_order.
+    The goal is to replace the post_order implementation.
+
+        
+'''
+
+    edge_type = tree.property('edge_type')
+    if pre_order_filter is None:
+        pre_order_filter = lambda v: True
+    if post_order_visitor is None:
+        post_order_visitor = lambda x: None
+    
+    def order_children(vid):
+        ''' Internal function to retrieve the children in a correct order:
+            - Branch before successor.
+        '''
+        plus = []
+        successor = []
+        for v in tree.children(vid):
+            if complex is not None and tree.complex(v) != complex:
+                continue
+            if pre_order_filter and not pre_order_filter(v):
+                continue
+            
+            if edge_type.get(v) == '<':
+                successor.append(v)
+            else:
+                plus.append(v)
+        
+        plus.extend(successor)
+        child = plus
+        return list(reversed(child))
+
+    visited = set([])
+    
+    queue = [vtx_id]
+
+    # 1. select first '+' edges
+
+    while queue:
+
+        vtx_id = queue[-1]
+        for vid in order_children(vtx_id):
+            if vid not in visited:
+                queue.append(vid)
+                break
+        else: # no child or all have been visited
+            post_order_visitor(vtx_id)
+            yield vtx_id
+            visited.add(vtx_id)
+            queue.pop()
+            
 
 
 def traverse_tree(tree, vtx_id, visitor):
