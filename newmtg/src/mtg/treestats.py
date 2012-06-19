@@ -65,7 +65,8 @@ def extract_trees(g, vid, variables=[], **kwds):
     '''
     def pre_visit(v):
         return True
-    for v in traversal.pre_order2_with_filter(g, vid, complex=None, pre_order_filterpre_visit)
+    for v in traversal.pre_order2_with_filter(g, vid, complex=None, pre_order_filterpre_visit):
+        pass
     
     
 def extract_vectors(g, vids, variables=[], **kwds):
