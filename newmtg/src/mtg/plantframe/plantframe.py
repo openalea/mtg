@@ -44,10 +44,10 @@ based on various infomation.
     - translate the branch at the extremities of the cylinder.
 '''
 import sys
-import traversal
+from .. import traversal
 from dresser import DressingData
-import algo
-from mtg import colored_tree, PropertyTree
+from .. import algo
+from openalea.mtg.mtg import colored_tree, PropertyTree
 from math import sqrt
 
 from vplants.plantgl.all import * 

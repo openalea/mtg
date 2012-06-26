@@ -32,6 +32,8 @@ setup(
                   'openalea.mtg_wralea' : 'src/mtg_wralea', 
                   '' : 'src' },
 
+    share_dirs = {'share':'share'},
+
     entry_points = {
         "wralea": ["mtg = openalea.mtg_wralea",
                   ]

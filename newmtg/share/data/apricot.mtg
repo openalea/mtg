@@ -1,0 +1,144 @@
+# B= Branche ; U=Unité de croissance ; L= distance/ insertion sur tronc ; b= ramification"				
+# Long= longueur de U en cm ; LAB,LAC et LBC= distances en cm entre les trois piquets (constantes pour une même branche) qui définissent le plan ."				
+# LA, LB et LC= distances en mm d'un point de la branche (segments de 10 cm) au sommet de chacun des trois piquets				
+# Diamètres= en mm à la base de l' U.C, du segment et de la ramification.				
+# Zone= région d'insertion de la ramification (1=face supérieure de la branche, 2=faces latérales et 3=face inférieure) ; Poids = de la ramification, en g."				
+# 1, 2, 3 et 4= position angulaire de la mesure de DRLM (1=face supérieure ou 0°, 2=90°, 3=180° et 4=270°).				
+
+
+CODE :	FORM-A			
+
+CLASSES:				
+SYMBOL	SCALE	DECOMPOSITION	INDEXATION	DEFINITION
+$ 	0	FREE	FREE	IMPLICIT
+P	1	FREE	FREE	EXPLICIT
+T	2	PURELINEAR	FREE	EXPLICIT
+B	2	LINEAR	FREE	EXPLICIT
+U 	3	LINEAR	FREE	EXPLICIT
+L	4	FREE	FREE	EXPLICIT
+
+
+
+DESCRIPTION :				
+LEFT	RIGHT	RELTYPE	MAX	
+T	B	+	?	
+U	U	+	?	
+U	U	<	1	
+L	L	<	1	
+L	L	+	?	
+
+
+
+FEATURES:				
+NAME	TYPE			
+LongUC	INT
+DAB	INT
+DAC	INT
+DBC	INT
+L1	INT
+L2	INT
+L3	INT
+TopDia	INT
+Zone	INT
+Poids	INT
+Posang1	INT
+Posang2	INT
+Posang3	INT
+Posang4	INT
+BT1	INT
+BT2	INT
+BT3	INT																				
+BT4	INT																				
+
+MTG:																					
+
+ENTITY-CODE				LongUC	DAB	DAC	DBC	L1	L2	L3	TopDia	Zone	Poids	Posang1	Posang2	Posang3	Posang4	BT1	BT2	BT3	BT4
+/P1					2800	4440	3120
+^/T1					
+	/U90			30				2385	2943	2504											
+		/L10						2352	2862	2480	72										
+		^<L15												-146	-221	-63	-190	29	27	8	45
+		^<L20						2331	2800	2466	71										
+		^<L27																			
+			+B1/U1								
+			^/L842								20	3	5035								
+		^<L30						2324	2736	2455	68										
+			 +B2/U1								23
+			^/L693								12	2	1440								
+		^+U90		214																
+		^/L40						2337	2710	2430	62										
+		^<L43												-192	-223	-78	-106	33	42	12	37
+		^<L50						2364	2665	2400	61										
+		^<L60						2392	2638	2387	59										
+		^<L70						2430	2607	2378	57			-149	-289	-57	-170	39	35	14	35
+		^<L77																			
+			 +B3/U1								
+			^/L232								10	3	365								
+		^<L79																			
+			 +B4/U1								
+			^/L620								9	4	880								
+		^<L80						2480	2590	2364	56										
+		^<L83																			
+			 +B5/U1								
+			^/L477								8	2	480								
+		^<L90						2522	2560	2353	57										
+		^<L100						2584	2535	2345	57										
+		^<L105												-195	-313	-58	-215	36	52	19	49
+		^<L110						2624	2499	2337	54										
+		^<L120						2668	2474	2348	55										
+		^<L124																			
+			 +B6/U1								
+			^/L489								6	3	325								
+		^<L130						2716	2451	2356	56										
+		^<L140						2765	2427	2371	51										
+		^<L150						2824	2407	2383	49			-147	-205	-70	-203	45	35	14	39
+		^<L160						2877	2382	2405	49										
+		^<L170						2931	2372	2423	49			-191		-86		37	15	7	36 
+		^<L176																			
+			 +B7/U1								
+			^/L1219								22	1	9270								
+		^<L180						2979	2330	2436	29										
+		^<L183												-249		-52		35	36	20	24
+		^<L190						3035	2300	2448	27										
+		^<L200						3100	2272	2455	28										
+		^<L205												-290		-95		20	22	14	16
+		^<L210						3157	2232	2453	26										
+		^<L220						3212	2204	2460	26										
+		^<L224												-172		-88		40	37	15	16
+		^<L226																			
+			 +B8/U1								
+			^/L673									1	320								
+		^<L230						3277	2183	2473	25			-181		-75		47	39	13	9
+		^<L240						3353	2164	2494	26										
+		^<L242																			
+			 +B9/U1								
+			^/L683								9	1	870								
+		^+U91		10							16										
+		^/L247												-232		-92		40	17	5	20
+		^<L250						3395	2154	2549	16										
+		^+U91		10							15										
+		^/L260						3455	2171	2621	16										
+		^+U92		2							16										
+		^/L261					 	3455	2171	2621	16
+		^+U92		10							14										
+		^/L270						3468	2186	2720	14			-191		-58		22	51	29	6
+		^+U92		52							12										
+		^/L280						3491	2202	2813	13										
+		^<L285												-210		-55		25	26	21	33
+		^<L290						3520	2246	2913	11										
+		^<L300						3563	2290	3004	11										
+		^<L310						3604	2348	3094	11										
+		^<L320						3654	2404	3195	10										
+		^<L323									
+		^+U93		7							8										
+		^/L330						3696	2468	3283	9										
+		^+U93		20							8										
+		^/L340						3758	2555	3373	7										
+		^<L350						3836	2622	3450	6										
+		^+U94		2							6									
+		^/L351						3836	2622	3450	6													
+
+		^+U94		15							5										
+		^/L360						3907	2715	3529	5
+		^<L370						3978	2815	3596	3
+

@@ -15,4 +15,4 @@
 ################################################################################
 
 from mtg import *
-
+from plantframe import turtle, frame, plantframe, dresser

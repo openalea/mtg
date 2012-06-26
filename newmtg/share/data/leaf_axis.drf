@@ -1,0 +1,9 @@
+SMBPath = D:/Documents/pradal/devlp/vplants/aml/databases/SMBFiles
+#SMBPath = ../../../databases/SMBFiles
+
+SMBModel feuille = feui136 #feui113
+
+# Geometry = ../../../databases/GEOMFiles/leaf.geom
+# contains symbol a_leaf
+
+Class F = feuille
