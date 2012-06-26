@@ -101,13 +101,13 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             arg_string = l[1].strip()[:-1]
             if arg_string:
                 ln = arg_string.split(',')
-                try:
-                    for arg in ln:
-                        k, v = arg.split('=')
-                        klass = _type[class_type[k]]
+                for arg in ln:
+                    k, v = arg.split('=')
+                    klass = _type[class_type[k]]
+                    try:
                         args[k] = klass(v)
-                except:
-                    print name
+                    except:
+                        print 'Args ', v, 'of type ', k, 'is not of type ', str(klass)
         return args
 
     implicit_scale = bool(symbol_at_scale)
