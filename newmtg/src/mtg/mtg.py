@@ -68,12 +68,13 @@ class MTG(PropertyTree):
 
     '''
 
-    def __init__(self):
+    def __init__(self, filename=''):
         ''' Create a new MTG object.
 
         :Usage:
 
             >>> g = MTG()
+            >>> g = MTG('my_mtg.mtg')
         '''
 
         super(MTG, self).__init__()
@@ -91,6 +92,9 @@ class MTG(PropertyTree):
         self.add_property('edge_type')
         self.add_property('label')
 
+        if filename:
+            from io import read_mtg_file
+            self = read_mtg_file(filename, mtg=self)
 
     def __getitem__(self, vtx_id):
         """A simple getitem to extract relevant information on a vertex.

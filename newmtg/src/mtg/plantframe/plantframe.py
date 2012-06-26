@@ -44,11 +44,13 @@ based on various infomation.
     - translate the branch at the extremities of the cylinder.
 '''
 import sys
+from math import sqrt
+
 from .. import traversal
 from dresser import DressingData
 from .. import algo
 from openalea.mtg.mtg import colored_tree, PropertyTree
-from math import sqrt
+from openalea.mtg.plantframe import turtle
 
 from vplants.plantgl.all import * 
 
@@ -939,6 +941,17 @@ class PlantFrame(object):
     #--------------------------------------------------------------------------------------
     #  Phyllotaxy algorithms
     #--------------------------------------------------------------------------------------
+
+def Plot(g, *args, **kwds):
+    """ Plot a MTG.
+
+    """
+    visitor = kwds.get('visitor', turtle.visitor)
+    gc = kwds.get('gc', True)
+    _turtle = kwds.get('turtle', None)
+    scene = turtle.TurtleFrame(g, visitor=visitor, turtle=_turtle, gc=gc)
+    Viewer.display(scene)
+    return scene
 
 ###########################################################################################
 

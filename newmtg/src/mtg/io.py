@@ -86,7 +86,7 @@ def replace_date(s, format):
 
     return re.sub(rawstr, change_date, s)
 
-def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False):
+def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mtg=None):
 
     def get_properties(name):
         _type = dict([('INT', int), ('REAL', float), ('ALPHA', str), ('DD/MM/YY', str), ('DD/MM/YYYY', str)])
@@ -115,7 +115,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False):
     if debug:
         print symbol_at_scale.keys()
 
-    mtg = MTG()
+    mtg = mtg if mtg else MTG()
 
     vid = mtg.root # vid of the support tree, i.e. at the finest scale
     current_vertex = mtg.root
@@ -809,8 +809,8 @@ class Reader(object):
     The code contains topology relations and properties.
     """
 
-    def __init__(self, string, has_line_as_param=True):
-        self.mtg = None
+    def __init__(self, string, has_line_as_param=True, mtg=None):
+        self.mtg = mtg
 
         # First implementation.
         # Do not store 3 time the structure (mtg, txt and lines)
@@ -1184,10 +1184,10 @@ class Reader(object):
     def build_mtg(self):
         """
         """
-        self.mtg = multiscale_edit(self._new_code, self._symbols, self._features, self.has_date)
+        self.mtg = multiscale_edit(self._new_code, self._symbols, self._features, self.has_date, mtg=self.mtg)
         #self.mtg = multiscale_edit(self._new_code, {}, self._features)
 
-def read_mtg(s):
+def read_mtg(s, mtg=None):
     """ Create an MTG from its string representation in the MTG format.
     
     :Parameter:
@@ -1207,11 +1207,11 @@ def read_mtg(s):
     .. seealso:: :func:`read_mtg_file`.
 
     """
-    reader = Reader(s)
+    reader = Reader(s, mtg=mtg)
     g = reader.parse()
     return g
 
-def read_mtg_file(fn):
+def read_mtg_file(fn, mtg=None):
     """ Create an MTG from a filename.
 
     :Usage:
@@ -1223,7 +1223,7 @@ def read_mtg_file(fn):
     f = open(fn)
     txt = f.read()
     f.close()
-    return read_mtg(txt)
+    return read_mtg(txt, mtg=mtg)
 
 
 def mtg_display(g, vtx_id, tab='  ', edge_type=None, label=None):
