@@ -869,6 +869,7 @@ class Reader(object):
         CODE: FORM-A / FORM-B
         """
         l = self._next_line()
+        l = l.split('#')[0]
         code = l.split(':')
         if len(code) == 2 and 'CODE' in code[0] and 'FORM-' in code[1]:
             self._code = code[1] 
@@ -888,6 +889,7 @@ class Reader(object):
             self.warnings.append((self._no_line, "CLASSES section not found."))
             
         l = self._next_line()
+        l = l.split('#')[0]
         class_header = l.split()
         if class_header != ['SYMBOL', 'SCALE', 'DECOMPOSITION', 'INDEXATION', 'DEFINITION']:
             self.warnings.append((self._no_line, "CLASS header error."))
@@ -896,6 +898,7 @@ class Reader(object):
             l = self._next_line()
             if l.startswith('DESCRIPTION'):
                 break
+            l = l.split('#')[0]
             line = l.split()
             if len(line) != 5:
                 self.warnings.append((self._no_line, "CLASS error."))
@@ -931,6 +934,7 @@ class Reader(object):
             self.warnings.append((self._no_line, "DESCRIPTION section not found."))
             
         l = self._next_line()
+        l = l.split('#')[0]
         desc_header = l.split()
         if desc_header != ['LEFT', 'RIGHT', 'RELTYPE', 'MAX']:
             self.warnings.append((self._no_line, "DESCRIPTION header error."))
@@ -939,6 +943,7 @@ class Reader(object):
             l = self._next_line()
             if l.startswith('FEATURES'):
                 break
+            l = l.split('#')[0]
             line = l.split()
             if len(line) < 2:
                 self.warnings.append((self._no_line, "Class description error."))
@@ -976,6 +981,7 @@ class Reader(object):
             self.warnings.append((self._no_line, "FEATURES section not found."))
             
         l = self._next_line()
+        l = l.split('#')[0]
         f_header = l.split()
         if f_header != ['NAME', 'TYPE']:
             self.warnings.append((self._no_line, "FEATURES header error."))
@@ -984,7 +990,9 @@ class Reader(object):
             l = self._next_line()
             if not l or l.startswith('MTG'):
                 break
+            l = l.split('#')[0]
             line = l.split()
+            
             if len(line) != 2:
                 self.warnings.append((self._no_line, "FEATURE description error."))
                 continue
@@ -1045,6 +1053,7 @@ class Reader(object):
         if not l.startswith('ENTITY-CODE') and not l.startswith('TOPO'):
             self.warnings.append((self._no_line, "ENTITY-CODE or TOPO not found."))
         
+        l = l.split('#')[0]
         features = l.split()[1:]
         self._nb_features = len(features)
         self._feature_head = []
