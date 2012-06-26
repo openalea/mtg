@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # -*- python -*-
 #
 #       OpenAlea.mtg.stat
@@ -34,8 +35,9 @@ from itertools import chain, ifilter, imap
 
 from openalea.tree_statistic.trees import etrees
 from openalea.mtg import algo
+from openalea.mtg.traversal import pre_order2_with_filter
 
-def extract_trees(g, vid, variables=[], **kwds):
+def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], **kwds):
     ''' Extract a tree from an MTG.
 
     :Parameters:
@@ -63,12 +65,63 @@ def extract_trees(g, vid, variables=[], **kwds):
         vectors = extract_vectors(g, vids, [length])
 
     '''
-    def pre_visit(v):
-        return True
-    for v in traversal.pre_order2_with_filter(g, vid, complex=None, pre_order_filter=pre_visit):
-        pass
-    
-    
+    # used default mtg properties if no particular properties are given
+    if len(variable_funcs) == 0:
+        for p in g.property_names():
+            variable_funcs += [lambda vid: g.get_vertex_property(vid)['index']]
+
+    if len(variable_names) == 0:
+        for p in range(len(variable_funcs)):
+            variable_names += ["Variable" + str(p)]
+
+    # list of roots
+    roots = list(g.roots(scale=scale))
+
+    def props(vid):
+        '''Extract the properties for the Tree.'''
+        return [ f(vid) for f in variable_funcs]
+
+    # should probably not be used
+    # pre_order_filter must filter descendants if parent is filtered 
+    def recursive_filter(vid):
+        """Recursively delete partially observed vertices"""
+        if not(filter(vid)):
+            return False
+        else:
+            return recursive_filter(g.parent(vid))
+
+    def build_tree(vids):
+        """Build a Tree from a list of vertices"""
+        root = vids[0]
+        nb_vertices = len(vids)
+        tree_root = 0
+        mtg2tree = {}
+        t = etrees.Tree(props(root), nb_vertices, tree_root)
+
+        # Root management
+        for vid in vids:
+            edge_type = g.edge_type(vid)
+            v = t.AddVertex(props(vid))
+            mtg2tree[vid] = v
+            if vid != root:
+                t.AddEdge(mtg2tree[g.parent(vid)],v, edge_type)
+
+        return t, mtg2tree
+
+    trees = []
+    mappings = [] # List of mapping between Tree id and MTG id
+
+    for vid_root in roots:
+        l = list(pre_order2_with_filter(g, vid_root, pre_order_filter=filter))
+        t, m = build_tree(l)
+        trees.append(t)
+        mappings.append(m)
+
+    forest = etrees.Trees(trees, attribute_names=variable_names)
+    forest._SetMTGVidDictionary(mappings)
+
+    return forest
+
 def extract_vectors(g, vids, variables=[], **kwds):
     ''' Extract a set of Vectors from an MTG.
 
