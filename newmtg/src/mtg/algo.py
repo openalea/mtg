@@ -443,4 +443,43 @@ def union(g1, g2, vid1=None, vid2=None, edge_type='<'):
 
     return g
         
+def orders(g, scale=-1):
+    """ Compute the order of all vertices at scale `scale`.
     
+    If scale == -1, the compute the order for vertices at the finer scale.
+    """
+    orders = {}
+    if scale <= 0:
+        for vid in traversal.iter_mtg(g, g.root):
+            pid = g.parent(vid)
+            p_order = 0 if pid is None else orders[pid]
+            orders[vid] = p_order+1 if g.edge_type(vid) == '+' else p_order
+    else:
+        for rid in g.roots(scale=scale):
+            for vid in traversal.pre_order2(g, rid):
+                pid = g.parent(vid)
+                p_order = 0 if pid is None else orders[pid]
+                orders[vid] = p_order+1 if g.edge_type(vid) == '+' else p_order
+
+    return orders
+
+def heights(g, scale=-1):
+    """ Compute the order of all vertices at scale `scale`.
+    
+    If scale == -1, the compute the order for vertices at the finer scale.
+    """
+    heights = {}
+    if scale <= 0:
+        for vid in traversal.iter_mtg(g, g.root):
+            pid = g.parent(vid)
+            p_height = -1 if pid is None else heights[pid]
+            heights[vid] = p_height+1
+    else:
+        for rid in g.roots(scale=scale):
+            for vid in traversal.pre_order2(g, rid):
+                pid = g.parent(vid)
+                p_height = -1 if pid is None else heights[pid]
+                heights[vid] = p_height+1
+
+    return heights
+
