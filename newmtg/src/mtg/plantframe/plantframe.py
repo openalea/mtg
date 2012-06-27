@@ -101,6 +101,8 @@ class PlantFrame(object):
         self.top_diameter = self._extract_properties('TopDiameter', kwds)
         self.bottom_diameter = self._extract_properties('BottomDiameter', kwds)
 
+        self.diameter = self.top_diameter
+
         # Absolute coordinate of the components
         self.xx= self._extract_properties('XX', kwds)
         self.yy = self._extract_properties('YY', kwds)
@@ -1070,42 +1072,48 @@ class PlantFrame(object):
         return p.get(vid) if vid else p
 
 
-def Plot(g, *args, **kwds):
-    """ Plot a MTG.
+    def plot(g, *args, **kwds):
+        """ Plot a MTG.
 
-    """
-    visitor = kwds.get('visitor', turtle.visitor)
-    gc = kwds.get('gc', True)
-    _turtle = kwds.get('turtle', None)
-    scene = turtle.TurtleFrame(g, visitor=visitor, turtle=_turtle, gc=gc)
-    Viewer.display(scene)
-    return scene
+        """
+        visitor = kwds.get('visitor', turtle.visitor)
+        gc = kwds.get('gc', True)
+        _turtle = kwds.get('turtle', None)
+        scene = turtle.TurtleFrame(g, visitor=visitor, turtle=_turtle, gc=gc)
+        Viewer.display(scene)
+        return scene
 
 
-def PlotProp(pf, prop, **kwds):
-    """
-     Plot properties of MTG
-    """
-    import matplotlib.pyplot
-    props = getattr(pf, prop)
-    order = {}
-    for order in pf.axes:
-        for seq in pf.axes[order]:
-            for v in seq:
-                color[v] = matplotlib.colors.cnames.keys()[order]
-    print props
-    print color
-    for v in props:
-        matplotlib.pyplot.plot(algo.height(pf.g, v), props[v], 'o', color = color[v])
+    def plot_property(self, prop, **kwds):
+        """
+        Plot properties of MTG
 
-    #for v in props:
-    #    matplotlib.pyplot.plot(algo.height(pf.g, v), props[v], 'o')
-    #props = getattr(pf, "_"+prop)
-    #for order in pf.axes:
-    #   for seq in pf.axes[order]:
-    #         matplotlib.pyplot.plot([algo.height(v) for v in seq], [props[v] for v in seq])
-    #matplotlib.pyplot.show()
-    return props
+        :Example:
+
+            >>> pf.plot_property('length')
+        """
+        pf = self
+        import matplotlib
+        import matplotlib.pyplot
+        props = getattr(self, prop)
+        pylab_colors = matplotlib.colors.cnames.keys()
+        color = {}
+        orders = algo.orders(self.g)
+        color = [pylab_colors[orders[k]] for k in props.iterkeys()]
+        
+        heights = algo.heights(self.g)
+        h = [heights[v] for v in props]
+        
+        matplotlib.pyplot.plot(h, props.values(), 'o', color = color)
+
+        #for v in props:
+        #    matplotlib.pyplot.plot(algo.height(pf.g, v), props[v], 'o')
+        #props = getattr(pf, "_"+prop)
+        #for order in pf.axes:
+        #   for seq in pf.axes[order]:
+        #         matplotlib.pyplot.plot([algo.height(v) for v in seq], [props[v] for v in seq])
+        #matplotlib.pyplot.show()
+        return props
 
 
 ###########################################################################################
