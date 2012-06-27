@@ -403,6 +403,24 @@ class MTG(PropertyTree):
         self._complex.clear()
         self._components.clear()
 
+    def clear_properties(selfi, exclude=[]):
+        """Remove all the properties of the MTG.
+
+        :Example: 
+            .. code-block:: python
+
+                >>> g.clear_properties()
+        """
+        super(MTG, self).clear()
+
+        exclude = set(exclude)
+        for p in ['edge_type', 'label']:
+            exclude.add(p)
+
+        props = set(self._properties.keys()) - exclude
+        for k in props:
+            del self_properties[k]
+
     def copy(self):
         """ Return a copy of the graph.
 
@@ -410,7 +428,7 @@ class MTG(PropertyTree):
             - `g` (MTG) - A copy of the MTG
 
         """
-        return g.sub_mtg(g.root)
+        return self.sub_mtg(self.root)
 
     def roots(self, scale=0):
         ''' Returns the roots of the tree graphs at a given scale.

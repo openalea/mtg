@@ -2,7 +2,7 @@
 #
 #       OpenAlea.mtg
 #
-#       Copyright 2008-2009 INRIA - CIRAD - INRA  
+#       Copyright 2008-2012 INRIA - CIRAD - INRA  
 #
 #       File author(s): Christophe Pradal <christophe.pradal.at.cirad.fr>
 #
@@ -44,7 +44,7 @@ based on various infomation.
     - translate the branch at the extremities of the cylinder.
 '''
 import sys
-from math import sqrt
+from math import sqrt, pi
 
 from .. import traversal
 from dresser import DressingData
@@ -126,10 +126,18 @@ class PlantFrame(object):
         # Exclude some elements depending on their class
         self.exclude = kwds.get('Exclude', [])
 
+
+        self._length = {}
+        self._diameter = {}
+        self._surface = {}
+        self._volume = {}
+        self._segmentvec = {}
+        self._inertia = {}
+
         self._compute_global_data()
         self.propagate_constraints()
 
-
+        
     def _extract_properties(self, name, kwds):
         ''' Extract the property from properties of the mtg 
         or from a user given function.
@@ -389,6 +397,7 @@ class PlantFrame(object):
             #diameter = self.advanced_algo_diameter(power)
             diameter = self.advanced_algo_diameter2(power)
 
+        self._diameter = diameter
         return diameter
 
     def default_algo_diameter(self, power):
@@ -768,10 +777,6 @@ class PlantFrame(object):
         return top_diameter 
 
 
-        
-        
-        
-        
 
     def build_mtg_from_radius(self):
         """ Decompose the tree (mtg at finest scale) into sub systems
@@ -851,10 +856,43 @@ class PlantFrame(object):
         # Check if points are defined
         # 1. points not defined
         if not self.points:
-            return self.algo_length_without_points(default_length=default_length)
+            length = self.algo_length_without_points(default_length=default_length)
         else:
-            pass
-        return {}
+            length = self._length_from_points()
+
+        self._length = length
+        return self._length
+
+    def _length_from_points(self):
+        g = self.g
+        origin = self.origin
+        points = self.points
+        length = {}
+        for vid in g.vertices(scale=g.max_scale()):
+            node = g.node(vid)
+            # WARNING: Wrong when several trees
+            pid = g.parent(vid)
+            pt0 = origin if pid is None else points.get(pid)
+            pt1 = points.get(vid)
+            length[vid] = norm(Vector3(*pt1)-Vector3(*pt0))
+        return length
+            
+    def _segmentvec_from_points(self):
+        g = self.g
+        origin = self.origin
+        points = self.points
+        segvec = {}
+        for vid in g.vertices(scale=g.max_scale()):
+            node = g.node(vid)
+            # WARNING: Wrong when several trees
+            pid = g.parent(vid)
+            pt0 = origin if pid is None else points.get(pid)
+            pt1 = points.get(vid)
+            segvec[vid] = Vector3(*pt1)-Vector3(*pt0)
+        return segvec
+
+
+
 
     def algo_length_without_points(self, default_length=None):
 
@@ -941,6 +979,97 @@ class PlantFrame(object):
     #--------------------------------------------------------------------------------------
     #  Phyllotaxy algorithms
     #--------------------------------------------------------------------------------------
+    #ToDo
+
+    #--------------------------------------------------------------------------------------
+    #  Computing geometric properties
+    #--------------------------------------------------------------------------------------
+    def compute_length(self,vid= None, default_length = None):
+        """ Return the length of a vertex.
+
+        If no vertex has been defined, return the length of all vertices.
+        """
+        
+        if not self._length:
+            self.algo_length(default_length)
+
+        p = self._length
+        return p.get(vid) if vid else p
+
+    def compute_diameter(self, vid=None):
+        """ Return the diameter of a vertex or for all vertices. """
+        if not self._diameter:
+            # get the length and the radius
+            self.algo_diameter()
+        
+        p = self._diameter
+        return p.get(vid) if vid else p
+
+    def compute_surface(self, vid=None):
+        """ Return the surface of a vertex or for all vertices. 
+
+        The surface is for a tapered is 
+        .. math::
+
+             \pi (R_{t} + R_b)*h
+        """
+        if not self._surface:
+            # get the length and the radius
+            self._surface = surface = {}
+            diameter = self.compute_diameter()
+            length = self.compute_length()
+            g = self.g
+            for vid in  self.g:
+                if vid not in diameter or vid not in length:
+                    continue
+                pid = g.parent(vid)
+                diam_top = diameter[vid]
+                diam_base = diameter.get(pid,diam_top)
+                h = length[vid]
+
+                s = h*pi*fabs(diam_base+diam_top)/2.
+                surface[vid] = s
+
+        p = self._surface
+        return p.get(vid) if vid else p
+
+    def compute_volume(self, vid=None):
+        """ Return the volume of a vertex or for all vertices. 
+
+        The volume is for a tapered is 
+        .. math::
+
+            V = \frac{\pi h}{3}(R_1^2+R_2^2+R_1 R_2) 
+        """
+        if not self._volume:
+            # get the length and the radius
+            self._volume = volume= {}
+            diameter = self.compute_diameter()
+            length = self.compute_length()
+            g = self.g
+            for vid in  self.g:
+                if vid not in diameter or vid not in length:
+                    continue
+                pid = g.parent(vid)
+                r_top = diameter[vid]/2.
+                r_base = diameter.get(pid,diam_top)/2.
+                h = length[vid]
+
+                v = (pi*h/3.)(r_base**2+r_top**2+r_base*r_top)
+                volume[vid] = v
+
+        p = self._volume
+        return p.get(vid) if vid else p
+
+    def compute_segmentvec(self, vid=None):
+        """ Return the segment (i.e. direction with a length) of a vertex or for all vertices. """
+        if not self._segmentvec:
+            if self.points:
+                self._segmentvec = self._segmentvec_from_points()
+
+        p = self._segmentvec
+        return p.get(vid) if vid else p
+
 
 def Plot(g, *args, **kwds):
     """ Plot a MTG.
