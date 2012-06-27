@@ -975,7 +975,6 @@ class PlantFrame(object):
         return length
 
 
-
     #--------------------------------------------------------------------------------------
     #  Phyllotaxy algorithms
     #--------------------------------------------------------------------------------------
@@ -1081,6 +1080,33 @@ def Plot(g, *args, **kwds):
     scene = turtle.TurtleFrame(g, visitor=visitor, turtle=_turtle, gc=gc)
     Viewer.display(scene)
     return scene
+
+
+def PlotProp(pf, prop, **kwds):
+    """
+     Plot properties of MTG
+    """
+    import matplotlib.pyplot
+    props = getattr(pf, prop)
+    order = {}
+    for order in pf.axes:
+        for seq in pf.axes[order]:
+            for v in seq:
+                color[v] = matplotlib.colors.cnames.keys()[order]
+    print props
+    print color
+    for v in props:
+        matplotlib.pyplot.plot(algo.height(pf.g, v), props[v], 'o', color = color[v])
+
+    #for v in props:
+    #    matplotlib.pyplot.plot(algo.height(pf.g, v), props[v], 'o')
+    #props = getattr(pf, "_"+prop)
+    #for order in pf.axes:
+    #   for seq in pf.axes[order]:
+    #         matplotlib.pyplot.plot([algo.height(v) for v in seq], [props[v] for v in seq])
+    #matplotlib.pyplot.show()
+    return props
+
 
 ###########################################################################################
 
