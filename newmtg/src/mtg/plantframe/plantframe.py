@@ -1099,21 +1099,32 @@ class PlantFrame(object):
         pylab_colors = matplotlib.colors.cnames.keys()
         color = {}
         orders = algo.orders(self.g)
-        color = [pylab_colors[orders[k]] for k in props.iterkeys()]
+        color = dict([(k, pylab_colors[orders[k]]) for k in props.iterkeys()])
         
         heights = algo.heights(self.g)
-        h = [heights[v] for v in props]
-        
-        matplotlib.pyplot.plot(h, props.values(), 'o', color = color)
+        h = dict([(v, heights[v]) for v in props])
+
+        for v in props:
+            matplotlib.pyplot.plot(h[v], props[v], 'o', color = color[v])
+
 
         #for v in props:
         #    matplotlib.pyplot.plot(algo.height(pf.g, v), props[v], 'o')
-        #props = getattr(pf, "_"+prop)
-        #for order in pf.axes:
-        #   for seq in pf.axes[order]:
-        #         matplotlib.pyplot.plot([algo.height(v) for v in seq], [props[v] for v in seq])
+        props = getattr(pf, "_"+prop)
+        print props
+        h = dict([(v, heights[v]) for v in props])
+        for order in pf.axes:
+            for seq in pf.axes[order]:
+                if order > min(pf.axes.keys()):
+                    x = [h[algo.father(self.g, seq[0])]]
+                    x.extend([h[v] for v in seq])
+                    y = [props[algo.father(self.g, seq[0])]]
+                    y.extend([props[v] for v in seq])
+                    matplotlib.pyplot.plot(x, y)
+                else:
+                    matplotlib.pyplot.plot([h[v] for v in seq], [props[v] for v in seq])
         #matplotlib.pyplot.show()
-        return props
+        #return props
 
 
 ###########################################################################################
