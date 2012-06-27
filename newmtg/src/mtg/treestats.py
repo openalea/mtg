@@ -43,26 +43,17 @@ def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], *
     :Parameters:
 
     - `g`: an MTG
-    - `vid`: a vertex that belong to the MTG
-    - `variables`: a list of property names that represent the vectors variables.
+    - `scale`: the scale at which trees are to be extracted
+    - `variable_funcs`: a list of functions to compute each property
+    - `variable_names`: a list property names
 
     :Return:
 
-    - a Tree object from the Tree Statistic module
+    - a Trees object from the openalea.tree_statistic.trees module
 
     :Example:
 
     ::
-
-        length = g.property('Length')
-        vids = [vid for vid in g.vertices(scale=2) if vid in length]
-        vectors = extract_vectors(g, vids, ['Length'])
-
-        # or an equivalent
-
-        length = g.property('Length')
-        vids = [vid for vid in g.vertices(scale=2) if vid in length]
-        vectors = extract_vectors(g, vids, [length])
 
     '''
     # used default mtg properties if no particular properties are given
