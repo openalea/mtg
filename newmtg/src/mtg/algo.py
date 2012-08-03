@@ -450,7 +450,7 @@ def orders(g, scale=-1):
     """
     orders = {}
     if scale <= 0:
-        for vid in traversal.iter_mtg(g, g.root):
+        for vid in traversal.iter_mtg2(g, g.root):
             pid = g.parent(vid)
             p_order = 0 if pid is None else orders[pid]
             orders[vid] = p_order+1 if g.edge_type(vid) == '+' else p_order
@@ -470,7 +470,7 @@ def heights(g, scale=-1):
     """
     heights = {}
     if scale <= 0:
-        for vid in traversal.iter_mtg(g, g.root):
+        for vid in traversal.iter_mtg2(g, g.root):
             pid = g.parent(vid)
             p_height = -1 if pid is None else heights[pid]
             heights[vid] = p_height+1

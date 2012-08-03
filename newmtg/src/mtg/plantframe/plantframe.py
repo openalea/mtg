@@ -109,7 +109,7 @@ class PlantFrame(object):
         self.zz = self._extract_properties('ZZ', kwds)
 
         # Absolute euler angles in degree
-        self.aa= self._extract_properties('AA', kwds)
+        self.aa = self._extract_properties('AA', kwds)
         self.bb = self._extract_properties('BB', kwds)
         self.cc = self._extract_properties('CC', kwds)
 
@@ -281,7 +281,9 @@ class PlantFrame(object):
         # Compute the points
         # 1. compute fixed points
         # 
-        
+
+        # Compute diameters
+        self.algo_diameter()
 
     def propagate_constraints(self):
         """ Propagate the properties into the whole MTG.
@@ -906,7 +908,7 @@ class PlantFrame(object):
         if min_length and not default_length: 
             default_lenght = min(min_length.values())
         else:
-            default_length = default_length if default_length else 1
+            default_length = default_length if default_length else 1.
 
         _length = {}
         _unknows = {}
@@ -921,10 +923,10 @@ class PlantFrame(object):
                 name = g.class_name(vid)
 
                 if vid in length:
-                    _length[cid] = _length.get(cid,0) + length[vid]
+                    _length[cid] = _length.get(cid,0.) + length[vid]
 
                 elif vid in _length:
-                    _length[cid] = _length.get(cid,0) + _length[vid]
+                    _length[cid] = _length.get(cid,0.) + _length[vid]
 
                 elif vid in _unknows:
                     d = _unknows[vid]
@@ -937,7 +939,7 @@ class PlantFrame(object):
                         name = 'default'
                     _unknows[cid][name] = _unknows.setdefault(cid,{name:0}).get(name,0) + 1
             
-        print _length, _unknows
+        #print _length, _unknows
         # Solve the equations in top down.
         marked = {}
         class Visitor:
@@ -1072,14 +1074,48 @@ class PlantFrame(object):
         return p.get(vid) if vid else p
 
 
-    def plot(g, *args, **kwds):
+    def plot(self, *args, **kwds):
         """ Plot a MTG.
 
         """
-        visitor = kwds.get('visitor', turtle.visitor)
+
+        g = self.g
+        # computed properties
+        diameters = self.compute_diameter()
+        points = self.points
+
+        origins = kwds.get('origins', [])
+
+        def plantframe_visitor(g, v, turtle):
+            pt = points.get(v)
+            radius = diameters.get(v)
+            if radius: 
+                radius = radius /2.
+
+            
+            turtle.setId(v)
+            turtle.lineTo(pt, radius)
+
+        visitor = kwds.get('visitor', plantframe_visitor)
         gc = kwds.get('gc', True)
         _turtle = kwds.get('turtle', None)
-        scene = turtle.TurtleFrame(g, visitor=visitor, turtle=_turtle, gc=gc)
+
+        if not _turtle:
+            _turtle = PglTurtle()
+
+        scale = g.max_scale()
+        roots = list(g.roots(scale=scale))
+        for i, rid in enumerate(roots):
+            if len(origins) > i:
+                origin = origins[i]
+            else:
+                origin = (0,0,0)
+            _turtle.move(origin)
+            turtle.traverse_with_turtle(g, rid, visitor=visitor, turtle=_turtle, gc=gc)
+
+        scene = _turtle.getScene()
+        
+
         Viewer.display(scene)
         return scene
 
