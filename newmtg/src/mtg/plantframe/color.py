@@ -10,7 +10,10 @@ def colormap(g, property_name, cmap='jet',lognorm=True):
     keys = prop.keys()
     values = np.array(prop.values())
     #m, M = int(values.min()), int(values.max())
-    _cmap = cm.get_cmap(cmap)
+    if isinstance(cmap, str):
+        _cmap = cm.get_cmap(cmap)
+    else:
+        _cmap = cmap
     norm = Normalize() if not lognorm else LogNorm() 
     values = norm(values)
     #my_colorbar(values, _cmap, norm)
