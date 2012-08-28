@@ -33,14 +33,16 @@ def lut(g, property_name, colors=[], N=0):
     """
     prop = g.property(property_name)
     keys = prop.keys()
-    values = np.array(prop.values())
+    values = prop.values()
     #m, M = int(values.min()), int(values.max())
 
     if not colors:
         colors = [hex2color(c) for c in matplotlib.colors.cnames.values()]
 
-    
-    g.properties()['color'] = dict((keys[i], colors[values[i]]) for i in range(len(keys)))
+    n = len(colors)
+    if n < max(values):
+        print 'values max ', max(values), '  when nb colors is ', n
+    g.properties()['color'] = dict((keys[i], colors[values[i]%n]) for i in range(len(keys)))
     return g
 
 
