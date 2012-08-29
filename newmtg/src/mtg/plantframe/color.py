@@ -2,6 +2,13 @@ import numpy as np
 from pylab import cm, colorbar
 import matplotlib
 from matplotlib.colors import Normalize, LogNorm
+from matplotlib import pyplot, mpl
+
+def get_cmap(cmap):
+    _cmap = cmap
+    if isinstance(cmap, str):
+        _cmap = cm.get_cmap(cmap)
+    return _cmap
 
 def colormap(g, property_name, cmap='jet',lognorm=True):
     """ Compute a color property based on a given property and a colormap.
@@ -11,10 +18,8 @@ def colormap(g, property_name, cmap='jet',lognorm=True):
     keys = prop.keys()
     values = np.array(prop.values())
     #m, M = int(values.min()), int(values.max())
-    if isinstance(cmap, str):
-        _cmap = cm.get_cmap(cmap)
-    else:
-        _cmap = cmap
+
+    _cmap = get_cmap(cmap)
     norm = Normalize() if not lognorm else LogNorm() 
     values = norm(values)
     #my_colorbar(values, _cmap, norm)
@@ -45,4 +50,33 @@ def lut(g, property_name, colors=[], N=0):
     g.properties()['color'] = dict((keys[i], colors[values[i]%n]) for i in range(len(keys)))
     return g
 
+
+def colorbar(g, property_name, cmap='jet',lognorm=True, N=5):
+    fig = pyplot.figure(figsize=(8,3))
+    ax = fig.add_axes([0.05, 0.65, 0.9, 0.15])
+
+    prop = g.property(property_name)
+    keys = prop.keys()
+    values = np.array(prop.values())
+    m, M = values.min(), values.max()
+    print 'Interval before norm: ',m, M
+
+    ticks = np.linspace(m,M,N)
+
+    _cmap = get_cmap(cmap)
+    norm = Normalize() if not lognorm else LogNorm() 
+    values = norm(values)
+
+
+    cb = mpl.colorbar.ColorbarBase(ax, cmap=_cmap,
+                                   norm=norm,
+                                   ticks=ticks,
+                                   orientation='horizontal')
+    cb.ax.set_xticklabels(['%.1e'%x for x in ticks])# horizontal colorbar
+    cb.set_label(property_name)
+
+    #cb = fig.colorbar(cax, ticks=[_min, (_min+_max)/2., _max], orientation='horizontal')
+
+    pyplot.show()
+    return g, cb
 

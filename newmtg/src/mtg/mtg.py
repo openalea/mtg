@@ -716,13 +716,15 @@ class MTG(PropertyTree):
         l = ["MTG : nb_vertices=%d, nb_scales=%d"%(self.nb_vertices(), self.nb_scales())]
         v  = self.root
 
+        """
         edge_type = self.property('edge_type')
         label = self.property('label')
         while v is not None and self.scale(v) is not None:
-            l.append("\nScale %d"%self.scale(v))
+            l.append('\nScale %d'%self.scale(v))
             l.extend(display_tree(self,v, edge_type=edge_type, labels=label))
             compo = self._components.get(v,[None])
             v= compo[0]
+        """
         return '\n'.join(l)
 
     #########################################################################
