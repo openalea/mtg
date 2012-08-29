@@ -40,8 +40,27 @@ def ancestors(g, vid, **kwds):
 
     .. seealso: :func:`aml.Ancestors`
     """
+    edge_type = g.property('edge_type')
+
+    et = kwds.get('EdgeType','*')
+    rt = kwds.get('RestrictedTo', 'NoRestriction')
+    ci = kwds.get('ContainedIn')
+
+    if ci is not None:
+        c_scale = g.scale(ci)
+
+
+
     v = vid
+
     while v is not None:
+
+        if rt == 'SameComplex':
+            if g.complex(v) != g.complex(vid):
+                break
+        if ci and g.complex_at_scale(v, scale=c_scale) != ci:
+            break
+
         yield v
         v = g.parent(v)
 
@@ -281,7 +300,16 @@ def axis(g, vtx_id, scale=-1, **kwds):
     ci = kwds.get('ContainedIn')
     kwds['EdgeType'] = '<'
 
-    for v in ancestors(g, vtx_id):
+    if ci is not None:
+        c_scale = g.scale(ci)
+
+    for v in ancestors(g, vtx_id, **kwds):
+        if rt == 'SameComplex':
+            if g.complex(v) != g.complex(vtx_id):
+                break
+        if ci and g.complex_at_scale(v, scale=c_scale) != ci:
+            break
+
         if edge_type.get(v) == '+':
             break
     return local_axis(g, v, scale=scale, **kwds)
