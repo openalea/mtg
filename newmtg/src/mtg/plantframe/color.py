@@ -48,10 +48,10 @@ def lut(g, property_name, colors=[], N=0):
     if n < max(values):
         print 'values max ', max(values), '  when nb colors is ', n
     g.properties()['color'] = dict((keys[i], colors[values[i]%n]) for i in range(len(keys)))
-    return g
+    return g, colors
 
 
-def colorbar(g, property_name, cmap='jet',lognorm=True, N=5):
+def colorbar(g, property_name, cmap='jet',lognorm=True, N=5, fmt='%.1e'):
     fig = pyplot.figure(figsize=(8,3))
     ax = fig.add_axes([0.05, 0.65, 0.9, 0.15])
 
@@ -59,7 +59,6 @@ def colorbar(g, property_name, cmap='jet',lognorm=True, N=5):
     keys = prop.keys()
     values = np.array(prop.values())
     m, M = values.min(), values.max()
-    print 'Interval before norm: ',m, M
 
     ticks = np.linspace(m,M,N)
 
@@ -72,7 +71,44 @@ def colorbar(g, property_name, cmap='jet',lognorm=True, N=5):
                                    norm=norm,
                                    ticks=ticks,
                                    orientation='horizontal')
-    cb.ax.set_xticklabels(['%.1e'%x for x in ticks])# horizontal colorbar
+    cb.ax.set_xticklabels([fmt%x for x in ticks])# horizontal colorbar
+    cb.set_label(property_name)
+
+    #cb = fig.colorbar(cax, ticks=[_min, (_min+_max)/2., _max], orientation='horizontal')
+
+    pyplot.show()
+    return g, cb
+
+def colorbar_lut(g, property_name, colors=[], N=5, fmt='%d'):
+    fig = pyplot.figure(figsize=(8,3))
+    ax = fig.add_axes([0.05, 0.65, 0.9, 0.15])
+
+    if not colors:
+        colors = [hex2color(c) for c in matplotlib.colors.cnames.values()]
+
+    prop = g.property(property_name)
+    keys = prop.keys()
+    values = prop.values()
+    m, M = min(values), max(values)
+
+    n = len(colors)
+
+    m , M = 0, min(n,M)
+    values = range(M)
+
+    ticks = np.linspace(m,M,M+1)
+
+    array_colors = np.array(colors,dtype=np.float)
+    if array_colors.max() > 1.:
+        array_colors /= 255.
+
+    cmap = mpl.colors.ListedColormap(array_colors)
+
+    cb = mpl.colorbar.ColorbarBase(ax, cmap=cmap,
+                                   ticks=ticks,
+                                   boundaries=ticks,
+                                   orientation='horizontal')
+    #cb.ax.set_xticklabels([fmt%x for x in ticks])# horizontal colorbar
     cb.set_label(property_name)
 
     #cb = fig.colorbar(cax, ticks=[_min, (_min+_max)/2., _max], orientation='horizontal')

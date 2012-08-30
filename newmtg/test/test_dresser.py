@@ -1,4 +1,4 @@
-from openalea.mtg.dresser import *
+from openalea.mtg.plantframe.dresser import *
 
 def test1():
     fn = r'data/wij10.drf'
