@@ -713,18 +713,10 @@ class MTG(PropertyTree):
         return child, complex
 
     def __str__(self):
+        from . import io
         l = ["MTG : nb_vertices=%d, nb_scales=%d"%(self.nb_vertices(), self.nb_scales())]
-        v  = self.root
-
-        """
-        edge_type = self.property('edge_type')
-        label = self.property('label')
-        while v is not None and self.scale(v) is not None:
-            l.append('\nScale %d'%self.scale(v))
-            l.extend(display_tree(self,v, edge_type=edge_type, labels=label))
-            compo = self._components.get(v,[None])
-            v= compo[0]
-        """
+        s = io.write_mtg(self, display_id=True)
+        l.append(s.split('ENTITY-CODE')[1])
         return '\n'.join(l)
 
     #########################################################################

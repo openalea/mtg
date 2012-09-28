@@ -1313,7 +1313,7 @@ class Writer(object):
         desc = self.description()
         features = self.features()
 
-    def code(self, property_names, nb_tab=12):
+    def code(self, property_names, nb_tab=12, display_id=False):
         """
         Traverse the MTG and write the code.
         """
@@ -1426,7 +1426,8 @@ class Writer(object):
 
             # Create a valid line with properties.
             label = labels.get(vtx, str(vtx))
-            name = '%s%s'%(et,get_label(label))
+            
+            name = '%s%s'%(et,get_label(label)) if not display_id else '%s%s(%d)'%(et,get_label(label),vtx)
             line = ['']*nb_tab
             line[tab] = name
 
@@ -1558,7 +1559,7 @@ class Writer(object):
     
         return symbols 
 
-def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12):
+def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False):
     """ Transform an MTG into a multi-line string in the MTG format.
 
     This method build a generic header, then traverses the MTG and transform
@@ -1577,6 +1578,7 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12):
         - `class_at_scale` (dict(name->int)): a map between a class name and its scale.
             If `class _at_scale` is None, its value will be computed from `g`.
         - `nb_tab` (int): the number of tabs used to write the code.
+        - `display_id` (bool): display the id for each vertex 
 
     :Returns: a list of strings.
 
@@ -1625,7 +1627,7 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12):
     header.append('')
 
     property_name = [p[0] for p in properties]
-    code = w.code(property_name, nb_tab=nb_tab)
+    code = w.code(property_name, nb_tab=nb_tab, display_id=display_id)
 
     header.extend(code)
     header.append('')
