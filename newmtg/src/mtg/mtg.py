@@ -1419,5 +1419,6 @@ class _ProxyNode(object):
     def remove_vertex(): pass
     @return_iter_proxy
     def remove_tree(): pass
-
+    def properties(self):
+        return self._g.get_vertex_property(self._vid)
 
