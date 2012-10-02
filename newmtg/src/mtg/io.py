@@ -1313,7 +1313,8 @@ class Writer(object):
         desc = self.description()
         features = self.features()
 
-    def code(self, property_names, nb_tab=12, display_id=False):
+    def code(self, property_names, nb_tab=12, 
+             display_id=False, display_scale=False, filter=None):
         """
         Traverse the MTG and write the code.
         """
@@ -1335,7 +1336,11 @@ class Writer(object):
         prev_scale = 0
 
         sym_at_col = []
-        for vtx in traversal.iter_mtg2(self.g, self.g.root):
+
+        for vtx in traversal.iter_mtg2(self.g, current_vertex):
+
+            if filter and not filter(self.g, vtx):
+                continue
 
             log('Process ',vtx, self.g.node(vtx).label)
 
@@ -1427,7 +1432,15 @@ class Writer(object):
             # Create a valid line with properties.
             label = labels.get(vtx, str(vtx))
             
-            name = '%s%s'%(et,get_label(label)) if not display_id else '%s%s(%d)'%(et,get_label(label),vtx)
+            if not display_id and not display_scale:
+                name = '%s%s'%(et,get_label(label))
+            elif display_id and display_scale:
+                name = '%s%s\t\t\t(id=%d, scale=%d)'%(et,get_label(label),vtx, self.g.scale(vtx))
+            elif display_id:
+                name = '%s%s\t\t\t(id=%d)'%(et,get_label(label),vtx)
+            else:
+                name = '%s%s\t\t\t(scale=%d)'%(et,get_label(label),self.g.scale(vtx))
+
             line = ['']*nb_tab
             line[tab] = name
 
@@ -1627,10 +1640,25 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False
     header.append('')
 
     property_name = [p[0] for p in properties]
-    code = w.code(property_name, nb_tab=nb_tab, display_id=display_id)
+    code = w.code(property_name, nb_tab=nb_tab, display_id=display_id, filter=lambda g,v: True if g.scale(v) <=4 else False)
 
     header.extend(code)
     header.append('')
 
     return '\n'.join(header)
+
+def display(g, max_scale=0, display_id=False, display_scale=False, nb_tab=12,**kwds):
+    """
+    Display MTG
+    """
+    w = Writer(g)
+
+    if max_scale:
+        f = lambda g,v: True if g.scale(v) <= max_scale else False
+    else:
+        f = None
+
+    code = w.code([], nb_tab=nb_tab, display_id=display_id, display_scale=display_scale, filter=f)
+    
+    return '\n'.join(code[2:])
 

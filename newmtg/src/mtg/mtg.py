@@ -715,9 +715,26 @@ class MTG(PropertyTree):
     def __str__(self):
         from . import io
         l = ["MTG : nb_vertices=%d, nb_scales=%d"%(self.nb_vertices(), self.nb_scales())]
-        s = io.write_mtg(self, display_id=True)
-        l.append(s.split('ENTITY-CODE')[1])
+        
+        s = io.display(self, display_id=True)
+        l.append(s)
         return '\n'.join(l)
+
+    def display(self, max_scale=0, display_id=True, display_scale=False,
+                nb_tab=12, **kwds):
+        """ Print an MTG on the console.
+        
+        :Optional Parameters:
+            - `max_scale`: do not print vertices of scale greater than max_scale
+            - `display_id`: display the vid of the vertices
+            - `display_scale`: display the scale of the vertices
+            - `nb_tab`: display the MTG using nb_tab columns
+
+        """
+        from . import io
+        print(("MTG : nb_vertices=%d, nb_scales=%d"%(self.nb_vertices(), self.nb_scales())))
+        print(io.display(self, max_scale=max_scale, display_id=display_id,
+                         display_scale=display_scale, nb_tab=nb_tab, **kwds))
 
     #########################################################################
     # Algorithms to copy extract and extend sub_mtg
