@@ -1647,7 +1647,7 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False
 
     return '\n'.join(header)
 
-def display(g, max_scale=0, display_id=False, display_scale=False, nb_tab=12,**kwds):
+def display(g, max_scale=0, display_id=True, display_scale=False, nb_tab=12,**kwds):
     """
     Display MTG
     """
