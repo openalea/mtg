@@ -668,7 +668,7 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
         tree = lpy.AxialTree()
 
     # Root of the MTG at scale 0
-    vtx_id = g.roots(scale=0).next()
+    vtx_id = g.roots_iter(scale=0).next()
 
     prev = vtx_id
 
@@ -790,8 +790,8 @@ def mtg2mss(name, mtg, scene, envelop_type = 'CvxHull'):
     l = []
     for scale in range(1, mtg.nb_scales()-1):
         d = {}
-        for vid in mtg.vertices(scale=scale):
-            d[vid] = list(mtg.components(vid))
+        for vid in mtg.vertices_iter(scale=scale):
+            d[vid] = mtg.components(vid)
         l.append(d)
     return ssFromDict(name, scene, l, envelop_type)
     
@@ -1381,7 +1381,7 @@ class Writer(object):
                             vc = self.g.complex(vc)
                         #down
                         # Even if the complex are linked together, several solution can coexist
-                        vtx_proj = self.g.component_roots_at_scale(vtx,scale=vscale).next()
+                        vtx_proj = self.g.component_roots_at_scale_iter(vtx,scale=vscale).next()
                         parent_proj = self.g.parent(vtx_proj)
                         
                     if vc == parent and v == parent_proj:

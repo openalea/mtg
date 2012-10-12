@@ -54,6 +54,7 @@ class Tree(object):
         Tree constructor.
         :Parameters:
             - `root` is the root id which is by default 0
+        
         :Returns:
             - `tree` : a tree with one node.
         '''
@@ -80,14 +81,20 @@ class Tree(object):
         '''
         return len(self._parent)
 
-    def vertices(self):
+    def vertices_iter(self):
         '''
         :returns: iter of vertex_id
         '''
         return self._parent.iterkeys()
 
+    def vertices(self):
+        '''
+        :returns: iter of vertex_id
+        '''
+        return list(self.vertices_iter())
+
     def __iter__(self):
-        return self.vertices()
+        return self.vertices_iter()
 
     #########################################################################
     # GraphConcept methods.
@@ -165,7 +172,6 @@ class Tree(object):
         self._children.clear()
         self._parent[self._root] = None
 
-
     #########################################################################
     # RootedTreeConcept methods.
     #########################################################################
@@ -201,7 +207,7 @@ class Tree(object):
         '''
         return self._parent.get(vtx_id)
 
-    def children(self, vtx_id):
+    def children_iter(self, vtx_id):
         '''
         returns a vertex iterator
 
@@ -210,6 +216,16 @@ class Tree(object):
         :returns: iter of vertex identifier
         '''
         return iter(self._children.get(vtx_id,[]))
+
+    def children(self, vtx_id):
+        '''
+        returns a vertex iterator
+
+        :param vtx_id: The vertex identifier.
+
+        :returns: iter of vertex identifier
+        '''
+        return self._children.get(vtx_id,[])
 
     def nb_children(self, vtx_id):
         '''
@@ -220,9 +236,9 @@ class Tree(object):
 
         :returns: int
         '''
-        return len(self._children.get(vtx_id,[]))
+        return len(self.children(vtx_id))
 
-    def siblings(self, vtx_id):
+    def siblings_iter(self, vtx_id):
         '''
         returns an iterator of vtx_id siblings.
         vtx_id is not include in siblings.
@@ -238,6 +254,17 @@ class Tree(object):
         else:
             return (vid for vid in self._children[parent] if vid != vtx_id)
 
+    def siblings(self, vtx_id):
+        '''
+        returns an iterator of vtx_id siblings.
+        vtx_id is not include in siblings.
+
+        :Parameters:
+         - `vtx_id`: The vertex identifier.
+
+        :returns: iter of vertex identifier
+        '''
+        return list(self.siblings_iter(vtx_id))
 
     def nb_siblings(self, vtx_id):
         '''
@@ -355,14 +382,17 @@ class Tree(object):
             index = children.index(vtx_id)
             del children[index]
 
+
     def __str__(self):
         l = ["Tree : nb_vertices=%d"%(self.nb_vertices())]
-        v  = self.root
-
-        edge_type = self.property('edge_type')
-        label = self.property('label')
-        l.extend(display_tree(self,v, edge_type=edge_type, labels=label))
         return '\n'.join(l)
+        
+        #v  = self.root
+
+        #edge_type = self.property('edge_type')
+        #label = self.property('label')
+        #l.extend(display_tree(self,v, edge_type=edge_type, labels=label))
+        #return '\n'.join(l)
 
     #########################################################################
     # Editable Tree Interface.
@@ -533,7 +563,7 @@ class PropertyTree(Tree):
 
         # Update the properties
         self._add_vertex_properties(vtx_id2, properties)
- 
+
         return vtx_id2
 
     def insert_parent(self, vtx_id, parent_id=None, **properties):
@@ -632,7 +662,6 @@ class PropertyTree(Tree):
                     self._properties[name][vid] = v
 
         return treeid_id
-        
 
 
     def add_child_tree(self, parent, tree):
@@ -668,6 +697,14 @@ class PropertyTree(Tree):
     #########################################################################
 
     def property_names(self):
+        '''
+        names of all property maps.
+        Properties are defined only on vertices, even edge properties.
+        return iter of names
+        '''
+        return self._properties.keys()
+
+    def property_names_iter(self):
         '''
         iter on names of all property maps.
         Properties are defined only on vertices, even edge properties.
@@ -720,11 +757,10 @@ class PropertyTree(Tree):
             p = self.property(name)
             if vid in p:
                 del p[vid]
-    
+
     def get_vertex_property(self, vid):
         """ Returns all the properties defined on a vertex.
         """
         p = self.properties()
         return dict((name,p[name][vid]) for name in p if vid in p[name])
-
 

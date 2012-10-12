@@ -66,7 +66,7 @@ def plot2d(g, image_name, scale=None, orientation=90 ):
     """
     import pydot
     if scale is None:
-        scale = max(g.scales())
+        scale = max(g.scales_iter())
     label = g.property('label')
     edges = g.iteredges(scale=scale)
 
@@ -99,7 +99,7 @@ def plot3d( g, scale=None ):
     edges = {}
     edge_type = g.property('edge_type')
 
-    root_id = g.roots(scale=scale).next()
+    root_id = g.roots_iter(scale=scale).next()
     for vid in pre_order(g, root_id):
         parent = g.parent(vid)
         if parent is None:

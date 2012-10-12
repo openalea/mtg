@@ -122,7 +122,7 @@ class PlantFrame(object):
         # User define axes: Return True or False
         self.new_axe = self._extract_properties('Axe', kwds)
         if not self.new_axe:
-            self.new_axe = dict((vid, True) for vid in g.vertices() if g.edge_type(vid) == '+')
+            self.new_axe = dict((vid, True) for vid in g.vertices_iter() if g.edge_type(vid) == '+')
         self.axes = {}
 
         # Exclude some elements depending on their class
@@ -149,7 +149,7 @@ class PlantFrame(object):
         func = kwds.get(name)
         if callable(func):
             # Compute the value for all vertices
-            all_values = ((vid,func(vid)) for vid in self.g.vertices())
+            all_values = ((vid,func(vid)) for vid in self.g.vertices_iter())
             # Select only those which are defined
             values = ( (vid, fvid) for vid, fvid in all_values if fvid is not None)
 
@@ -198,7 +198,7 @@ class PlantFrame(object):
                 continue
         
         if not self.new_axe:
-            self.new_axe = [v for v in g.vertices(scale = self.max_scale) if (g.edge_type(v) == '+' or g.parent(v) is None) or g.class_name(v) in self.exclude]
+            self.new_axe = [v for v in g.vertices_iter(scale = self.max_scale) if (g.edge_type(v) == '+' or g.parent(v) is None) or g.class_name(v) in self.exclude]
 
         # Method to compute the axes and their order.
         self._compute_axes()
@@ -236,7 +236,7 @@ class PlantFrame(object):
                 v = g.parent(v)
             return _order
 
-        for root in g.roots(scale=max_scale):
+        for root in g.roots_iter(scale=max_scale):
             for vid in traversal.post_order(g, root):
                 if vid in marked or g.class_name(vid) in exclude:
                     continue
@@ -270,7 +270,7 @@ class PlantFrame(object):
             scale = self.g.max_scale()
 
         # TODO: Compute the plantframe for several plants.
-        root = list(self.g.roots(scale=scale))[0]
+        root = self.g.roots(scale=scale)[0]
 
         # 1. compute the origin of the tree
         # Check if a complex has origin
@@ -298,7 +298,7 @@ class PlantFrame(object):
             if scale == max_scale:
                 continue
             for s in range(scale+1, max_scale+1):
-                roots = g.component_roots_at_scale(vid, s)
+                roots = g.component_roots_at_scale_iter(vid, s)
                 try:
                     component_id = roots.next()
                     self.bottom_diameter[component_id] = self.bottom_diameter[vid] 
@@ -340,7 +340,7 @@ class PlantFrame(object):
     # Methods that extend MTG
     @staticmethod
     def _first_component(g, vid):
-        return self.g.component_roots(vid).next()
+        return self.g.component_roots_iter(vid).next()
     @staticmethod
     def _last_component(g, vid):
         leaves = algo.extremities(g, vid, scale=g.scale(vid)+1, ContainedIn=vid)
@@ -348,7 +348,7 @@ class PlantFrame(object):
 
     @staticmethod
     def _first_component_at_scale(g, vid, scale):
-        return g.component_roots_at_scale(vid, scale).next()
+        return g.component_roots_at_scale_iter(vid, scale).next()
     @staticmethod
     def _last_component_at_scale(g, vid, scale):
         leaves = algo.extremities(g, vid, scale=scale, ContainedIn=vid)
@@ -411,7 +411,7 @@ class PlantFrame(object):
         """
         g = self.g
         max_scale = g.max_scale()
-        v = g.roots(scale=max_scale).next()
+        v = g.roots_iter(scale=max_scale).next()
 
         # Compute default diameter
         dresser = self.dresser
@@ -463,7 +463,7 @@ class PlantFrame(object):
         # update the defined properties with the new indices
         top_diameter = {}
         bottom_diameter = {}
-        for v in g.vertices(scale=2):
+        for v in g.vertices_iter(scale=2):
             old_v = new_map[v]
             if old_v in self.top_diameter:
                 top_diameter[v] = self.top_diameter[old_v]
@@ -476,9 +476,9 @@ class PlantFrame(object):
         error_vertex = []
         # For each independant sub_systems
         
-        for cid in g.vertices(scale=1):
+        for cid in g.vertices_iter(scale=1):
             # traverse the tree in a post_order way only for all vid in cid
-            root = g.component_roots(cid).next()
+            root = g.component_roots_iter(cid).next()
             has_root_diameter = root in diameters or root in bottom_diameter or g.parent(root) in diameters
             if has_root_diameter:
                 pid = g.parent(root)
@@ -554,7 +554,7 @@ class PlantFrame(object):
                     
             else:
                 # Compute the total number of strands for the mtg
-                nb_leaves = len([v for v in g.vertices(scale=2) if g.is_leaf(v)])
+                nb_leaves = len([v for v in g.vertices_iter(scale=2) if g.is_leaf(v)])
                 if root not in diameters:
                     strands_diameter = default_diameter
                 elif root not in strands:
@@ -651,7 +651,7 @@ class PlantFrame(object):
                     if error:
                         if max(children_diam) < root_diameter:
                             print "ONE children has a greater radius value than its root."
-                            print list(g.children(vid)), children_diam
+                            print g.children(vid), children_diam
                         else:
                             print 'WARNING: The pipe model compute at %d for power=%f a too large diameter.'%(vid, power)
                             print '       -> decrease the power of the pipe model.'
@@ -790,7 +790,7 @@ class PlantFrame(object):
         g = self.g
 
         max_scale = g.max_scale()
-        tree_root = g.roots(scale=max_scale).next()
+        tree_root = g.roots_iter(scale=max_scale).next()
 
         colors = {}
         tv = colors[2] = list(traversal.pre_order(g, tree_root))
@@ -805,10 +805,10 @@ class PlantFrame(object):
         
         mtg, new_map = colored_tree(g, colors)
 
-        mtg_root = mtg.roots(scale=1).next()
+        mtg_root = mtg.roots_iter(scale=1).next()
 
         label = mtg.property('label')
-        for v in mtg.vertices(scale=1):
+        for v in mtg.vertices_iter(scale=1):
             label[v] = 'R'+str(v)
 
         return mtg, new_map
@@ -830,7 +830,7 @@ class PlantFrame(object):
         tree_id = {}
         trees = {}
         max_scale = g.max_scale()
-        for tree_root in g.roots(scale=max_scale):
+        for tree_root in g.roots_iter(scale=max_scale):
             for vid in traversal.pre_order2_with_filter(g, tree_root, pre_order_filter=exclude_vertex):
                 if vid not in td:
                     pid = g.parent(vid)
@@ -872,7 +872,7 @@ class PlantFrame(object):
         origin = self.origin
         points = self.points
         length = {}
-        for vid in g.vertices(scale=g.max_scale()):
+        for vid in g.vertices_iter(scale=g.max_scale()):
             node = g.node(vid)
             # WARNING: Wrong when several trees
             pid = g.parent(vid)
@@ -886,7 +886,7 @@ class PlantFrame(object):
         origin = self.origin
         points = self.points
         segvec = {}
-        for vid in g.vertices(scale=g.max_scale()):
+        for vid in g.vertices_iter(scale=g.max_scale()):
             node = g.node(vid)
             # WARNING: Wrong when several trees
             pid = g.parent(vid)
@@ -918,7 +918,7 @@ class PlantFrame(object):
         # Traverse all the scales.
         # in  bottom up to propaate values and unknows
         for scale in range(max_scale, 1, -1):
-            for vid in g.vertices(scale=scale):
+            for vid in g.vertices_iter(scale=scale):
                 cid = g.complex(vid)
                 name = g.class_name(vid)
 
@@ -968,7 +968,7 @@ class PlantFrame(object):
 
         # Solve all the others without length
 
-        for root in g.roots(scale=1):
+        for root in g.roots_iter(scale=1):
             for v in traversal.pre_order_in_scale(g, root, visitor):
                 if v not in length:
                     l = _length.get(v,0) 
@@ -1054,11 +1054,13 @@ class PlantFrame(object):
                 if vid not in diameter or vid not in length:
                     continue
                 pid = g.parent(vid)
-                r_top = diameter[vid]/2.
-                r_base = diameter.get(pid,diam_top)/2.
+                r_top = diameter[vid]
+                r_base = diameter.get(pid,r_top)
+                r_base /= 2.
+                r_top /= 2.
                 h = length[vid]
 
-                v = (pi*h/3.)(r_base**2+r_top**2+r_base*r_top)
+                v = (pi*h/3.)*(r_base**2+r_top**2+r_base*r_top)
                 volume[vid] = v
 
         p = self._volume
@@ -1104,7 +1106,7 @@ class PlantFrame(object):
             _turtle = PglTurtle()
 
         scale = g.max_scale()
-        roots = list(g.roots(scale=scale))
+        roots = g.roots(scale=scale)
         for i, rid in enumerate(roots):
             if len(origins) > i:
                 origin = origins[i]

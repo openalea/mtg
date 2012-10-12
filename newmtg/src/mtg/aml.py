@@ -198,7 +198,7 @@ def VtxList(Scale=-1):
     .. seealso:: :func:`MTG`, :func:`Scale`, :func:`Class`, :func:`Index`.
     """
     global _g
-    return list(_g.vertices(scale=Scale))
+    return _g.vertices(scale=Scale)
 
 ################################################################################
 # Feature functions
@@ -392,7 +392,7 @@ def ClassScale(c):
     global _g
     for x in _g.vertices():
         if Class(x) == c:
-            return Scale(c)
+            return Scale(x)
 
 def EdgeType(v1, v2):
     """
@@ -1241,7 +1241,7 @@ def Components(v, Scale=-1):
         components = _g.components(v)
     elif scale < Scale:
         components = _g.components_at_scale(v, scale=Scale)
-    return list(components)
+    return components
 
 def ComponentRoots(v, Scale=-1):
     """
@@ -1295,7 +1295,7 @@ def ComponentRoots(v, Scale=-1):
     .. seealso:: :func:`MTG`, :func:`Components`, :func:`Trunk`.
     """
     global _g
-    return list(_g.component_roots_at_scale(v, scale=Scale))
+    return _g.component_roots_at_scale(v, scale=Scale)
 
 def Path(v1, v2):
     """

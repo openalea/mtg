@@ -133,7 +133,7 @@ def extract_sequences(g, variables=[], vid=-1, scale=0, mode='axes', **kwds):
         scale = g.max_scale()
     if vid < 0:
         vid = g.root
-    vids = list(g.component_roots_at_scale(vid, scale))
+    vids = g.component_roots_at_scale(vid, scale)
 
     if mode == 'extremities':
         seqs = extract_extremities(g, scale=scale, vid=vid, **kwds)
@@ -147,7 +147,7 @@ def extract_extremities(g, scale=0, **kwds):
         vid = first_component_root(g,g.root)
         scale = g.scale(vid)
 
-    vids = g.component_roots_at_scale(g.root, scale=scale)
+    vids = g.component_roots_at_scale_iter(g.root, scale=scale)
     leaves = chain.from_iterable(algo.extremities(g,vid) for vid in vids)
 
     seqs = [list(reversed([vid for vid in algo.ancestors(g,lid)])) for lid in leaves]
@@ -158,10 +158,10 @@ def extract_axes(g, scale=0, **kwds):
     if scale < 1:
         vid = first_component_root(g,g.root)
         scale = g.scale(vid)
-    roots = list(g.component_roots_at_scale(vid, scale=scale))
+    roots = g.component_roots_at_scale(vid, scale=scale)
 
     # Extract all the vertices with edge_type == '+'
-    vids =roots+[vid for vid in g.vertices(scale=scale) if g.edge_type(vid) == '+']
+    vids =roots+[vid for vid in g.vertices_iter(scale=scale) if g.edge_type(vid) == '+']
     seqs = [ list(algo.local_axis(g, vid, scale=scale, EdgeType='<')) for vid in vids]
     return seqs
 
@@ -173,7 +173,7 @@ def filter_sequence(seq, pred):
 
 def first_component_root(g, vid):
 
-    vids = list(g.component_roots(vid))
+    vids = g.component_roots(vid)
     if vids:
         return first_component_root(g, vids[0])
     else:

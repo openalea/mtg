@@ -35,7 +35,7 @@ def pre_order(tree, vtx_id, complex=None, visitor_filter=None):
     # 1. select first '+' edges
     successor = []
     yield vtx_id
-    for vid in tree.children(vtx_id):
+    for vid in tree.children_iter(vtx_id):
 
         if edge_type.get(vid) == '<':
             successor.append(vid)
@@ -72,7 +72,7 @@ def pre_order2_with_filter(tree, vtx_id, complex=None, pre_order_filter=None, po
         '''
         plus = []
         successor = []
-        for v in tree.children(vid):
+        for v in tree.children_iter(vid):
             if complex is not None and tree.complex(v) != complex:
                 continue
             if pre_order_filter and not pre_order_filter(v):
@@ -130,7 +130,7 @@ def pre_order2(tree, vtx_id, complex=None, visitor_filter=None):
         vtx_id = queue.pop()
         yield vtx_id
 
-        for vid in tree.children(vtx_id):
+        for vid in tree.children_iter(vtx_id):
             if complex is not None and tree.complex(vid) != complex:
                 continue
             if visitor_filter and not visitor_filter.pre_order(tree, vid):
@@ -164,7 +164,7 @@ def pre_order_in_scale(tree, vtx_id, visitor_filter=None):
         vtx_id = queue.pop()
         yield vtx_id
 
-        for vid in tree.components(vtx_id):
+        for vid in tree.components_iter(vtx_id):
             if visitor_filter and not visitor_filter.pre_order(vid):
                 continue
             queue.append(vid)
@@ -180,7 +180,7 @@ def post_order(tree, vtx_id, complex=None, visitor_filter=None):
     if visitor_filter and not visitor_filter.pre_order(vtx_id):
         return
     
-    for vid in tree.children(vtx_id):
+    for vid in tree.children_iter(vtx_id):
 
         for node in post_order2(tree, vid, complex, visitor_filter):
             yield node
@@ -202,7 +202,7 @@ def post_order2(tree, vtx_id, complex=None, visitor_filter=None):
     if visitor_filter and not visitor_filter.pre_order(vtx_id):
         return
     
-    for vid in tree.children(vtx_id):
+    for vid in tree.children_iter(vtx_id):
 
         for node in post_order2(tree, vid, complex, visitor_filter):
             yield node
@@ -235,7 +235,7 @@ def post_order2(tree, vtx_id, complex=None, pre_order_filter=None, post_order_vi
         '''
         plus = []
         successor = []
-        for v in tree.children(vid):
+        for v in tree.children_iter(vid):
             if complex is not None and tree.complex(v) != complex:
                 continue
             if pre_order_filter and not pre_order_filter(v):
@@ -284,7 +284,7 @@ def traverse_tree(tree, vtx_id, visitor):
 
   yield visitor.pre_order(vtx_id)
 
-  for v in tree.children(vtx_id):
+  for v in tree.children_iter(vtx_id):
      for res in traverse_tree(tree, v, visitor):
         yield res
 
@@ -400,7 +400,7 @@ def iter_mtg2(mtg, vtx_id):
     max_scale = mtg.max_scale()
 
     yield vtx_id
-    for vtx_id in mtg.component_roots_at_scale(complex_id, max_scale):
+    for vtx_id in mtg.component_roots_at_scale_iter(complex_id, max_scale):
         for vid in pre_order2(mtg, vtx_id):
             for node in iter_scale2(mtg, vid, complex_id, visited):
                 yield node
@@ -460,7 +460,7 @@ def pre_order_with_filter(tree, vtx_id, pre_order_filter=None, post_order_visito
     # 1. select first '+' edges
     successor = []
     yield vtx_id
-    for vid in tree.children(vtx_id):
+    for vid in tree.children_iter(vtx_id):
         if edge_type.get(vid) == '<':
             successor.append(vid)
             continue
@@ -601,7 +601,7 @@ def iter_mtg2_with_filter(mtg, vtx_id, pre_order_filter=None, post_order_visitor
 
     queue.append(vtx_id) #cpl
 
-    for vtx_id in mtg.component_roots_at_scale(complex_id, max_scale):
+    for vtx_id in mtg.component_roots_at_scale_iter(complex_id, max_scale):
         for vid in pre_order2_with_filter(mtg, vtx_id, 
                                           pre_order_filter=None, 
                                           post_order_visitor=post_order_visitor,

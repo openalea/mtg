@@ -140,7 +140,7 @@ def test5():
     t1=clock(); t, dt = t1, t1-t
     print 'diameter in ', dt 
 
-    root = g.roots(scale=g.max_scale()).next()
+    root = g.roots_iter(scale=g.max_scale()).next()
     axes = plantframe.compute_axes(g,root, pf.points, pf.origin)
     axes[0][0].insert(0,pf.origin)
 
@@ -206,7 +206,7 @@ def fun3():
 
     lengths = []
     for root in g.vertices(scale=1):
-        vr = g.component_roots_at_scale(root,scale=2).next()
+        vr = g.component_roots_at_scale_iter(root,scale=2).next()
         h = aml.Height(vr)
         lv = [v for v in algo.trunk(g,vr, RestrictedTo='SameComplex', ConatinedIn=root) if v in pf.length]
         P.plot([aml.Height(v)-h for v in lv], [pf.length.get(v) for v in lv], 'o-')

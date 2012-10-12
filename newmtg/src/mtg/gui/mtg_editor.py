@@ -65,7 +65,7 @@ class ObservableMTG(GraphAdapterBase, Observed):
                 edge_added.append((pid, vid))
             else: # add a complex
                 cpx_id = g.complex(pid)
-                if pid in list(g.component_roots(cpx_id)):
+                if pid in g.component_roots(cpx_id):
                     g._id -= 1
                     return
                 # TODO : What is the type of the edge?
@@ -82,7 +82,7 @@ class ObservableMTG(GraphAdapterBase, Observed):
     def remove_vertex(self, vertex):
         g = self.graph
         pid = g.parent(vertex)
-        children = list(g.children(vertex))
+        children = g.children(vertex)
         nchildren = len(children)
 
         # -- refresh the graphical edges to --
@@ -239,7 +239,7 @@ class Vertex( qt.DefaultGraphicalVertex ):
                 if cpx_id is not None:
                     self.graph().notify_listeners(("vertex_event", (cpx_id, "select")))
             elif k == QtCore.Qt.Key_Down:
-                cids = list(g.components(vid))
+                cids = g.components(vid)
                 if len(cids) > 0:
                     self.graph().notify_listeners(("vertex_event", (cids[0], "select")))
             elif k == QtCore.Qt.Key_Left:
@@ -247,7 +247,7 @@ class Vertex( qt.DefaultGraphicalVertex ):
                 if pid is not None:
                     self.graph().notify_listeners(("vertex_event", (pid, "select")))
             else:
-                chids = list(g.children(vid))
+                chids = g.children(vid)
                 for chid in chids:
                     if g.edge_type(chid) == "<":
                         self.graph().notify_listeners(("vertex_event", (chid, "select")))

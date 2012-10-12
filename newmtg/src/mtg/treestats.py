@@ -67,7 +67,7 @@ def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], *
             variable_names += ["Variable" + str(p)]
 
     # list of roots
-    roots = list(g.roots(scale=scale))
+    roots = g.roots(scale=scale)
 
     def props(vid):
         '''Extract the properties for the Tree.'''

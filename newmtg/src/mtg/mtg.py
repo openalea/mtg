@@ -26,9 +26,10 @@ __docformat__ = "restructuredtext"
 import re
 import itertools
 import warnings
+import random
 
 import traversal
-import random
+import algo
 
 try:
     from openalea.container.tree import PropertyTree, InvalidVertex
@@ -150,7 +151,7 @@ class MTG(PropertyTree):
         '''
         return len(set(self._scale.itervalues()))
 
-    def scales(self):
+    def scales_iter(self):
         '''Return the different scales of the mtg.
 
         :Returns:
@@ -159,6 +160,16 @@ class MTG(PropertyTree):
         .. note:: The complexity is :math:`O(n)`.
         '''
         return iter(set(self._scale.itervalues()))
+
+    def scales(self):
+        '''Return the different scales of the mtg.
+
+        :Returns:
+            Iterator on scale identifiers (ints).
+
+        .. note:: The complexity is :math:`O(n)`.
+        '''
+        return list(self.scales_iter())
 
     def max_scale(self):
         '''Return the max scale identifier.
@@ -174,7 +185,7 @@ class MTG(PropertyTree):
         .. note:: The complexity is :math:`O(n)`.
         .. seealso:: :func:`scale`, :func:`scales`
         '''
-        return max(self._scale.itervalues())
+        return max(self.scales_iter())
 
 
     #########################################################################
@@ -201,9 +212,43 @@ class MTG(PropertyTree):
         if scale < 0:
             return len(self._scale)
         else:
-            return len(set(self.vertices(scale=scale)))
+            return len(self.vertices(scale=scale))
 
     def vertices(self, scale = -1):
+        '''
+        Return a list of the vertices contained in an MTG.
+
+        The set of all vertices in the MTG is returned.
+        Vertices from all scales are returned if no scale is given.
+        Otherwise, it returns only the vertices of the given scale.
+        The order of the elements in this array is not significant.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g = MTG()
+            len(g) == len(list(g.vertices()))
+            for vid in g.vertices(scale=2):
+                print g.class_name(vid)
+
+        :Optional Parameters:
+            - `scale` (int): used to select vertices at a given scale.
+
+        :Returns:
+            Iterator on vertices at "scale" or on all
+            vertices if scale < 0.
+
+        :Returns Type:
+            list of vid
+
+        :Background:
+
+        .. seealso:: :meth:`children`, :meth:`components`, :meth:`vertices_iter`..
+        '''
+        return list(self.vertices_iter(scale=scale))
+
+    def vertices_iter(self, scale = -1):
         '''
         Return an iterator of the vertices contained in an MTG.
 
@@ -240,6 +285,7 @@ class MTG(PropertyTree):
         else:
             return (vid for vid, sid in self._scale.iteritems() if sid == scale)
 
+
     #########################################################################
     # Python Iterator and Container interfaces
     #########################################################################
@@ -255,7 +301,7 @@ class MTG(PropertyTree):
                 print g.class_name(v)
 
         '''
-        return self.vertices()
+        return self.vertices_iter()
 
     def __contains__(self, vid):
         '''
@@ -316,6 +362,17 @@ class MTG(PropertyTree):
         else:
             return ((parent, child) for child, parent in self._parent.iteritems() if self.scale(parent) == scale)
 
+    def edges(self, scale=-1):
+        """
+        :Parameters:
+         - `scale` (int) - Scale at which to iterate.
+        :Returns:
+            Iterator on the edges of the MTG at a given scale
+            or on all edges if scale < 0.
+        :Returns Type:
+            iter
+        """
+        return list(self.iter_edges)
 
     #########################################################################
     # MutableVertexGraphConcept methods.
@@ -356,7 +413,7 @@ class MTG(PropertyTree):
 
         if reparent_child:
             new_parent_id = self.parent(vid)
-            for cid in self.children(vid):
+            for cid in self.children_iter(vid):
                 self.replace_parent(cid, new_parent_id)
 
         if self.nb_components(vid) == 0:
@@ -430,8 +487,8 @@ class MTG(PropertyTree):
         """
         return self.sub_mtg(self.root)
 
-    def roots(self, scale=0):
-        ''' Returns the roots of the tree graphs at a given scale.
+    def roots_iter(self, scale=0):
+        ''' Returns an iterator of the roots of the tree graphs at a given scale.
         
         In an MTG, the MTG root vertex, namely the vertex `g.root`, 
         can be decomposed into several, non-connected, tree graphs at a given scale. 
@@ -448,7 +505,27 @@ class MTG(PropertyTree):
 
         .. image:: ../user/mtg_componentroots.png
         '''
-        return (vid for vid in self.vertices(scale=scale) if self.parent(vid) is None)
+        return (vid for vid in self.vertices_iter(scale=scale) if self.parent(vid) is None)
+
+    def roots(self, scale=0):
+        ''' Returns a list of the roots of the tree graphs at a given scale.
+        
+        In an MTG, the MTG root vertex, namely the vertex `g.root`, 
+        can be decomposed into several, non-connected, tree graphs at a given scale. 
+        This is for example the case of an MTG containing the description of several plants.
+        
+        :Usage: ::
+
+            roots = g.roots(scale=g.max_scale()
+
+        :Returns:
+            list on vertex identifiers of root vertices at a given `scale`.
+        :Returns Type:
+            list of vid
+
+        .. image:: ../user/mtg_componentroots.png
+        '''
+        return list(self.roots_iter(scale=scale))
 
 
     #########################################################################
@@ -586,7 +663,7 @@ class MTG(PropertyTree):
             complex_id = self.complex(complex_id)
         return complex_id
 
-    def components(self, vid):
+    def components_iter(self, vid):
         '''
         returns a vertex iterator
 
@@ -596,11 +673,21 @@ class MTG(PropertyTree):
         '''
 
         if vid in self._components:
-            for v in self.component_roots(vid):
+            for v in self.component_roots_iter(vid):
                 for vtx in traversal.pre_order(self, v, complex=vid):
                     yield vtx
 
-    def components_at_scale(self, vid, scale):
+    def components(self, vid):
+        '''
+        returns the components of a vertex 
+
+        :param vid: The vertex identifier.
+
+        :returns: list of vertex identifier
+        '''
+        return list(self.components_iter(vid))
+
+    def components_at_scale_iter(self, vid, scale):
         '''
         returns a vertex iterator
 
@@ -616,12 +703,23 @@ class MTG(PropertyTree):
 
         gen = (vid, )
         for i in range(cur_scale, scale):
-            gen = (vid for vtx in gen for vid in self.components(vtx) )
+            gen = (vid for vtx in gen for vid in self.components_iter(vtx) )
 
         return gen
 
-    def component_roots(self, vtx_id):
-        '''Return the set of roots of the tree graphs that compose a vertex.
+    def components_at_scale(self, vid, scale):
+        '''
+        returns a vertex iterator
+
+        :Parameters:
+         - `vid`: The vertex identifier.
+
+        :returns: iter of vertex identifier
+        '''
+        return list(self.components_at_scale_iter(vid, scale))
+    
+    def component_roots_iter(self, vtx_id):
+        '''Return an iterator of the roots of the tree graphs that compose a vertex.
         '''
         components = self._components.get(vtx_id,[])
 
@@ -630,19 +728,29 @@ class MTG(PropertyTree):
             if p is None or self.complex(p) != vtx_id:
                 yield ci
 
-    def component_roots_at_scale(self, vtx_id, scale):
+    def component_roots(self, vtx_id):
+        '''Return the set of roots of the tree graphs that compose a vertex.
+        '''
+        return list(self.component_roots_iter(vtx_id))
+
+    def component_roots_at_scale_iter(self, vtx_id, scale):
         '''Return the set of roots of the tree graphs that compose a vertex.
         '''
         cur_scale = self.scale(vtx_id)
         if scale == -1 or scale == cur_scale+1:
-           return self.component_roots(vtx_id)
+           return self.component_roots_iter(vtx_id)
         elif scale > cur_scale+1:
             gen = (vtx_id,)
             for i in range(cur_scale, scale):
-                gen = (vid for vtx in gen for vid in self.component_roots(vtx))
+                gen = (vid for vtx in gen for vid in self.component_roots_iter(vtx))
             return gen
         else:
             return iter([])
+
+    def component_roots_at_scale(self, vtx_id, scale):
+        '''Return the list of roots of the tree graphs that compose a vertex.
+        '''
+        return list(self.component_roots_at_scale_iter(vtx_id, scale))
 
     def nb_components(self, vid):
         '''
@@ -653,7 +761,7 @@ class MTG(PropertyTree):
 
         :returns: int
         '''
-        return len(list(self.components(vid)))
+        return len(self.components(vid))
 
     # mutable
     def add_component(self, complex_id, component_id=None, **properties):
@@ -783,7 +891,7 @@ class MTG(PropertyTree):
                     self._children[pid].remove(vid)
                     del self._parent[vid]
                 # remove children edges
-                for cid in self.children(vid):
+                for cid in self.children_iter(vid):
                     self._parent[cid] = None
                 if vid in self._children:
                     del self._children[vid]
@@ -794,7 +902,7 @@ class MTG(PropertyTree):
                     self._components[complex_id].remove(vid)
                     del self._complex[vid]
                 # remove components edges
-                for cid in self.components(vid):
+                for cid in self.components_iter(vid):
                     del self._complex[cid]
                 if vid in self._components:
                     del self._components[vid]
@@ -833,7 +941,7 @@ class MTG(PropertyTree):
                 treeid_id[vid] = v
 
                 pid = self.parent(vid)
-                if pid is not None:
+                if pid in treeid_id:
                     parent = treeid_id[pid]
                     v = g.add_child(parent, child=v)
 
@@ -983,6 +1091,972 @@ class MTG(PropertyTree):
             # TODO: retunr an error
             return None
 
+    #########################################################################
+    # Compatibility with AML
+    # Add deprecated decorator
+    #########################################################################
+
+    def VtxList(self, Scale=-1):
+        """	
+        Array of vertices contained in a MTG
+
+        The set of all vertices in the :func:`MTG` is returned as an array.
+        Vertices from all scales are returned if no option is used.
+        The order of the elements in this array is not significant.
+
+        :Usage:
+
+        .. code-block:: python
+
+            >>> VtxList()
+            >>> VtxList(Scale=2)
+
+        :Optional Parameters:
+
+            - `Scale` (int): used to select components at a particular scale.
+
+        :Returns:
+
+            - list of vid
+
+        :Background:
+
+            :func:`MTGs`
+
+        .. seealso:: :meth:`MTG`, :meth:`scale`, :meth:`Class`, :meth:`index`.
+        """
+        return self.vertices(scale=Scale)
+
+    Label = label
+    Class = class_name
+    Index = index
+    Scale = scale
+
+    def ClassScale(self, c):
+        """
+        Scale at which appears a given class of vertex
+
+        Every vertex is associated with a unique class.
+        Vertices from a given class only appear at a given scale
+        which can be retrieved using this function.
+
+        :Usage: 
+
+        .. code-block:: python
+
+            ClassScale(c)
+
+        :Parameters:
+
+            - `c` (str) : symbol of the considered class
+
+        :Returns:
+
+            int
+
+        .. seealso:: :func:`MTG`, :func:`Class`, :func:`Scale`, :func:`Index`.
+
+        """
+        for x in self.vertices_iter():
+            if self.Class(x) == c:
+                return self.scale(x)
+
+    def EdgeType(self, v1, v2):
+        """
+        Type of connection between two vertices.
+
+        Returns the symbol of the type of connection between two vertices (either `<` or `+`).
+        If the vertices are not connected, None is returned.
+
+        :Usage:
+
+        .. code-block:: python
+
+            EdgeType(v1, v2)
+
+        :Parameters:
+
+            - v1 (int) : vertex of the active MTG
+            - v2 (int) : vertex of the active MTG
+
+        :Returns:
+
+            '<' (successor), '+' (branching) or `None`
+
+        .. image:: ../user/mtg_edgetype.png
+
+        .. seealso:: :func:`MTG`, :func:`Sons`, :func:`Father`.
+
+        """
+        if self.parent(v1) == v2:
+            v1, v2 = v2, v1
+
+        return self.property('edge_type').get(v2)
+
+    def Defined(self, vid):
+        """
+        Test whether a given vertex belongs to the active MTG.
+
+        :Usage:
+
+        .. code-block:: python
+
+            Defined(v)
+
+        :Parameters:
+
+            - v (int) : vertex of the active MTG
+
+        :Returns:
+
+            True or False
+
+        .. seealso:: :func:`MTG`.
+        """
+        return vid in self
+
+    def Rank(self, v1, v2=None):
+        """
+        Rank of one vertex with respect to another one.
+
+        This function returns the number of consecutive '<'-type edges between two components,
+        at the same scale, and does not take into account the order of vertices v1 and v2.
+        The result is a non negative integer.
+
+        :Usage:
+
+        .. code-block:: python
+
+            Rank(v1)
+            Rank(v1, v2)
+
+        :Parameters:
+
+            - v1 (int) : vertex of the active MTG
+            - v2 (int) : vertex of the active MTG
+
+        :Returns:
+
+            `int`
+
+            If v1 is not an ancestor of v2 (or vise versa) within the same botanical axis,
+            or if v1 and v2 are not defined at the same scale, an error value Undef id returned.
+
+        .. seealso:: :func:`MTG`, :func:`Order`, :func:`Height`, :func:`EdgeType`, :func:`AlgRank`, :func:`AlgHeight`, :func:`AlgOrder`.
+
+        """
+        return algo.rank(self,v1,v2)
+
+    def Height(self, v1, v2=None):
+        """
+        Number of components existing between two components in a tree graph.
+
+        The height of a vertex (`v2`) with respect to another vertex (`v1`)
+        is the number of edges (of either type '+' or '<') that must be crossed
+        when going from `v1` to `v2` in the graph.
+
+        This is a non-negative integer. When the function has only one argument `v1`,
+        the height of `v1` correspond to the height of `v1`with respect
+        to the root of the branching system containing `v1`.
+
+        :Usage:
+
+        .. code-block:: python
+
+            Height(v1)
+            Height(v1, v2)
+
+        :Parameters:
+
+            - v1 (int) : vertex of the active MTG
+            - v2 (int) : vertex of the active MTG
+
+        :Returns:
+
+            int
+
+        .. note::
+
+            When the function takes two arguments, the order of the arguments is not important
+            provided that one is an ancestor of the other. When the order is relevant, use
+            function `AlgHeight`.
+
+        .. seealso:: :func:`MTG`, :func:`Order`, :func:`Rank`, :func:`EdgeType`, :func:`AlgHeight`, :func:`AlgHeight`, :func:`AlgOrder`.
+
+        """
+        return algo.height(self, v1, v2)
+
+    def AlgOrder(self, v1, v2):
+        """
+        Algebraic value defining the relative order of one vertex with respect to another one.
+
+        This function is similar to function `Order(v1, v2)` : it returns the number of `+`-type edges
+        between two components, at the same scale, but takes into account the order of vertices
+        `v1` and `v2`.
+
+        The result is positive if `v1` is an ancestor of `v2`,
+        and negative if `v2` is an ancestor of `v1`.
+
+        :Usage:
+
+        .. code-block:: python
+
+            AlgOrder(v1, v2)
+
+        :Parameters:
+
+            - v1 (int) : vertex of the active MTG.
+            - v2 (int) : vertex of the active MTG.
+
+        :Returns:
+
+            int
+
+            If `v1` is not an ancestor of `v2` (or vise versa), or if `v1` and `v2` are not defined
+            at the same scale, an error value None is returned.
+
+
+        .. seealso:: :func:`MTG`, :func:`Rank`, :func:`Order`, :func:`Height`, :func:`EdgeType`, :func:`AlgHeight`, :func:`AlgRank`.
+        """
+        return algo.alg_order(self, v1, v2)
+
+    def AlgRank(self, v1, v2):
+        """
+        Algebraic value defining the relative rank of one vertex with respect to another one.
+
+        This function is similar to function `Rank(v1, v2)` : it returns the number of `<`-type edges
+        between two components, at the same scale, but takes into account the order of vertices
+        `v1` and `v2`.
+
+        The result is positive if `v1` is an ancestor of `v2`,
+        and negative if `v2` is an ancestor of `v1`.
+
+        :Usage:
+
+        .. code-block:: python
+
+            AlgRank(v1, v2)
+
+        :Parameters:
+
+            - v1 (int) : vertex of the active MTG.
+            - v2 (int) : vertex of the active MTG.
+
+        :Returns:
+
+            int
+
+            If `v1` is not an ancestor of `v2` (or vise versa), or if `v1` and `v2` are not defined
+            at the same scale, an error value None is returned.
+
+        .. seealso:: :func:`MTG`, :func:`Rank`, :func:`Order`, :func:`Height`, :func:`EdgeType`, :func:`AlgHeight`, :func:`AlgOrder`.
+
+        """
+        return algo.alg_rank(self, v1, v2)
+
+    def AlgHeight(self, v1, v2):
+        """
+        Algebraic value defining the number of components between two components.
+
+        This function is similar to function `Height(v1, v2)` : it returns the number of components
+        between two components, at the same scale, but takes into account the order of vertices
+        `v1` and `v2`.
+
+        The result is positive if `v1` is an ancestor of `v2`,
+        and negative if `v2` is an ancestor of `v1`.
+
+        :Usage:
+
+        .. code-block:: python
+
+            AlgHeight(v1, v2)
+
+        :Parameters:
+
+            - v1 (int) : vertex of the active MTG.
+            - v2 (int) : vertex of the active MTG.
+
+        :Returns:
+
+            int
+
+            If `v1` is not an ancestor of `v2` (or vise versa), or if `v1` and `v2` are not defined
+            at the same scale, an error value None is returned.
+
+        .. seealso:: :func:`MTG`, :func:`Rank`, :func:`Order`, :func:`Height`, :func:`EdgeType`, :func:`AlgOrder`, :func:`AlgRank`.
+
+        """
+        return algo.alg_height(self, v1, v2)
+
+    def Father(self, v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None, Scale = -1):
+        """
+        Topological father of a given vertex.
+
+        Returns the topological father of a given vertex. And `None` if the father does not exist.
+        If the argument is not a valid vertex, `None` is returned.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.Father(v)
+            g.Father(v, EdgeType='<')
+            g.Father(v, RestrictedTo='SameComplex')
+            g.Father(v, ContainedIn=complex_id)
+            g.Father(v, Scale=s)
+
+        :Parameters:
+
+            v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            If no optional argument is specified,  the function returns the topological father
+            of the argument (vertex that bears or precedes to the vertex passed as an argument).
+
+            It may be usefull in some cases to consider that the function only applies to a
+            subpart of the MTG (e.g. an axis).
+
+            The following options enables us to specify such restrictions:
+
+            - EdgeType (str) : filter on the type of edge that connect the vertex to its father.
+
+              Values can be '<', '+', and '*'. Values '*' means both '<' and '+'.
+              Only the vertex connected with the specified type of edge will be considered.
+
+            - RestrictedTo (str) : filter defining a subpart of the MTG where the father
+              must be considered. If the father is actually outside this subpart,
+              the result is `None`. Possible subparts are defined using keywords in
+              ['SameComplex', 'SameAxis', 'NoRestriction'].
+
+              For instance, if `RestrictedTo` is set to 'SameComplex', :func:`Father(v)` returns a
+              defined vertex only if the father `f` of `v` existsin the MTG and if `v` and `f`
+              have the same complex.
+
+            - ContainedIn (int) : filter defining a subpart of the MTG where the father
+              must be considered. If the father is actually outside this subpart,
+              the result is `None`.
+
+              In this case, the subpart of the MTG is made of the vertices
+              that composed `composite_id` (at any scale).
+
+            - Scale (int) : the scale of the considered father. Returns the vertex from scale `s`
+              which either bears and precedes the argument.
+
+              The scale `s` can be lower than the argument's (corresponding to a question such as
+              'which axis bears the internode?') or greater
+              (e.g. 'which internodes bears this annual shoot?').
+
+        :Returns:
+
+            the vertex id of the Father (int)
+
+        .. seealso:: :func:`MTG`, :func:`Defined`, :func:`Sons`, :func:`EdgeType`, :func:`Complex`, :func:`Components`.
+
+        """
+        if EdgeType not in ['+', '<', '*']:
+            raise Exception('Invalid argument %s. Value of EdgeType is "<", "+" or "*".'%EdgeType)
+
+        if RestrictedTo not in ['SameComplex', 'SameAxis', 'NoRestriction']:
+            raise Exception('Invalid argument %s. Value of RestrictedTo is SameComplex, SameAxis, NoRestriction .'%RestrictedTo)
+
+        return algo.father(self, v, scale=Scale, EdgeType=EdgeType, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
+
+    def Successor(self, v, RestrictedTo='NoRestriction', ContainedIn=None):
+        """
+        Vertex that is connected to a given vertex by a '<' edge type (i.e. in the same botanical axis).
+
+        This function is equivalent to Sons(v, EdgeType='<')[0].
+        It returns the vertex that is connected to a given vertex by a '<' edge type
+        (i.e. in the same botanical axis).
+        If many such vertices exist, an arbitrary one is returned by the function.
+        If no such vertex exists, None is returned.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.Successor(v)
+
+        :Parameters:
+
+            - v1 (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - RestrictedTo (str): cf. Father
+            - ContainedIn (int): cf. Father
+
+        :Returns:
+
+            Returns vertex's id (int)
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> g.Sons(v)
+            [3, 45, 47, 78, 102]
+            >>> g.Sons(v, EdgeType='+') # set of vertices borne by v
+            [3, 45, 47, 102]
+            >>> g.Sons(v, EdgeType-> '<') # set of successors of v
+            [78]
+            >>> g.Successor(v)
+            78
+
+        .. seealso:: :func:`MTG`, :func:`Sons`, :func:`Predecessor`.
+        """
+        global _g
+        return algo.successor(_g, v, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
+
+    def Predecessor(self, v, **kwds):
+        """
+        Father of a vertex connected to it by a '<' edge
+
+        This function is equivalent to Father(v, EdgeType-> '<').
+        It thus returns the father (at the same scale) of the argument
+        if it is located in the same botanical.
+        If it does not exist, None is returned.
+
+        :Usage:
+
+        .. code-block:: python
+
+            Predecessor(v)
+
+        :Parameters:
+
+            - v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - RestrictedTo (str): cf. `Father`
+            - ContainedIn (int): cf. `Father`
+
+        :Returns:
+
+            return the vertex id (int)
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> Predecessor(v)
+            7
+            >>> Father(v, EdgeType='+')
+            >>> Father(v, EdgeType-> '<')
+            7
+
+        .. seealso:: :func:`MTG`, :func:`Father`, :func:`Successor`.
+        """
+        return self.Father(v, EdgeType='<', **kwds)
+
+    def Root(self, v, RestrictedTo='*', ContainedIn=None):
+        """
+        Root of the branching system containing a vertex
+
+        This function is equivalent to Ancestors(v, EdgeType='<')[-1].
+        It thus returns the root of the branching system containing the argument.
+        This function never returns None.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.Root(v)
+
+        :Parameters:
+
+            - v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - RestrictedTo (str): cf. Father
+            - ContainedIn (int): cf. Father
+
+        :Returns:
+
+           return vertex's id (int)
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> g.Ancestors(v) # set of ancestors of v
+            [102,78,35,33,24,12]
+            >>> g.Root(v) # root of the branching system containing v
+            12
+
+        .. image:: ../user/mtg_root.png
+
+        .. seealso:: :func:`MTG`, :func:`Extremities`.
+        """
+        return algo.root(self, v, RestrictedTo=RestrictedTo, 
+                         ContainedIn=ContainedIn)
+
+    def Complex(self, v, Scale=-1):
+        """
+        Complex of a vertex.
+
+        Returns the complex of `v`. The complex of a vertex `v` has a scale lower than `v` :
+        `Scale(v)` - 1. In a MTG, every vertex except for the MTG root (cf. `MTGRoot`),
+        has a uniq complex. None is returned if the argument is the MTG Root
+        or if the vertex is undefined.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.Complex(v)
+            g.Complex(v, Scale=2)
+
+        :Parameters:
+
+            - `v` (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - `Scale` (int) : scale of the complex
+
+        :Returns:
+
+            Returns vertex's id (int)
+
+        :Details:
+
+            When a scale different form Scale(v)-1 is specified using the optional parameter
+            `Scale`, this scale must be lower than that of the vertex argument.
+
+        .. todo:: Complex(v, Scale=10) returns v why ? is this expected
+
+        .. seealso:: :func:`MTG`, :func:`Components`.
+        """
+        _g = self
+        if Scale == -1 or Scale == _g.scale(v)-1:
+            return _g.complex(v)
+        else:
+            return _g.complex_at_scale(v, scale=Scale)
+
+    def Sons(self, v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= None):
+        """
+        Set of vertices born or preceded by a vertex
+
+        The set of sons of a given vertex is returned as an array of vertices.
+        The order of the vertices in the array is not significant.
+        The array can be empty if there are no son vertices.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.Sons(v)
+            g.Sons(v, EdgeType= '+')
+            g.Sons(v, Scale= 3)
+
+        :Parameters:
+
+            - v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - RestrictedTo (str) : cf. :meth:`Father`
+            - ContainedIn (int) : cf. :meth:`Father`
+            - EdgeType (str) : filter on the type of sons.
+            - Scale (int) : set the scale at which sons are considered.
+
+        :Returns:
+
+            list(vid)
+
+        :Details:
+
+            When the option EdgeType is applied, the function returns the set of sons
+            that are connected to the argument with the specified type of relation.
+            
+        .. note:: `Sons(v, EdgeType= '<')` is not equivalent to `Successor(v)`.
+            The first function returns an array of vertices while the second function
+            returns a vertex.
+
+            The returned vertices have the same scale as the argument.
+            However, coarser or finer vertices can be obtained by specifying
+            the optional argument `Scale` at which the sons are considered.
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> g.Sons(v)
+            [3,45,47,78,102]
+            >>>  g.Sons(v, EdgeType= '+') # set of vertices borne by v
+            [3,45,47,102]
+            >>>  g.Sons(v, EdgeType= '<') # set of successors of v on the same axis
+            [78]
+
+        .. seealso:: :func:`MTG`, :func:`Father`, :func:`Successor`, :func:`Descendants`.
+        """
+        return algo.sons(self, v, EdgeType=EdgeType, 
+                         RestrictedTo=RestrictedTo, 
+                         Scale=Scale, 
+                         ContainedIn=ContainedIn)
+
+    def Ancestors(self, v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
+        """
+        Array of all vertices which are ancestors of a given vertex
+
+        This function returns the array of vertices which are located
+        before the vertex passed as an argument.
+        These vertices are defined at the same scale as `v`. The array starts by `v`,
+        then contains the vertices on the path from `v` back to the root (in this order)
+        and finishes by the tree root.
+
+        .. note:: The anscestor array always contains at least the argument vertex `v`.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.Ancestors(v)
+
+        :Parameters:
+
+            - v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - RestrictedTo (str): cf. `Father`
+            - ContainedIn (int): cf. `Father`
+            - EdgeType (str): cf. `Father`
+
+        :Returns:
+
+            list of vertices's id (int)
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> v # prints vertex v
+            78
+            >>> g.Ancestors(v) # set of ancestors of v at the same scale
+            [78,45,32,10,4]
+            >>> list(reversed(g.Ancestors(v))) # To get the vertices in the order from the root to the vertex v
+            [4,10,32,45,78]
+
+
+        .. seealso:: :func:`MTG`, :func:`Descendants`.
+        """
+        return list(algo.full_ancestors(self, v, RestrictedTo=RestrictedTo,
+                                              EdgeType=EdgeType,
+                                              ContainedIn=ContainedIn))
+
+    def Descendants(self, v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
+        """
+        Set of vertices in the branching system borne by a vertex.
+
+        This function returns the set of descendants of its argument as an array of vertices.
+        The array thus consists of all the vertices, at the same scale as `v`,
+        that belong to the branching system starting at `v`.
+        The order of the vertices in the array is not significant.
+
+        .. note:: The argument always belongs to the set of its descendants.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.Descendants(v)
+
+        :Parameters:
+
+            - v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - RestrictedTo (str): cf. `Father`
+            - ContainedIn (int): cf. `Father`
+            - EdgeType (str): cf. `Father`
+
+        :Returns:
+
+            list of int.
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> v
+            78
+            >>> g.Sons(v) # set of sons of v
+            [78,99,101]
+            >>> g.Descendants(v) # set of descendants of v
+            [78,99,101,121,133,135,156,171,190]
+
+        .. image:: ../user/mtg_descendants.png
+
+        .. seealso:: :func:`MTG`, :func:`Ancestors`.
+        """
+        return list(algo.descendants(self, v,
+                                     RestrictedTo=RestrictedTo,
+                                     ContainedIn=ContainedIn))
+
+    def Extremities(self, v, RestrictedTo='NoRestriction', ContainedIn=None):
+        """
+        Set of vertices that are the extremities of the branching system
+        born by a given vertex.
+
+        This function returns the extremities of the branching system defined by the argument
+        as a list of vertices. These vertices have the same scale as `v` and their order in
+        the list is not signifiant. The result is always a non empty array.
+
+        :Usage:
+
+        .. code-block:: python
+
+            Extremities(v)
+
+        :Properties:
+
+            -  v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - RestrictedTo (str): cf. :func:`Father`
+            - ContainedIn (int): cf. :func:`Father`
+
+        :Returns:
+
+            list of vertices's id (int)
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> g.Descendants(v)
+            [3, 45, 47, 78, 102]
+            >>> g.Extremities(v)
+            [47, 102]
+
+        .. seealso:: :func:`MTG`, :func:`Descendants`, :func:`Root`, :func:`MTGRoot`.
+        """
+        return list(algo.extremities(self, v, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn))
+
+    def Components(self, v, Scale=-1):
+        """
+        Set of components of a vertex.
+
+        The set of components of a vertex is returned as a list of vertices.
+        If **s** defines the scale of **v**, components are defined at scale **s** + 1.
+        The array is empty if the vertex has no components.
+        The order of the components in the array is not significant.
+
+        When a scale is specified using optional argument :arg:Scale,
+        it must be necessarily greater than the scale of the argument.
+
+        :Usage:
+
+        .. code-block:: python
+
+            Components(v)
+            Components(v, Scale=2)
+
+        :Parameters:
+
+            - v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - Scale (int) : scale of the components.
+
+        :Returns:
+
+            list of int
+
+        .. image:: ../user/mtg_components.png
+
+        .. seealso:: :func:`MTG`, :func:`Complex`.
+        """
+        _g = self
+        scale = _g.scale(v)
+        components = []
+        if Scale == -1 or scale == Scale:
+            components = _g.components(v)
+        elif scale < Scale:
+            components = _g.components_at_scale(v, scale=Scale)
+        return components
+
+    def ComponentRoots(self, v, Scale=-1):
+        """
+        Set of roots of the tree graphs that compose a vertex
+
+        In a MTG, a vertex may have be decomposed into components.
+        Some of these components are connected to each other, while other are not.
+        In the most general case, the components of a vertex are organized into several tree-graphs.
+        This is for example the case of a MTG containing the description of several plants:
+        the MTG root vertex can be decomposed into tree graphs (not connected)
+        that represent the different plants.
+        This function returns the set of roots of these tree graphs at scale *Scale(v)+1*.
+        The order of these roots is not significant.
+
+        When a scale different from *Scale(v)+1* is specified using the optional argument :func:`Scale`,
+        this scale must be greater than that of the vertex argument.
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.ComponentRoots(v)
+            g.ComponentRoots(v, Scale=s)
+
+        :Parameters:
+
+            - v (int) : vertex of the active MTG
+
+        :Optional Parameters:
+
+            - Scale (str): scale of the component roots.
+
+        :Returns:
+
+            list of vertices's id (int)
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> v=g.MTGRoot() # global MTG root
+            0
+            >>> g.ComponentRoots(v) # set of first vertices at scale 1
+            [1,34,76,100,199,255]
+            >>> g.ComponentRoots(v, Scale=2) # set of first vertices at scale 2
+            [2,35,77,101,200,256]
+
+        .. image:: ../user/mtg_componentroots.png
+
+        .. seealso:: :func:`MTG`, :func:`Components`, :func:`Trunk`.
+        """
+        return self.component_roots_at_scale(v, scale=Scale)
+
+    def Path(self, v1, v2):
+        """
+        List of vertices defining the path between two vertices
+
+        This function returns the list of vertices defining the path
+        between two vertices that are in an ancestor relationship.
+        The vertex `v1` must be an ancestor of vertex `v2`.
+        Otherwise, if both vertices are valid, then the empty array is returned
+        and if at least one vertex is undefined, None is returned.
+
+
+        :Usage:
+
+        .. code-block:: python
+
+            g.Path(v1, v2)
+
+        :Parameters:
+
+            - `v1` (int) : vertex of the active MTG
+            - `v2` (int) : vertex of the active MTG
+
+        :Returns:
+
+            list of vertices's id (int)
+
+
+        :Examples:
+
+        .. code-block:: python
+
+            >>> v # print the value of v
+            78
+            >>> g.Ancestors(v)
+            [78,45,32,10,4]
+            >>> g.Path(10,v)
+            [10,32,45,78]
+            >>> g.Path(9,v) # 9 is not an ancestor of 78
+            []
+
+        .. note:: `v1` can be equal to `v2`.
+
+        .. image:: ../user/mtg_path.png
+
+        .. seealso:: :func:`MTG`, :func:`Axis`, :func:`Ancestors`.
+        """
+        return list(algo.path(self, v1, v2)[0])
+
+    def Axis(self, v, Scale=-1):
+        """
+        Array of vertices constituting a botanical axis
+
+        An axis is a maximal sequence of vertices connected by '<'-type edges.
+        Axis return the array of vertices representing the botanical axis which the argument v belongs to.
+        The optional argument enables the user to choose the scale at which the axis decomposition is required.
+
+        :Usage:
+
+        .. code-block:: python
+
+            Axis(v)
+            Axis(v, Scale=s)
+
+        :Parameters:
+
+            - v (int) : Vertex of the active MTG
+
+        :Optional Parameters:
+
+            - Scale (str): scale at which the axis components are required.
+
+        :Returns:
+
+            list of vertices ids
+
+        .. image:: ../user/mtg_axis.png
+
+        .. seealso:: :func:`MTG`, :func:`Path`, :func:`Ancestors`.
+        """
+        return list(algo.axis(self, v, scale=Scale))
+
+    def Trunk(self, v, Scale=-1):
+        """
+        List of vertices constituting the bearing botanical axis of a branching system.
+
+        Trunk returns the list of vertices representing the botanical axis defined as
+        the bearing axis of the whole branching system defined by `v`.
+        The optional argument enables the user to choose the scale at which the trunk should be detailed.
+
+        :Usage:
+
+        .. code-block:: python
+
+            Trunk(v)
+            Trunk(v, Scale= s)
+
+        :Parameters:
+
+            - `v` (int) : Vertex of the active MTG.
+
+        :Optional Parameters:
+
+            - `Scale` (str): scale at which the axis components are required.
+
+        :Returns:
+
+            list of vertices ids
+
+        .. todo:: check the usage of the optional argument Scale
+
+        .. seealso:: :func:`MTG`, :func:`Path`, :func:`Ancestors`, :func:`Axis`.
+        """
+        return list(algo.trunk(self, v, scale=Scale))
 
 ################################################################################
 # Graph generators
@@ -1016,7 +2090,7 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
         - compute parent's components and the edge type between
 
     """
-    roots = list(mtg.roots(scale=scale))
+    roots = mtg.roots(scale=scale)
     #print 'roots: ', list(roots), scale
     for vid in roots:
         components = mtg._components.get(vid)
@@ -1161,7 +2235,7 @@ def random_mtg(tree, nb_scales):
     # colors contained the colored vertices at each scale
     # based on the vertex of the initial tree
     colors = {}
-    colors[nb_scales-1] = list(tree.vertices())
+    colors[nb_scales-1] = tree.vertices()
     for s in range(nb_scales-2, 0, -1):
         n = random.randint(1, n)
         l = random.sample(colors[s+1], n)
@@ -1276,7 +2350,7 @@ def display_tree(tree, vid, tab = "", labels = {}, edge_type = {}):
     assert vid in tree
     label = labels.get(vid, str(vid))
     yield tab+et+label
-    for v in tree.children(vid):
+    for v in tree.children_iter(vid):
         if edge_type.get(v) == '+':
             tab +='\t'
         for s in display_tree(tree, v, tab, edge_type=edge_type, labels=labels):
@@ -1349,7 +2423,7 @@ def proxy(f):
 def return_iter_proxy(f):
     mtg_f = getattr(MTG, f.func_name)
     def new_f(self, *args, **kwds):
-        return iter(self.__class__(self._g, id) for id in mtg_f(self._g,self._vid,*args,**kwds))
+        return [self.__class__(self._g, id) for id in mtg_f(self._g,self._vid,*args,**kwds)]
     new_f.func_name = f.func_name
     new_f.__doc__ = mtg_f.__doc__
     return new_f

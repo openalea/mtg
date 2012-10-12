@@ -150,7 +150,7 @@ def father(g, vid, scale=-1, **kwds):
         vid = g.complex_at_scale(vid)
         p = g.parent(vid)
     else:
-        vid = g.component_roots_at_scale(vid, scale=scale).next()
+        vid = g.component_roots_at_scale_iter(vid, scale=scale).next()
         p = g.parent(vid)
 
     if et != '*':
@@ -183,7 +183,7 @@ def successor(g, vid, **kwds):
     ci = kwds.get('ContainedIn')
 
     son = None
-    for v in g.children(vid):
+    for v in g.children_iter(vid):
         if edge_type.get(v) == '<':
             son = v
             break
@@ -254,8 +254,8 @@ def sons(g, vid, **kwds):
     if scale < current_scale:
         vid = g.complex_at_scale(vid, scale = scale)
     elif scale > current_scale:
-        vid = g.component_roots_at_scale(vid, scale=scale).next()
-    children = g.children(vid)
+        vid = g.component_roots_at_scale_iter(vid, scale=scale).next()
+    children = g.children_iter(vid)
     
     if et != '*':
         children = (v for v in children if edge_type[v] == et)
@@ -359,7 +359,7 @@ def extremities(g, vid, **kwds):
         if g.is_leaf(v):
             yield v
         else:
-            for vtx in g.children(v):
+            for vtx in g.children_iter(v):
                 if vtx in vertices:
                     break
             else:
@@ -387,7 +387,7 @@ def local_axis(g, vtx_id, scale=-1, **kwds):
     while v is not None:
         yield v
         vtx = v; v = None
-        for vid in g.children(vtx):
+        for vid in g.children_iter(vtx):
             if edge_type.get(vid) == '<':
                 v = vid
 
@@ -405,7 +405,7 @@ def vertex_at_scale(g, vtx_id, scale):
     if scale < current_scale:
         vtx_id = g.complex_at_scale(vtx_id, scale=scale)
     elif scale > current_scale:
-        vtx_id = g.component_roots_at_scale(vtx_id, scale=scale).next()
+        vtx_id = g.component_roots_at_scale_iter(vtx_id, scale=scale).next()
     return vtx_id
 
 def trunk(g, vtx_id, scale=-1, **kwds):
@@ -483,7 +483,7 @@ def orders(g, scale=-1):
             p_order = 0 if pid is None else orders[pid]
             orders[vid] = p_order+1 if g.edge_type(vid) == '+' else p_order
     else:
-        for rid in g.roots(scale=scale):
+        for rid in g.roots_iter(scale=scale):
             for vid in traversal.pre_order2(g, rid):
                 pid = g.parent(vid)
                 p_order = 0 if pid is None else orders[pid]
@@ -503,7 +503,7 @@ def heights(g, scale=-1):
             p_height = -1 if pid is None else heights[pid]
             heights[vid] = p_height+1
     else:
-        for rid in g.roots(scale=scale):
+        for rid in g.roots_iter(scale=scale):
             for vid in traversal.pre_order2(g, rid):
                 pid = g.parent(vid)
                 p_height = -1 if pid is None else heights[pid]

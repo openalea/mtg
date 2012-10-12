@@ -52,7 +52,7 @@ class TestMtg2Stat:
         topdia = g.property('TopDia')
         nfe = g.property('NFe')
 
-        vid = g.component_roots_at_scale(g.root, g.max_scale()).next()
+        vid = g.component_roots_at_scale_iter(g.root, g.max_scale()).next()
         leaves = algo.extremities(g,vid)
         seqs = [list(reversed([vid for vid in algo.ancestors(g, lid) if vid in topdia and vid in nfe])) for lid in leaves]
 

@@ -207,7 +207,7 @@ class PlantFrame(object):
         func = kwds.get(name)
         if func:
             # Compute the value for all vertices
-            all_values = ((vid,func(vid)) for vid in g.vertices())
+            all_values = ((vid,func(vid)) for vid in g.vertices_iter())
             # Select only those which are defined
             values = ( (vid, fvid) for vid, fvid in all_values if fvid is not None)
 
@@ -258,7 +258,7 @@ class PlantFrame(object):
         if scale == -1:
             scale = g.max_scale()
 
-        root = list(g.roots(scale=scale))[0]
+        root = g.roots(scale=scale)[0]
 
         # 1. compute the origin of the tree
         # Check if a complex has origin
@@ -306,7 +306,7 @@ def simple_axe(g, v, marked, fixed_points):
 def compute_radius(g, v, last_radius):
     all_r2 = {}
     for vid in post_order(g, v):
-        r2 = max(sum([all_r2[c] for c in g.children(vid)]), last_radius)
+        r2 = max(sum([all_r2[c] for c in g.children_iter(vid)]), last_radius)
         all_r2[vid] = r2
     for k, v in all_r2.iteritems():
         all_r2[k] = sqrt(v)
