@@ -1113,6 +1113,7 @@ class PlantFrame(object):
             else:
                 origin = (0,0,0)
             _turtle.move(origin)
+            _turtle.setWidth(diameters[rid])
             turtle.traverse_with_turtle(g, rid, visitor=visitor, turtle=_turtle, gc=gc)
 
         scene = _turtle.getScene()
