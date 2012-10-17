@@ -174,6 +174,7 @@ def post_order(tree, vtx_id, complex=None, visitor_filter=None):
     ''' 
     Traverse a tree in a postfix way.
     (from leaves to root)
+    This is a recursive implementation
     '''
     if complex is not None and tree.complex(vtx_id) != complex:
         return
@@ -182,7 +183,7 @@ def post_order(tree, vtx_id, complex=None, visitor_filter=None):
     
     for vid in tree.children_iter(vtx_id):
 
-        for node in post_order2(tree, vid, complex, visitor_filter):
+        for node in post_order(tree, vid, complex, visitor_filter):
             yield node
 
 
@@ -190,27 +191,6 @@ def post_order(tree, vtx_id, complex=None, visitor_filter=None):
         visitor_filter.post_order(vtx_id)
     yield vtx_id
 
-def post_order2(tree, vtx_id, complex=None, visitor_filter=None):
-    ''' 
-    Traverse a tree in a postfix way.
-    (from leaves to root)
-
-    This is a non recursive implementation
-    '''
-    if complex is not None and tree.complex(vtx_id) != complex:
-        return
-    if visitor_filter and not visitor_filter.pre_order(vtx_id):
-        return
-    
-    for vid in tree.children_iter(vtx_id):
-
-        for node in post_order2(tree, vid, complex, visitor_filter):
-            yield node
-
-
-    if visitor_filter:
-        visitor_filter.post_order(vtx_id)
-    yield vtx_id
 
 def post_order2(tree, vtx_id, complex=None, pre_order_filter=None, post_order_visitor=None):
     ''' 
@@ -221,7 +201,7 @@ def post_order2(tree, vtx_id, complex=None, pre_order_filter=None, post_order_vi
     The goal is to replace the post_order implementation.
 
         
-'''
+    '''
 
     edge_type = tree.property('edge_type')
     if pre_order_filter is None:
@@ -235,10 +215,10 @@ def post_order2(tree, vtx_id, complex=None, pre_order_filter=None, post_order_vi
         '''
         plus = []
         successor = []
-        for v in tree.children_iter(vid):
+        for v in tree.children(vid):
             if complex is not None and tree.complex(v) != complex:
                 continue
-            if pre_order_filter and not pre_order_filter(v):
+            if not pre_order_filter(v):
                 continue
             
             if edge_type.get(v) == '<':
@@ -248,7 +228,7 @@ def post_order2(tree, vtx_id, complex=None, pre_order_filter=None, post_order_vi
         
         plus.extend(successor)
         child = plus
-        return list(reversed(child))
+        return reversed(child)
 
     visited = set([])
     

@@ -824,8 +824,10 @@ class MTG(PropertyTree):
         from . import io
         l = ["MTG : nb_vertices=%d, nb_scales=%d"%(self.nb_vertices(), self.nb_scales())]
         
+        """
         s = io.display(self, display_id=True)
         l.append(s)
+        """
         return '\n'.join(l)
 
     def display(self, max_scale=0, display_id=True, display_scale=False,
