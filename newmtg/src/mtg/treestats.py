@@ -44,12 +44,17 @@ def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], *
 
     - `g`: an MTG
     - `scale`: the scale at which trees are to be extracted
+    - `filter`: function of vids to decide which vertices are not added to the tree
     - `variable_funcs`: a list of functions to compute each property
     - `variable_names`: a list property names
 
     :Return:
 
     - a Trees object from the openalea.tree_statistic.trees module
+    If variable_funcs is empty and variable_names is not empty,
+    variable_names will be used to define the properties.
+    If both variable_funcs and variable_names are empty,
+    the MTG property_names will be used to define the properties.
 
     :Example:
 
@@ -58,21 +63,41 @@ def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], *
     '''
     # used default mtg properties if no particular properties are given
     if len(variable_funcs) == 0:
-        for p in g.property_names():
-            if p not in ['label', 'edge_type'] and not p.startswith('_'):
-                variable_funcs += [lambda vid: g.property(p).get(vid)]
-
-    if len(variable_names) == 0:
+        if len(variable_names) == 0:
+            # use g.properties
+            for p in g.property_names():
+                if p not in ['label', 'edge_type'] and not p.startswith('_'):
+                    variable_funcs += [lambda vid: g.property(p).get(vid)]
+                    variable_names += [str(p)]
+        else:
+            # use g.properties in variable_names
+            property_names = [s for s in g.property_names()]
+            for p in variable_names:
+                if not(p in property_names):
+                    msg = "Property " + str(p) + " not present in MTG"
+                    raise ValueError, msg
+                else:
+                    variable_funcs += [lambda vid: g.property(p).get(vid)]
+    elif len(variable_names) == 0:
         for p in range(len(variable_funcs)):
             variable_names += ["Variable" + str(p)]
 
     # list of roots
     roots = g.roots(scale=scale)
+    # Some vertices may be descendants of roots, not be filtered,
+    # but have their parent filtered. Thus, they should be considered
+    # as roots
+    roots = [v for v in g.vertices(scale=scale) if filter(v) and (not(g.parent(v) and filter(g.parent(v))))]
+
+    
+    # Some vertices may be descendants of roots, not be filtered,
+    # but have their parent filtered. Thus, they should be considered
+    # as roots
+    roots = [v for v in g.vertices(scale=scale) if filter(v) and (not(g.parent(v) and filter(g.parent(v))))]
 
     def props(vid):
         '''Extract the properties for the Tree.'''
         return [ f(vid) for f in variable_funcs]
-
 
     def build_tree(vids):
         """Build a Tree from a list of vertices"""
@@ -97,9 +122,11 @@ def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], *
 
     for vid_root in roots:
         l = list(pre_order2_with_filter(g, vid_root, pre_order_filter=filter))
-        t, m = build_tree(l)
-        trees.append(t)
-        mappings.append(m)
+        lf = [v for v in l if filter(v)]
+        if lf:
+            t, m = build_tree(lf)
+            trees.append(t)
+            mappings.append(m)
 
     forest = etrees.Trees(trees, attribute_names=variable_names)
     forest._SetMTGVidDictionary(mappings)
