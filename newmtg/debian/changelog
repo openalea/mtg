@@ -1,3 +1,27 @@
+openalea-mtg (1.0.1~ppa9) quantal; urgency=low
+
+  *  Port to Quantal  
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Mon, 10 Dec 2012 17:17:25 +0100
+
+openalea-mtg (1.0.1~ppa8) precise; urgency=low
+
+  * Rebuild with new PlantGL 
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Thu, 06 Dec 2012 14:01:04 +0100
+
+openalea-mtg (1.0.1~ppa3) precise; urgency=low
+
+  * Fix the implementation error in treestats 
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Tue, 18 Sep 2012 10:12:50 +0200
+
+openalea-mtg (1.0.1~ppa2) precise; urgency=low
+
+  *  Switch to dh_python2 
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Wed, 12 Sep 2012 15:41:50 +0200
+
 openalea-mtg (1.0.1~ppa1) precise; urgency=low
 
   *  Release 1.0 on precise  

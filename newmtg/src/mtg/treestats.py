@@ -37,14 +37,14 @@ from openalea.tree_statistic.trees import etrees
 from openalea.mtg import algo
 from openalea.mtg.traversal import pre_order2_with_filter
 
-def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], **kwds):
+def extract_trees(g, scale, visitor=None, variable_funcs=[], variable_names=[], **kwds):
     ''' Extract a tree from an MTG.
 
     :Parameters:
 
     - `g`: an MTG
     - `scale`: the scale at which trees are to be extracted
-    - `filter`: function of vids to decide which vertices are not added to the tree
+    - `visitor`: function of vids to decide which vertices are not added to the tree
     - `variable_funcs`: a list of functions to compute each property
     - `variable_names`: a list property names
 
@@ -87,13 +87,8 @@ def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], *
     # Some vertices may be descendants of roots, not be filtered,
     # but have their parent filtered. Thus, they should be considered
     # as roots
-    roots = [v for v in g.vertices(scale=scale) if filter(v) and (not(g.parent(v) and filter(g.parent(v))))]
+    roots = [v for v in g.vertices(scale=scale) if visitor(v) and (not(g.parent(v) and visitor(g.parent(v))))]
 
-    
-    # Some vertices may be descendants of roots, not be filtered,
-    # but have their parent filtered. Thus, they should be considered
-    # as roots
-    roots = [v for v in g.vertices(scale=scale) if filter(v) and (not(g.parent(v) and filter(g.parent(v))))]
 
     def props(vid):
         '''Extract the properties for the Tree.'''
@@ -114,15 +109,13 @@ def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], *
             mtg2tree[vid] = v
             if vid != root:
                 t.AddEdge(mtg2tree[g.parent(vid)],v, edge_type)
-
         return t, mtg2tree
 
     trees = []
     mappings = [] # List of mapping between Tree id and MTG id
-
     for vid_root in roots:
-        l = list(pre_order2_with_filter(g, vid_root, pre_order_filter=filter))
-        lf = [v for v in l if filter(v)]
+        l = list(pre_order2_with_filter(g, vid_root, pre_order_filter=visitor))
+        lf = [v for v in l if visitor(v)]
         if lf:
             t, m = build_tree(lf)
             trees.append(t)
@@ -132,4 +125,5 @@ def extract_trees(g, scale, filter=None, variable_funcs=[], variable_names=[], *
     forest._SetMTGVidDictionary(mappings)
 
     return forest
+
 
