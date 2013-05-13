@@ -1094,9 +1094,9 @@ class PlantFrame(object):
             if radius: 
                 radius = radius /2.
 
-            
-            turtle.setId(v)
-            turtle.lineTo(pt, radius)
+            if pt:
+                turtle.setId(v)
+                turtle.lineTo(pt, radius)
 
         visitor = kwds.get('visitor', plantframe_visitor)
         gc = kwds.get('gc', True)
