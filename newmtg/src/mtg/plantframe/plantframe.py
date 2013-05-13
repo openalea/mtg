@@ -1079,6 +1079,14 @@ class PlantFrame(object):
     def plot(self, *args, **kwds):
         """ Plot a MTG.
 
+        Optional Parameters
+        ===================
+
+            - origins : list of 3D points
+            - visitor : a function f(g, v, turtle)
+                This function is called for each vertex of the MTG.
+            - gc : (bool) generalised cylinder
+            - turtle: specify the turtle object
         """
 
         g = self.g
@@ -1089,14 +1097,24 @@ class PlantFrame(object):
         origins = kwds.get('origins', [])
 
         def plantframe_visitor(g, v, turtle):
-            pt = points.get(v)
             radius = diameters.get(v)
             if radius: 
                 radius = radius /2.
+            if points:
+                pt = points.get(v)
 
-            if pt:
+                if pt:
+                    turtle.setId(v)
+                    turtle.lineTo(pt, radius)
+            else:
                 turtle.setId(v)
-                turtle.lineTo(pt, radius)
+                if g.edge_type(v) == '+':
+                    turtle.down()
+                turtle.F()
+                if radius:
+                    turtle.setWidth(radius)
+                turtle.rollL()
+
 
         visitor = kwds.get('visitor', plantframe_visitor)
         gc = kwds.get('gc', True)
