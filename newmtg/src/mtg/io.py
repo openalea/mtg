@@ -581,6 +581,14 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
             for p in _params:
                 if module.hasParameter(p):
                     params[p] = module.getParameter(p)
+                # otherwise check in parameterset
+                elif module.argSize() is 1:
+                    try:
+                        pset = module.args[0]
+                        if p in pset.__dict__.keys():
+                            params[p] = pset.__dict__[p]
+                    except:
+                        pass
 
             if mtg.scale(vid) == mtg.scale(current_vertex) == _scale:
                 # Add a vertex at the finer scale
@@ -685,13 +693,26 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
             return False
 
         l = [name]
-
-        for p in parameters.get(name, []):
-            arg = g.property(p).get(vid)
-            if arg is None:
+        
+        params = parameters.get(name, [])
+        if 'parameter_set' in params and len(params) is 1:
+            from openalea.lpy.parameterset import ParameterSet
+            exclude = ['geometry','label','edge_type','_axial_id']
+            pset = {}
+            for p in g.property_names():
+                if not p in exclude:
+                    arg = g.property(p).get(vid)
+                    if arg is None:
+                        continue
+                    pset[p] = arg
+            l.append(ParameterSet(**pset))
+        else:
+            for p in params:
+                arg = g.property(p).get(vid)
+                if arg is None:
                  # Be Careful, the argument is skipped if not defined.
-                continue
-            l.append(arg)
+                    continue
+                l.append(arg)
 
         tree += tuple(l)
         return True
@@ -721,13 +742,19 @@ def lpy2mtg(axial_tree, lsystem, scene = None):
     for m in modules:
         label = m.name
         parameters[label] = m.parameterNames
+        if 'parameter_set' in m.parameterNames and len(m.parameterNames) is 1:
+            if axial_tree.count(label) > 0:
+                index = axial_tree.find(label + '(p)')
+                pset = axial_tree[index].args[0]
+                parameters[label] = pset.__dict__.keys()
         scales[label] = m.scale
 
     tree = axial_tree
     if scene is None:
         scene = l.sceneInterpretation(tree)
-
+    l.done()
     mtg = axialtree2mtg(tree, scales, scene, parameters)
+
     return mtg
 
 def mtg2lpy(g, lsystem, axial_tree=None):
@@ -767,6 +794,7 @@ def mtg2lpy(g, lsystem, axial_tree=None):
     parameters = {}
     for m in modules:
         parameters[m.name] = m.parameterNames
+    l.done()
 
     return mtg2axialtree(g, parameters, axial_tree)
 
