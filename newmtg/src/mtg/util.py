@@ -107,3 +107,7 @@ def plot3d( g, scale=None ):
             edges = (0,0,3)
         else:
             et = edge_type[vid]
+
+def plot_nx(g, *args, **kwds):
+    import plot_statistic as ps
+    
