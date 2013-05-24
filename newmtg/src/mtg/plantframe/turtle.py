@@ -36,7 +36,13 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
         if v == vid: continue
         visitor(g,v,turtle)
     if gc: turtle.stopGC()
-    return turtle.getScene()
+    scene = turtle.getScene()
+    shapes = dict( (sh.getId(),sh) for sh in scene)
+    colors = g.property('color')
+    for vid in colors:
+        shapes[vid].appearance = pgl.Material(colors[vid])
+    scene = pgl.Scene(shapes.values())
+    return scene
 
 def TurtleFrame(g, visitor=visitor, turtle=None, gc=True, all_roots = False):
     n = g.max_scale()

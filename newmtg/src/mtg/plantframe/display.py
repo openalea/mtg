@@ -34,7 +34,7 @@ import openalea.plantgl.all as pgl
 #X     #n.color = random.random()
 #X 
 
-def plot(pf, length=1.e-4, has_radius=False, r_base=1., r_tip=0.25, visitor=root_visitor, prop_cmap='radius'):
+def plot(pf, length=1.e-4, has_radius=False, r_base=1., r_tip=0.25, visitor=root_visitor, prop_cmap=None):
     """
     Exemple:
 
@@ -43,14 +43,14 @@ def plot(pf, length=1.e-4, has_radius=False, r_base=1., r_tip=0.25, visitor=root
         >>> shapes = dict( (x.getId(), x.geometry) for x in s)
         >>> Viewer.display(s)
     """
-)
 
     turtle = turt.PglTurtle()
     turtle.down(180)
     scene = turt.TurtleFrame(g, visitor=root_visitor, turtle=turtle, gc=False)
 
     # Compute color from radius
-    my_colormap(g,prop_cmap)
+    if prop_cmap:
+        my_colormap(g,prop_cmap)
 
     shapes = dict( (sh.getId(),sh) for sh in scene)
 
