@@ -1136,8 +1136,8 @@ class PlantFrame(object):
 
         scene = _turtle.getScene()
         
-
-        Viewer.display(scene)
+        if kwds.get('display',True:
+            Viewer.display(scene)
         return scene
 
 
