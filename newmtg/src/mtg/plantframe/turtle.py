@@ -40,8 +40,8 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
     shapes = dict( (sh.getId(),sh) for sh in scene)
     colors = g.property('color')
     for vid in colors:
-        shapes[vid].appearance = pgl.Material(colors[vid])
-    scene = pgl.Scene(shapes.values())
+        shapes[vid].appearance = Material(colors[vid])
+    scene = Scene(shapes.values())
     return scene
 
 def TurtleFrame(g, visitor=visitor, turtle=None, gc=True, all_roots = False):
