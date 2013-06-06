@@ -2,7 +2,7 @@ from openalea.mtg.mtg import *
 from openalea.mtg.io import *
 from openalea.mtg.traversal import *
 from vplants.plantgl.all import *
-import inspect
+
 
 def visitor(g, v, turtle):
         if g.edge_type(v) == '+':
@@ -11,16 +11,10 @@ def visitor(g, v, turtle):
         turtle.F()
         turtle.rollL()
 
-def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True, context = {}):
+def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
     if turtle is None:
         turtle = PglTurtle()
-    
-    if not 'context' in inspect.getargspec(visitor).args:
-        def context_visitor(g,vid,turtle,context):
-            visitor(g,vid,turtle)
-    else:
-        context_visitor = visitor
-            
+
     def push_turtle(v):
         if g.edge_type(v) == '+':
             turtle.push()
@@ -37,10 +31,10 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True, context 
 
     turtle.push()
     if gc: turtle.startGC()
-    context_visitor(g,vid,turtle,context)
+    visitor(g,vid,turtle)
     for v in pre_order2_with_filter(g, vid, None, push_turtle, pop_turtle):
         if v == vid: continue
-        context_visitor(g,v,turtle,context)
+        visitor(g,v,turtle)
     if gc: turtle.stopGC()
     scene = turtle.getScene()
     shapes = dict( (sh.getId(),sh) for sh in scene)
@@ -50,14 +44,14 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True, context 
     scene = Scene(shapes.values())
     return scene
 
-def TurtleFrame(g, visitor=visitor, turtle=None, gc=True, all_roots = False, context = {}):
+def TurtleFrame(g, visitor=visitor, turtle=None, gc=True, all_roots = False):
     n = g.max_scale()
     if not all_roots:
         v = g.component_roots_at_scale_iter(g.root, scale=n).next()
-        s = traverse_with_turtle(g,v, visitor, turtle=turtle, gc=gc, context = context)
+        s = traverse_with_turtle(g,v, visitor, turtle=turtle, gc=gc)
     else:
         for v in g.component_roots_at_scale_iter(g.root, scale=n):
-            s = traverse_with_turtle(g,v, visitor, turtle=turtle, gc=gc, context = context)
+            s = traverse_with_turtle(g,v, visitor, turtle=turtle, gc=gc)
     return s
 
 def Plot(scene):
