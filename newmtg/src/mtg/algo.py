@@ -471,6 +471,11 @@ def union(g1, g2, vid1=None, vid2=None, edge_type='<'):
 
     return g
         
+def split(g, scale=1):
+    """ Split at scale.
+    """
+    return [g.sub_mtg(vid) for vid in g.component_roots_at_scale(g.root,scale=scale)]
+
 def orders(g, scale=-1):
     """ Compute the order of all vertices at scale `scale`.
     

@@ -2106,7 +2106,7 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
         parent_id = mtg.complex(mtg.parent(cid))
         if parent_id is None:
             #roots.append(vid)
-            print 'ERROR: Missing complex for vertex %d'%parent_id
+            print 'ERROR: Missing parent for vertex %d'%cid
             continue
         if edge_type_property:
             edge_type = edge_type_property.get(cid)

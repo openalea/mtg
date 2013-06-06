@@ -1168,18 +1168,21 @@ class PlantFrame(object):
         #for v in props:
         #    matplotlib.pyplot.plot(algo.height(pf.g, v), props[v], 'o')
         props = getattr(pf, "_"+prop)
-        print props
+
         h = dict([(v, heights[v]) for v in props])
         for order in pf.axes:
             for seq in pf.axes[order]:
-                if order > min(pf.axes.keys()):
-                    x = [h[algo.father(self.g, seq[0])]]
-                    x.extend([h[v] for v in seq])
-                    y = [props[algo.father(self.g, seq[0])]]
-                    y.extend([props[v] for v in seq])
-                    matplotlib.pyplot.plot(x, y)
-                else:
-                    matplotlib.pyplot.plot([h[v] for v in seq], [props[v] for v in seq])
+                try:
+                    if order > min(pf.axes.keys()):
+                        x = [h[algo.father(self.g, seq[0])]]
+                        x.extend([h[v] for v in seq])
+                        y = [props[algo.father(self.g, seq[0])]]
+                        y.extend([props[v] for v in seq])
+                        matplotlib.pyplot.plot(x, y)
+                    else:
+                        matplotlib.pyplot.plot([h[v] for v in seq], [props[v] for v in seq])
+                except:
+                    pass
         #matplotlib.pyplot.show()
         #return props
 
