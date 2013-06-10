@@ -846,6 +846,30 @@ class MTG(PropertyTree):
         print(io.display(self, max_scale=max_scale, display_id=display_id,
                          display_scale=display_scale, nb_tab=nb_tab, **kwds))
 
+    def plot_property(self, prop, **kwds):
+        """
+        Plot properties of MTG using matplotlib
+
+        :Example:
+
+            >>> g.plot_property('length')
+        """
+        import matplotlib
+        import matplotlib.pyplot
+        import numpy as np
+        props = self.property(prop)
+        pylab_colors = matplotlib.colors.cnames.keys()
+        color = {}
+        orders = algo.orders(self)
+        color = {k:pylab_colors[orders[k]] for k in props}
+        
+        heights = algo.heights(self)
+        h = np.array([heights[v] for v in props])
+        _prop = np.array(props.values())
+        for v in props:
+            matplotlib.pyplot.plot(heights[v], props[v], 'o', color = color[v])
+        
+
     #########################################################################
     # Algorithms to copy extract and extend sub_mtg
     #########################################################################
