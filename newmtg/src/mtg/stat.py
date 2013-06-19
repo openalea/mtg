@@ -55,7 +55,7 @@ def check_vids(g, vids):
 
 def property_list(g, vid, variables):
     props = g.properties()
-    return [props[variable][vid] for variable in variables] 
+    return [float(props[variable][vid])  for variable in variables] 
 
 def extract_vectors(g, vids, variables=[], **kwds):
     ''' Extract a set of Vectors from an MTG.

@@ -88,8 +88,8 @@ def replace_date(s, format):
 
 def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mtg=None):
 
-    def get_properties(name):
-        _type = dict([('INT', int), ('REAL', float), ('ALPHA', str), ('DD/MM/YY', str), ('DD/MM/YYYY', str)])
+    def get_properties(name,vid=None):
+        _type = dict([('INT', int), ('REAL', float), ('ALPHA', str), ('DD/MM/YY', str), ('DD/MM/YYYY', str), ('STRING', str)])
         args = {}
         l = name.strip().split('(')
         label = get_label(name)
@@ -107,7 +107,10 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
                     try:
                         args[k] = klass(v)
                     except:
-                        print 'Args ', v, 'of type ', k, 'is not of type ', str(klass)
+                        if vid is not None:
+                            print 'Args ', v, 'of vertex ', vid, 'of type ', k, 'is not of type ', str(klass)
+                        else:
+                            print 'Args ', v, 'of type ', k, 'is not of type ', str(klass)
         return args
 
     implicit_scale = bool(symbol_at_scale)
@@ -174,11 +177,11 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             current_vertex = vid
             scale = mtg.scale(vid)
         elif tag == '*':
-            args = get_properties(name)
+            args = get_properties(name, vid=vid)
             #print args
         else:
             if class_type:
-                args = get_properties(name)
+                args = get_properties(name, vid=vid)
             else:
                 label = get_label(name)
                 index = get_index(name)
