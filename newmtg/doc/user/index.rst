@@ -29,10 +29,10 @@ Finally, once the MTG format is understood, you may want to create your own MTG 
     intro.rst
     illustration.rst
     tutorial.rst
+    tutorial_plantframe.rst
     visualea.rst
     syntax.rst
-
-    tutorial_plantframe.rst
+    lpy2mtg.rst
 
 .. toctree::
     :hidden:

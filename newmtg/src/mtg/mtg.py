@@ -387,7 +387,6 @@ class MTG(PropertyTree):
         :Parameters:
         - `parent_id` (int) - The id of the parent vertex
         - `edge_type` (str) - The type of relation:
-
             - "/" : component (default)
             - "+" : branch
             - "<" : successor.

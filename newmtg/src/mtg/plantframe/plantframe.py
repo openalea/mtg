@@ -387,7 +387,9 @@ class PlantFrame(object):
     def algo_diameter(self, mode=1, power = 2):
         """
         Compute the radius for each vertices.
+
         Cases:
+
             1. No radius values at all : pipe model
             2. Linear interpolation of radius on axes.
             3. Pipe model
@@ -1042,7 +1044,7 @@ class PlantFrame(object):
         The volume is for a tapered is 
         .. math::
 
-            V = \frac{\pi h}{3}(R_1^2+R_2^2+R_1 R_2) 
+            V = \frac{\pi h}{3}(R_1^2+R_2^2+R_1 R_2)
         """
         if not self._volume:
             # get the length and the radius
@@ -1079,14 +1081,13 @@ class PlantFrame(object):
     def plot(self, *args, **kwds):
         """ Plot a MTG.
 
-        Optional Parameters
-        ===================
-
+        :Optional Parameters:
             - origins : list of 3D points
             - visitor : a function f(g, v, turtle)
                 This function is called for each vertex of the MTG.
             - gc : (bool) generalised cylinder
             - turtle: specify the turtle object
+        
         """
 
         g = self.g

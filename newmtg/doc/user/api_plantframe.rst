@@ -5,9 +5,9 @@ Graphical representation of MTG
 PlantFrame
 --------------
 
-.. currentmodule:: openalea.mtg.plantframe
+.. currentmodule:: openalea.mtg
 
-.. automodule:: openalea.mtg.plantframe
+.. automodule:: openalea.mtg.plantframe.plantframe
 
 .. autoclass:: PlantFrame
     :member-order: groupwise
@@ -20,9 +20,9 @@ PlantFrame
 DressingData
 ----------------
 
-.. currentmodule:: openalea.mtg.dresser
+.. currentmodule:: openalea.mtg.plantframe.dresser
 
-.. automodule:: openalea.mtg.dresser
+.. automodule:: openalea.mtg.plantframe.dresser
 
 .. autoclass:: DressingData
     :member-order: groupwise
@@ -35,12 +35,12 @@ DressingData
 3D Plot 
 ---------------------
 
-.. currentmodule:: openalea.mtg.turtle
+.. currentmodule:: openalea.mtg.plantframe.turtle
 
 Plot a PlantFrame.
 
-.. automodule:: openalea.mtg.turtle
+.. automodule:: openalea.mtg.plantframe.turtle
 
 
-Download the source files :download:`../../src/mtg/plantframe.py`, :download:`../../src/mtg/dresser.py`, :download:`../../src/mtg/turtle.py`, 
+Download the source files :download:`../../src/mtg/plantframe/plantframe.py`, :download:`../../src/mtg/plantframe/dresser.py`, :download:`../../src/mtg/plantframe/turtle.py`, 
 
