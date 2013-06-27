@@ -87,6 +87,9 @@ def extract_trees(g, scale, visitor=None, variable_funcs=[], variable_names=[], 
     # Some vertices may be descendants of roots, not be filtered,
     # but have their parent filtered. Thus, they should be considered
     # as roots
+    if visitor is None:
+        visitor = lambda v: True
+
     roots = [v for v in g.vertices(scale=scale) if visitor(v) and (not(g.parent(v) and visitor(g.parent(v))))]
 
 
@@ -115,7 +118,7 @@ def extract_trees(g, scale, visitor=None, variable_funcs=[], variable_names=[], 
     mappings = [] # List of mapping between Tree id and MTG id
     for vid_root in roots:
         l = list(pre_order2_with_filter(g, vid_root, pre_order_filter=visitor))
-        lf = [v for v in l if visitor(v)]
+        lf = [v for v in l if visitor(v) and g.scale(v) == scale]
         if lf:
             t, m = build_tree(lf)
             trees.append(t)
