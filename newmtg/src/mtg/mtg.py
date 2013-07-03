@@ -27,6 +27,7 @@ import re
 import itertools
 import warnings
 import random
+import copy
 
 import traversal
 import algo
@@ -484,7 +485,7 @@ class MTG(PropertyTree):
             - `g` (MTG) - A copy of the MTG
 
         """
-        return self.sub_mtg(self.root)
+        return copy.deepcopy(self)
 
     def roots_iter(self, scale=0):
         ''' Returns an iterator of the roots of the tree graphs at a given scale.
