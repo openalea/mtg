@@ -36,7 +36,7 @@ import openalea.plantgl.all as pgl
 
 def plot(pf, length=1.e-4, has_radius=False, r_base=1., r_tip=0.25, visitor=root_visitor, prop_cmap=None):
     """
-    Exemple:
+    Example:
 
         >>> from openalea.plantgl.all import *
         >>> s = plot()
