@@ -40,7 +40,8 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
     shapes = dict( (sh.getId(),sh) for sh in scene)
     colors = g.property('color')
     for vid in colors:
-        shapes[vid].appearance = Material(colors[vid])
+        if vid in shapes:
+            shapes[vid].appearance = Material(colors[vid])
     scene = Scene(shapes.values())
     return scene
 
