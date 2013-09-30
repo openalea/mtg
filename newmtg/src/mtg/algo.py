@@ -23,9 +23,9 @@ __docformat__ = "restructuredtext"
 import traversal
 
 try:
-    from openalea.container.tree import InvalidVertex
-except ImportError:
     from tree import InvalidVertex
+except ImportError:
+    from openalea.container.tree import InvalidVertex
 
 
 def ancestors(g, vid, **kwds):
