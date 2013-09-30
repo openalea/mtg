@@ -1,3 +1,10 @@
+openalea-mtg (1.0.2~ppa1) precise; urgency=low
+
+  * Remove dependency to openalea.container
+  * Major change of the API: By default return list rather than iterable.
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Mon, 30 Sep 2013 17:48:19 +0200
+
 openalea-mtg (1.0.1~ppa9) quantal; urgency=low
 
   *  Port to Quantal  
