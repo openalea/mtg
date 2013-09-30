@@ -144,7 +144,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             date_format = 'DD/MM/YY'
         else:
             date_format = 'DD/MM/YYYY'
-        s = replace_date(s, format)
+        s = replace_date(s, date_format)
 
     for edge_type in symbols:
         if edge_type != '/' or not symbol_at_scale:
@@ -221,7 +221,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
                     if i == index:
                         _args = args
                     _args['index'] = i
-                    ll = _args['label'] = label.replace(str(index), str(i))
+                    _args['label'] = label.replace(str(index), str(i))
                     vid = mtg.add_child(vid, edge_type='<', **_args)
                     current_vertex = vid
             elif tag == '/':
@@ -668,7 +668,6 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
     """
 
     edge_type = g.properties().get('edge_type', {})
-    label= g.properties().get('label', {})
 
     if parameters is None:
         parameters = {}
@@ -680,8 +679,6 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
 
     # Root of the MTG at scale 0
     vtx_id = g.roots_iter(scale=0).next()
-
-    prev = vtx_id
 
     def axialtree_pre_order_visitor(vid, tree=tree):
         if vid == g.root:
@@ -787,8 +784,6 @@ def mtg2lpy(g, lsystem, axial_tree=None):
     .. seealso:: :func:`mtg2axialtree`
     """
     # Retrieve the set of modules, their label, scale and proerty names.
-
-    edge_type = g.properties().get('edge_type', {})
 
     l = lsystem
     l.makeCurrent()
@@ -1060,12 +1055,12 @@ class Reader(object):
 
     def errors(self):
         nb_lines = len(self.lines)
-        for id, warn in self.warnings:
+        for id, warning in self.warnings:
             if id < nb_lines:
                 print "== Line %d: %s"%(id, self.lines[id])
-                print warn
+                print warning
             else:
-                print id, " ", warn
+                print id, " ", warning
     ############################################################################
     ### Parsing of the MTG code
     ### That's the real stuff...
@@ -1175,7 +1170,6 @@ class Reader(object):
 
         indent = [0]
         edge_type = []
-        tab = 0
         new_code = []
 
         #for l in code:
@@ -1185,7 +1179,6 @@ class Reader(object):
             s= s.split()[0]
             # args
             args = l.split('\t')[self._feature_slice]
-            n = len(args)
             params = [ "%s=%s"%(k,v) for k, v in zip(self._feature_head, args) if v.strip()]
 
             if self.has_line_as_param:
@@ -1487,7 +1480,6 @@ class Writer(object):
             head.append('\t'.join(line))
 
             current_vertex = vtx
-            prev_scale = cur_scale
 
             if len(sym_at_col)==tab:
                 sym_at_col.append(vtx)
@@ -1665,7 +1657,6 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False
     header.append(w._description(scales))
     header.append('')
 
-    prop = dict(properties)
     features = w._features(properties)
     header.append(features)
     header.append('')

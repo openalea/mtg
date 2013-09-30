@@ -24,7 +24,7 @@ For interface definition, see openalea.container.interface package.
 __docformat__ = "restructuredtext"
 
 import re
-import itertools
+#import itertools
 import warnings
 import random
 import copy
@@ -32,10 +32,7 @@ import copy
 import traversal
 import algo
 
-try:
-    from openalea.container.tree import PropertyTree, InvalidVertex
-except ImportError:
-    from tree import PropertyTree, InvalidVertex
+from tree import PropertyTree, InvalidVertex
 
 
 class MTG(PropertyTree):
@@ -428,7 +425,7 @@ class MTG(PropertyTree):
                 try:
                     i = l.index(vid)
                     del l[i]
-                except ValueError, e:
+                except ValueError:
                     pass
                 del self._complex[vid]
         else:
@@ -460,7 +457,7 @@ class MTG(PropertyTree):
         self._complex.clear()
         self._components.clear()
 
-    def clear_properties(selfi, exclude=[]):
+    def clear_properties(self, exclude=[]):
         """Remove all the properties of the MTG.
 
         :Example: 
@@ -476,7 +473,7 @@ class MTG(PropertyTree):
 
         props = set(self._properties.keys()) - exclude
         for k in props:
-            del self_properties[k]
+            del self._properties[k]
 
     def copy(self):
         """ Return a copy of the graph.
@@ -821,10 +818,10 @@ class MTG(PropertyTree):
         return child, complex
 
     def __str__(self):
-        from . import io
         l = ["MTG : nb_vertices=%d, nb_scales=%d"%(self.nb_vertices(), self.nb_scales())]
         
         """
+        from . import io
         s = io.display(self, display_id=True)
         l.append(s)
         """
@@ -1533,7 +1530,7 @@ class MTG(PropertyTree):
 
         .. seealso:: :func:`MTG`, :func:`Sons`, :func:`Predecessor`.
         """
-        global _g
+        _g = self
         return algo.successor(_g, v, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
 
     def Predecessor(self, v, **kwds):

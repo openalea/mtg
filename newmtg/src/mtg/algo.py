@@ -40,16 +40,12 @@ def ancestors(g, vid, **kwds):
 
     .. seealso: :func:`aml.Ancestors`
     """
-    edge_type = g.property('edge_type')
-
     et = kwds.get('EdgeType','*')
     rt = kwds.get('RestrictedTo', 'NoRestriction')
     ci = kwds.get('ContainedIn')
 
     if ci is not None:
         c_scale = g.scale(ci)
-
-
 
     v = vid
 
@@ -209,8 +205,6 @@ def root(g, vid, RestrictedTo='NoRestriction', ContainedIn=None):
     """
     TODO: see aml.Root doc string.
     """
-    edge_type = g.property('edge_type')
-
     rt = RestrictedTo
     ci = ContainedIn
 
@@ -433,7 +427,7 @@ def union(g1, g2, vid1=None, vid2=None, edge_type='<'):
 
     v1 = vid1 if vid1 is not None else g1.root
     if v1 not in g1:
-        raise InvalidVertex(v2)
+        raise InvalidVertex(v1)
     v2 = vid2 if vid2 is not None else g2.root
     if v2 not in g2:
         raise InvalidVertex(v2)

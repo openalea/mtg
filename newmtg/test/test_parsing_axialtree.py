@@ -109,7 +109,7 @@ def test_mtglpy_topvine():
     if not fn.exists():
         return
 
-    l = Lsystem(fn)
+    l = Lsystem(str(fn))
     parameters = {}
     parameters['carto_file'] = 'geom_n.dat'
     parameters['picle_file'] = 'vine_n.dat'

@@ -1,3 +1,13 @@
+TULIP = True
+try:
+    import tulip
+except ImportError:
+    TULIP = False
+
+if not TULIP:
+    import sys
+    sys.exit(1)
+
 from openalea.mtg.io import *
 from openalea.mtg import iox
 from tulip import *

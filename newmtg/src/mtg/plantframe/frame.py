@@ -29,6 +29,8 @@ based on various infomation.
     - 
 '''
 
+from math import sqrt
+from openalea.mtg.traversal import post_order
 
 
 
@@ -204,6 +206,7 @@ class PlantFrame(object):
         '''
         d = {}
 
+        g = self.g
         func = kwds.get(name)
         if func:
             # Compute the value for all vertices
@@ -221,6 +224,11 @@ class PlantFrame(object):
         
 
     def _compute_global_data(self, factor=1):
+        g = self.g
+        xx = self.xx
+        yy = self.yy
+        zz = self.zz
+
         self.points = {}
         points = self.points
         for vid in self.xx:
@@ -254,7 +262,7 @@ class PlantFrame(object):
     def run(self, scale= -1):
         '''Compute the geometry of the plant.
         '''
-        
+        g = self.g
         if scale == -1:
             scale = g.max_scale()
 

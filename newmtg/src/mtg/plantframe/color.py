@@ -1,5 +1,5 @@
 import numpy as np
-from pylab import cm, colorbar
+from pylab import cm
 import matplotlib
 from matplotlib.colors import Normalize, LogNorm
 from matplotlib import pyplot, mpl

@@ -43,7 +43,6 @@ based on various infomation.
     - remove noise from points
     - translate the branch at the extremities of the cylinder.
 '''
-import sys
 from math import sqrt, pi
 
 from .. import traversal
