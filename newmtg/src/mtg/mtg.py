@@ -2216,7 +2216,7 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
     l=[vid]
     while nb_vertices > 0:
         n = min(randint(1,nb_children), nb_vertices)
-        vid = l.pop()
+        vid = l.pop(randint(0,len(l)-1))
         for i in range(n):
             edge_type = '+'
             if i == n/2:
