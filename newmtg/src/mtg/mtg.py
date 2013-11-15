@@ -2188,12 +2188,18 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
     """ Generate and add a random tree to an existing one.
 
     Add a random sub tree at a given vertex id position `root`.
-    The length of the sub_tree is `nb_vertices`. Each new vertex has
-    at most `nb_children` children.
+    The length of the sub_tree is `nb_vertices`. 
+    The number of children for each vertex is sampled according to `nb_children` distribution.
+    If nb_children is an interger, the random distribution is uniform between [1, nb_children]. 
+    Otherwise, you can give your own discrete distribution sampling function.
 
     :Parameters:
         - `mtg`: the mtg to modified
         - `root` (id): vertex id on which the sub tree will be added.
+
+    :Optional Parameters:
+        - `nb_vertices`
+        - `nb_children` : an int or a discrete distribution sampling function.
 
     :Returns:
 
@@ -2208,6 +2214,19 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
             random_tree(g, vid, nb_children=2, nb_vertices=20)
             print len(g) # 22
             
+        .. code-block:: python
+            from scipy.stats import poisson, binom
+
+            g = MTG()
+            vid = g.add_component(g.root)
+            dist = poisson(1., loc=1).rvs
+            random_tree(g, vid, nb_children=dist)
+            print len(g) # 22
+
+            dist = binom(5, 0.5, loc=1).rvs
+            random_tree(g, vid, nb_children=dist)
+
+
     .. seealso:: :func:`simple_tree`, :func:`random_mtg`
 
     """
@@ -2215,7 +2234,11 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
     vid = root
     l=[vid]
     while nb_vertices > 0:
-        n = min(randint(1,nb_children), nb_vertices)
+        if callable(nb_children):
+            n = min(nb_children(), nb_vertices)
+        else:
+            n = min(randint(1,nb_children), nb_vertices)
+
         vid = l.pop(randint(0,len(l)-1))
         for i in range(n):
             edge_type = '+'
