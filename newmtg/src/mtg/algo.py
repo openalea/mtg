@@ -84,7 +84,7 @@ def path(g, vid1, vid2=None):
         except ValueError:
             return iter([]), 0
 
-    return reversed(l[:index]), sign
+    return reversed(l[:index+1]), sign
 
 def edge_type(g,v):
     return g.property('edge_type').get(v)
