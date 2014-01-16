@@ -5,8 +5,8 @@ from openalea.mtg import *
 
 
 g = MTG()
-v = random_tree(g, g.root, 5, 1000)
-g = random_mtg(g, 5)
+v = random_tree(g, g.root, 3, 900)
+g = random_mtg(g, 4)
 
 # Question
 # order: 
@@ -48,3 +48,9 @@ def rank(g, v1, v2=None):
 
 def height(g, v1, v2=None):
     return sum(1 for v in path(g,v1,v2))
+
+def reindex(g):
+    vtxs = list(traversal.iter_mtg2(g,g.root))
+    mapping = dict(zip(vtxs, range(len(g))))
+    return g.reindex(mapping, copy=True)
+

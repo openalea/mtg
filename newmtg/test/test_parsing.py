@@ -61,6 +61,7 @@ def test_properties():
     # this should also be possible
     s1='/I1(10,65.3,,)<I2(8,60.1,,)[+I10<I11]<I3(7,62.7,,3)<I4(5,58.8,Dead,)[+I7<I8<I9][+I5<I6]'
     s2='/I1(10,65.3)<I2(8,60.1)[+I10<I11]<I3(7,62.7,,3)<I4(5,58.8,Dead)[+I7<I8<I9][+I5<I6]'
+    class_type = {'diameter':'INT', 'length':'REAL', 'status':'STRING', 'type':'INT' }
     for s in [s1, s2]:
         g = multiscale_edit(s)
         assert len(g) == 12 
@@ -68,7 +69,9 @@ def test_properties():
 
 def test_dynamic():
     # addition of dates:
-    s = '/I1(10/1/92,10,65.3)(20/1/92,12,69.3)(2/2/92,15,70.1)<I2(10/1/92,8,60.1)(20/1/92,9,61.3)(2/2/92,10,66.3)[+I<I]<I3(20/1/92,7,62.7,4=3)(2/2/92,9,65.5,4=1)<I4(2/2/92,5,58.8,Dead)[+I7<I<I][+I5<I]'
+    s = '/I1(date=10/01/92,x=10,y=65.3)*(date=20/01/92,x=12,y=69.3)*(date=02/02/92,x=15,y=70.1)<I2(date=10/01/92,x=8,y=60.1)*(date=20/01/92,x=9,y=61.3)*(date=02/02/92,x=10,y=66.3)[+I<I]<I3(date=20/01/92,x=7,y=62.7,z=3)*(date=02/02/92,x=9,y=65.5,z=1)<I4(date=02/02/92,x=5,y=58.8,status=Dead)[+I7<I<I][+I5<I]'
+    class_type = {'date':'DD/MM/YY', 'x':'REAL', 'y': 'REAL', 'z':'REAL' ,'status':'STRING' }
+    g = multiscale_edit(s, class_type=class_type, has_date=True)
 
 def test_tree():
     # Tree from Godin et al. 2005

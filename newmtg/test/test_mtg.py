@@ -206,3 +206,22 @@ def test_remove_vertex():
     mtg.remove_vertex(v5)
     mtg.remove_vertex(v1, reparent_child=True)
     assert len(mtg) == n-2
+
+def test_reindex():
+    g = MTG()
+    v = random_tree(g, g.root, 3, 100)
+    g = random_mtg(g, 4)
+
+    g1 = g.reindex(copy=True)
+    assert len(g) == len(g1)
+    for i in range(1,4):
+        assert g.nb_vertices(scale=i) ==g.nb_vertices(scale=i)
+
+    mapping = dict(zip(iter_mtg2(g1, g1.root), iter_mtg2(g, g.root)))
+    g0 = g1.reindex(mapping, copy=False)
+    
+    # compare g0 and g: Have to be similar.
+    for v in g0:
+        assert g0[v] == g[v]
+        
+

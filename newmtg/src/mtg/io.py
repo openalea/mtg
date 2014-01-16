@@ -76,7 +76,7 @@ def replace_date(s, format):
     """
     import re
     if format == 'DD/MM/YY':
-        rawstr = r"""(?P<day>3[01]|[0-2]{0,1}\d)/(?P<month>1[012]|0\d)/(?P<year>\d\d)"""
+        rawstr = r"""(?P<day>3[01]|[1-9]|[0-2][0-9])/(?P<month>1[012]|0[1-9]|[1-9])/(?P<year>\d\d)"""
     else:
         rawstr = r"""(?P<day>3[01]|[0-2]{0,1}\d)/(?P<month>1[012]|0\d)/(?P<year>19\d\d|20\d\d)"""
 
@@ -87,7 +87,26 @@ def replace_date(s, format):
     return re.sub(rawstr, change_date, s)
 
 def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mtg=None):
+    """Construction of an MTG from a string.
 
+    :Parameters:
+
+    - `s`: The string representing the MTG.
+    - `symbol_at_scale`: A dict containing the scale for each symbol name.
+
+    :Optional parameters:
+
+    - `class_type`: A dict containing the type of the properties.
+	- `has_date`: Is the MTG is a Dynamic MTG?
+	- `mtg`: An existing MTG
+	  
+
+
+    :Return:
+
+        MTG object
+
+    """
     def get_properties(name,vid=None):
         _type = dict([('INT', int), ('REAL', float), ('ALPHA', str), ('DD/MM/YY', str), ('DD/MM/YYYY', str), ('STRING', str)])
         args = {}
@@ -146,6 +165,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             date_format = 'DD/MM/YYYY'
         s = replace_date(s, date_format)
 
+
     for edge_type in symbols:
         if edge_type != '/' or not symbol_at_scale:
             s = s.replace(edge_type, '\n%s'%edge_type)
@@ -154,7 +174,11 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             for klass in symbol_at_scale.keys():
                 s = s.replace('/%s'%klass, '\n/%s'%klass)
     s = s.replace('<\n<', '<<')
+    # TODO: Write a regular expression to allow several spaces
     s = s.replace(')(', ')\n(')
+    s = s.replace(') (', ')\n(')
+    s = s.replace('*(', '\n(')
+
 
     l = filter( None, s.split('\n'))
 
@@ -178,7 +202,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             scale = mtg.scale(vid)
         elif tag == '*':
             args = get_properties(name, vid=vid)
-            #print args
+            print '*(', args, ')'
         else:
             if class_type:
                 args = get_properties(name, vid=vid)

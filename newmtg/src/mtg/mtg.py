@@ -974,6 +974,85 @@ class MTG(PropertyTree):
             return g
 
 
+    def reindex(self, mapping=None, copy=False):
+        """ Assign a new identifier to each vertex.
+
+        This method assigns a new identifier to each vertex of the MTG. The mapping can be user defined or
+        is implicit (`mapping`). This method modify the MTG in place or return a new MTG (`copy`).
+
+        :Usage:
+
+        .. code-block:: python
+
+            >>> g.reindex()
+            >>> g1 = g.reindex(copy=True)
+            >>> mymap = dict(zip(list(traversal.iter_mtg2(g,g.root)), range(len(g))))
+            >>> g2 = g.reindex(mapping=mymap, copy=True)
+
+        :Optional Parameters:
+
+            - `mapping` (dict): define a mapping between old and new vertex identifiers.
+            - `copy` (bool) : modify the object in place or return a new MTG.
+
+        :Returns:
+
+            - a MTG
+
+        :Background:
+
+            :func:`MTGs`
+
+        .. seealso:: :meth:`sub_mtg`
+
+        """
+        # Manage also mapping as a function
+        if not mapping:
+            mapping = dict(zip(traversal.iter_mtg2(self, self.root), range(len(self))))
+
+        if copy:
+            g = MTG()
+            g.root = mapping.setdefault(self.root,0)
+
+            for name in self.properties():
+                g.add_property(name)
+
+            subtree = traversal.iter_mtg2(self, self.root)
+
+            # Skip the first vertex vtx_id
+            subtree.next()
+                
+            # Traverse all the sub_mtg.
+            # Every vertex has a complex in this sub_mtg.
+            # Complex vertices are traversed before there components and
+            # parent before the children.
+
+            for vid in subtree:
+                complex_id = mapping[self.complex(vid)]
+                v_id = mapping[vid]
+                v_id = g.add_component(complex_id, component_id=v_id)
+
+                pid = self.parent(vid)
+                if pid:
+                    parent = mapping[pid]
+                    v_id = g.add_child(parent, child=v_id)
+
+                # Copy the properties
+                g._add_vertex_properties(v_id, self.get_vertex_property(vid))
+
+            return g
+        else:
+            # recreate new dict for _parent, _children, _complex, _components
+            self._parent = dict((mapping[k], mapping.get(v)) for k, v in self._parent.iteritems())
+            self._children = dict((mapping[k], [mapping[v] for v in l]) for k, l in self._children.iteritems())
+            self._complex = dict((mapping[k], mapping.get(v)) for k, v in self._complex.iteritems())
+            self._components = dict((mapping[k], [mapping[v] for v in l]) for k, l in self._components.iteritems())
+            self._scale = dict((mapping[k], s) for k, s in self._scale.iteritems())
+            for name in self._properties:
+                d = self._properties[name] 
+                self._properties[name] = dict((mapping[k], s) for k, s in d.iteritems())
+
+            return self
+
     #########################################################################
     # Specialised algorithms for aml compatibility.
     #########################################################################
