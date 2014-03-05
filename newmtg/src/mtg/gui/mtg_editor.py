@@ -19,6 +19,7 @@ __revision__ = " $Id$ "
 
 from random import randint as rint
 from math import sin, cos, radians
+import weakref
 
 from openalea.grapheditor import *
 from openalea.grapheditor.all import *
@@ -33,6 +34,30 @@ from openalea.mtg import algo
 # -- A wrapper around mtg.MTG that implements notification -- #
 ###############################################################
 
+class ObservedVertex(Observed):
+
+    def __init__(self, graph, vid):
+        Observed.__init__(self)
+        self.vid = vid
+        self.g = weakref.ref(graph)
+
+    def notify_position(self, pos):
+        self.notify_listeners(("metadata_changed", "position", pos))
+
+    def notify_update(self, **kwargs):
+        for item in kwargs.iteritems():
+            self.notify_listeners(item)
+
+        pos = self.g().node(self.vid).position
+        self.notify_position(pos)
+
+    def __setitem__(self, key, value):
+        self.g().node(self.vid).__setattr__(key,value)
+        self.notify_update()
+
+    def __getitem__(self, key):
+        return self.g().node(self.vid).__getattr__(key)
+
 class ObservableMTG(GraphAdapterBase, Observed):
     """An adapter to vplants.newmtg.mtg.MTG. It has the role to
     add notifications to actions performed on the underlying graph"""
@@ -40,23 +65,38 @@ class ObservableMTG(GraphAdapterBase, Observed):
         GraphAdapterBase.__init__(self)
         Observed.__init__(self)
         self.set_graph(MTG() if graph is None else graph)
+        self.mapping = {}
 
-    def new_vertex(self, **kwargs):
-        self.graph._id += 1
-        id_ = self.graph._id
-        self.add_vertex(id_, **kwargs)
-        return id_
+    def map_edges(self, edges):
+        edges = [(self.mapping[s], self.mapping[t]) for s, t in edges if s in self.mapping and t in self.mapping]
+        return edges
 
-    def add_vertex(self, vid, **kwargs):
+    def vid2obj(self, vid):
+        return self.mapping[vid]
+
+    def new_vertex(self, vid=None, **kwargs):
+        if vid is None:
+            vid = self.graph._id+1
+        vid = self.graph._id = max(self.graph._id+1, vid) 
+        vtx = ObservedVertex(self.graph, vid)
+        self.mapping[vid]=vtx
+        self.add_vertex(vtx, **kwargs)
+        return vtx
+
+    def add_vertex(self, vertex, **kwargs):
+        g = self.graph
+        vid = vertex.vid
+
         vertex_added = [vid]
         edge_added=[]
-        pid = kwargs.pop("parent", None)
+        parent = kwargs.pop("parent", None)
         edge_type = kwargs.pop("edge_type", "<")
-        g = self.graph
-        if pid is None:
+
+        if parent is None:
             vid = g.add_component(g.root, component_id=vid, **kwargs)
             edge_added.append((g.root, vid))
         else:
+            pid = parent.vid
             if edge_type in ["<", "+"]:
                 vid = g.add_child(pid, child=vid,edge_type=edge_type, **kwargs)
                 edge_added.append((pid, vid))
@@ -75,27 +115,29 @@ class ObservableMTG(GraphAdapterBase, Observed):
                 edge_added.append((vid, pid))
 
 
-        self.notify_listeners(("vertex_added", ("vertex",vid)))
-
+        self.notify_listeners(("vertex_added", ("vertex",vertex)))
         self.notify_edge_additions(edge_added)
 
     def remove_vertex(self, vertex):
         g = self.graph
-        pid = g.parent(vertex)
-        children = g.children(vertex)
+        vid = vertex.vid
+        pid = g.parent(vid)
+        children = g.children(vid)
         nchildren = len(children)
 
         # -- refresh the graphical edges to --
         # -- reparent children to parent of vertex --
-        edges_to_remove = [(pid,vertex)]+ [None]*nchildren
+        edges_to_remove = [(pid,vid)]+ [None]*nchildren
         edges_to_add    = [None]*nchildren
         for n, cid in enumerate(children):
-            edges_to_remove[n+1] = vertex, cid
+            edges_to_remove[n+1] = vid, cid
             edges_to_add[n] = pid, cid
+
         self.notify_edge_removals(edges_to_remove)
         self.notify_edge_additions(edges_to_add)
 
-        g.remove_vertex(vertex, reparent_child=True)
+        g.remove_vertex(vid, reparent_child=True)
+        del self.mapping[vid]
         self.notify_listeners(("vertex_removed", ("vertex",vertex)))
 
     def add_edge(self, src_vertex, tgt_vertex, **kwargs):
@@ -111,11 +153,13 @@ class ObservableMTG(GraphAdapterBase, Observed):
         pass
 
     def notify_edge_additions(self, edges):
+        edges = self.map_edges(edges)
         for edge in edges:
             src, tgt = edge
             self.notify_listeners(("edge_added", ("default", edge, src, tgt)))
 
     def notify_edge_removals(self, edges):
+        edges = self.map_edges(edges)
         for edge in edges:
             self.notify_listeners(("edge_removed", ("default",edge)))
 
@@ -152,12 +196,12 @@ class Vertex( qt.DefaultGraphicalVertex ):
         g = self.mtg
 
         # -- set the color based on the scale of this vertex and the HSV wheel--
-        scale = g.scale(self.vertex())
+        scale = g.scale(self.vertex().vid)
         s = (scale%self.max_scale)/float(self.max_scale)
         color = QtGui.QColor.fromHsvF(s, 1,1)
         brush = QtGui.QBrush(color)
         self.setBrush(brush)
-        self._label.setText(str(self.vertex()))
+        self._label.setText(str(self.vertex().vid))
         self._label.setPos(self.boundingRect().center()- \
                            self._label.boundingRect().bottomRight()/2)
 
@@ -166,11 +210,11 @@ class Vertex( qt.DefaultGraphicalVertex ):
         self.select()
 
     def store_view_data(self, **kwargs):
-        vid = self.vertex()
+        vid = self.vertex().vid
         self.mtg._add_vertex_properties(vid,kwargs)
 
     def get_view_data(self, key):
-        vid = self.vertex()
+        vid = self.vertex().vid
         return self.mtg.property(key).get(vid)
 
     def default_position(self):
@@ -199,11 +243,11 @@ class Vertex( qt.DefaultGraphicalVertex ):
             pass #y==y
 
         if edge_type == "<":
-            n = len(algo.sons(self.mtg, self.vertex(), EdgeType="<"))
+            n = len(algo.sons(self.mtg, self.vertex().vid, EdgeType="<"))
             if n > 0: #there can only be one successor
                 return
         elif edge_type == "+":
-            children = algo.sons(self.mtg, self.vertex(), EdgeType="+")
+            children = algo.sons(self.mtg, self.vertex().vid, EdgeType="+")
             n = len(children)
             n = n if n < 60/30 else n+1
             angle = -60 + n*30
@@ -233,29 +277,33 @@ class Vertex( qt.DefaultGraphicalVertex ):
         if k in [QtCore.Qt.Key_Up, QtCore.Qt.Key_Down,
                  QtCore.Qt.Key_Left, QtCore.Qt.Key_Right]:
             g = self.mtg
-            vid = self.vertex()
+            vid = self.vertex().vid
             if k == QtCore.Qt.Key_Up:
                 cpx_id = g.complex(vid)
+                cpx = self.graph().vid2obj(cpx_id)
                 if cpx_id is not None:
-                    self.graph().notify_listeners(("vertex_event", (cpx_id, "select")))
+                    self.graph().notify_listeners(("vertex_event", (cpx, "select")))
             elif k == QtCore.Qt.Key_Down:
                 cids = g.components(vid)
                 if len(cids) > 0:
-                    self.graph().notify_listeners(("vertex_event", (cids[0], "select")))
+                    _component = self.graph().vid2obj(cids[0])
+                    self.graph().notify_listeners(("vertex_event", (_component, "select")))
             elif k == QtCore.Qt.Key_Left:
                 pid = g.parent(vid)
                 if pid is not None:
-                    self.graph().notify_listeners(("vertex_event", (pid, "select")))
+                    parent = self.graph().vid2obj(pid)
+                    self.graph().notify_listeners(("vertex_event", (parent, "select")))
             else:
                 chids = g.children(vid)
                 for chid in chids:
                     if g.edge_type(chid) == "<":
-                        self.graph().notify_listeners(("vertex_event", (chid, "select")))
+                        kid = self.graph().vid2obj(chid)
+                        self.graph().notify_listeners(("vertex_event", (kid, "select")))
                         break
                 else:
                     if chids:
-                        chid = chids[0]
-                        self.graph().notify_listeners(("vertex_event", (chid, "select")))
+                        kid = self.graph().vid2obj(chids[0])
+                        self.graph().notify_listeners(("vertex_event", (kid, "select")))
         else:
             edge_type = "<"
             to_add = True
@@ -329,7 +377,8 @@ def initialise_graph_view_from_model(graphView, graphModel):
     gm = graphModel
     print g, gm
     for v in g:
-        gm.notify_listeners(("vertex_added", ("vertex", v)))
+        if v is not g.root:
+            gm.notify_listeners(("vertex_added", ("vertex", gm.vid2obj(v))))
 
 
 
