@@ -15,6 +15,10 @@
 ################################################################################
 
 from mtg import *
-from plantframe import turtle, frame, plantframe, dresser
-DressingData = dresser.DressingData
-PlantFrame = plantframe.PlantFrame
+try:
+	from plantframe import turtle, frame, plantframe, dresser
+	DressingData = dresser.DressingData
+	PlantFrame = plantframe.PlantFrame
+except ImportError:
+	DressingData = None
+	PlantFrame = None

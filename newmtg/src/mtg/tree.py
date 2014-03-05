@@ -521,6 +521,7 @@ class PropertyTree(Tree):
         '''
         super(PropertyTree, self).__init__(*args, **kwds)
         self._properties = {}
+        self._graph_properties = {}
 
     def remove_vertex(self, vid, reparent_child=False):
         """
@@ -763,4 +764,13 @@ class PropertyTree(Tree):
         """
         p = self.properties()
         return dict((name,p[name][vid]) for name in p if vid in p[name])
+
+    def graph_properties(self):
+        """
+        return a dict containing the graph properties/
+
+        :rtype: dict of ``{property_name:data}``
+        """
+        return self._graph_properties
+
 
