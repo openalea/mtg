@@ -1,3 +1,9 @@
+openalea-mtg (1.0.2~ppa2) quantal; urgency=low
+
+  * Port to Quantal 
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Mon, 30 Sep 2013 17:57:33 +0200
+
 openalea-mtg (1.0.2~ppa1) precise; urgency=low
 
   * Remove dependency to openalea.container
