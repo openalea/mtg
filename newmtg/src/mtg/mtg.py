@@ -607,7 +607,7 @@ class MTG(PropertyTree):
         #if new_parent_id not in self:
             #    raise ""
         if self.scale(vtx_id) != self.scale(new_parent_id):
-            raise InvalidVertex("Can not replace vertex %d by vertex %d from a different scale"%(vtx_id, new_parent_id))
+            raise InvalidVertex("Can not replace vertex {} by vertex {} from a different scale".format(vtx_id, new_parent_id))
 
         old_complex = self._complex.get(vtx_id)
 
