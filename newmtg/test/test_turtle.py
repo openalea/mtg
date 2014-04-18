@@ -17,6 +17,7 @@ def test3():
     def visitor(g, v, turtle):
         if g.edge_type(v) == '+':
             turtle.down(90)
+         
         turtle.F()
         turtle.rollL()
 

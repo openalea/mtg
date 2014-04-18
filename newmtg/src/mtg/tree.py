@@ -354,6 +354,7 @@ class Tree(object):
         if old_parent is not None:
             index = children.index(vtx_id)
             children[index] = parent_id
+            self._parent[parent_id] = old_parent
         return parent_id
 
     def replace_parent(self, vtx_id, new_parent_id, **properties):
