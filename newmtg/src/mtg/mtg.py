@@ -370,7 +370,7 @@ class MTG(PropertyTree):
         :Returns Type:
             iter
         """
-        return list(self.iter_edges)
+        return list(self.iter_edges(scale=scale))
 
     #########################################################################
     # MutableVertexGraphConcept methods.
