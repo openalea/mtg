@@ -1053,6 +1053,144 @@ class MTG(PropertyTree):
 
             return self
 
+    def insert_scale(self, inf_scale=None, partition=None, default_label='A'):
+        """
+
+        """
+        g = self
+        if g.nb_scales() < 2:
+            raise Exception('Can not insert a scale on a tree which is not an MTG')
+
+        if inf_scale is None:
+            inf_scale = g.max_scale()
+
+        if partition is None:
+            partition = lambda v: g.edge_type(v) != '<' 
+        
+        inf_vertices = g.components_at_scale(g.root, scale=inf_scale)
+        colors = [v  for v in inf_vertices if partition(v)]
+
+        sup_vertices = g.components_at_scale(g.root, scale=inf_scale-1)
+        
+        # compute the component_roots
+        sup_components = dict((v, g.component_roots_iter(v).next()) for v in sup_vertices)
+        complexes = sup_components.values()
+
+        if (set(complexes) - set(colors)):
+            raise Exception("Error: the scale you want to insert is not included in the upper scale. Please modify the partition.")
+
+        # Modification in_place:
+        # Algo: 
+        # - Modify the _scale of the vertices at scale >= inf_scale
+        # - create new ids
+        # - Modify the _components of sup_vertices
+        # - Modify the _complex of vertices
+        # - add a tree at scale inf_scale with _complex in sup_vertices and _components in colors
+
+        nb_scales = g.max_scale()
+
+        new_scale = dict((vid,sid+1) for vid, sid in g._scale.iteritems() if sid >= inf_scale)
+        g._scale.update(new_scale)
+
+        max_id = max(g._scale)
+        complex_inf = dict((colors[i], max_id+i+1) for i in range(len(colors)))
+        components_sup = dict((vid, complex_inf[cid]) for vid ,cid in sup_components.iteritems()) 
+
+        # add the new vertices
+        g._scale.update( (vid, inf_scale) for vid in complex_inf.itervalues())
+
+        # remove all the components of sup_vertices
+        for v in sup_vertices:
+            if v in g._components:
+                del g._components[v]
+
+        # remove all the complex of inf_vertices
+        for v in inf_vertices:
+            if v in g._complex:
+                del g._complex[v]
+
+        # And new components
+        for vid, component_id in components_sup.iteritems():
+            g.add_component(vid,component_id)
+
+        # Add new complex 
+        for component_id, complex_id in complex_inf.iteritems():
+            g.add_component(complex_id, component_id)    
+            g._add_vertex_properties(complex_id, dict(label=default_label))
+
+
+        return fat_mtg(g)
+
+    def remove_scale(self, scale):
+        """ Remove all the vertices at a given scale.
+
+        The upper and lower scale are then connected.
+
+        Parameters:
+        ===========
+            - scale : the scale that have to be removed
+
+        Returns
+        =======
+            - g : the input MTG modified in place.
+            - results : a list of dict
+                all the vertices that have been removed
+        """
+
+        g = self
+        nb_scales = g.max_scale()
+        if scale > nb_scales or scale < 1:
+            return
+        # 2 cases to consider: scale == 1 or max_scale
+
+        vertices = g.components_at_scale(g.root, scale=scale)
+        sup_vertices = g.components_at_scale(g.root, scale=scale-1)
+        inf_vertices = g.components_at_scale(g.root, scale=scale+1)
+
+        results = dict((v, g[v]) for v in vertices)
+
+        new_complex = dict((cid, g.complex(v)) for v in vertices for cid in  g.component_roots_iter(v))
+
+        # Algo:
+        # Update scale of vertices
+        # Remove vertices at scale=scale
+        # Remove components at scale -1
+        # Remove complex at scale +1
+        # Add component between sup and inf scale
+
+        new_scale = dict((vid,sid-1) for vid, sid in g._scale.iteritems() if sid > scale)
+        g._scale.update(new_scale)
+
+        for v in vertices:
+            del g._scale[v]
+            if v in g._children:
+                del g._children[v]
+            if v in g._parent:
+                del g._parent[v]
+            if v in g._components:
+                del g._components[v]
+            if v in g._complex:
+                del g._complex[v]
+
+        for v in sup_vertices:
+            if v in g._components:
+                del g._components[v]
+
+        for v in inf_vertices:
+            if v in g._complex:
+                del g._complex[v]
+
+        # And new components
+        for component_id, complex_id in new_complex.iteritems():
+            g.add_component(complex_id,component_id)
+
+        # Update components
+        g._components = dict((v, [cid for cid in components if g.parent(cid) is None or g.complex(g.parent(cid)) !=v]) 
+            for v, components in g._components.iteritems())
+
+        g = fat_mtg(g)
+        return g, results
+
     #########################################################################
     # Specialised algorithms for aml compatibility.
     #########################################################################
@@ -2428,7 +2566,7 @@ def colored_tree(tree, colors):
             component_id = index_scale.get(id)
 
             if complex_id:
-                g.add_component(complex_id, index_scale[id])
+                g.add_component(complex_id, component_id)
             elif component_id:
                 g._scale[component_id] = scale
 
