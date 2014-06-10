@@ -410,9 +410,11 @@ class MTG(PropertyTree):
 
         if reparent_child:
             new_parent_id = self.parent(vid)
-            for cid in self.children_iter(vid):
+            children = list(self.children_iter(vid)) # should do a copy because the list will be modified by replace_parent
+            for cid in children:
                 self.replace_parent(cid, new_parent_id)
-
+        
+        
         if self.nb_components(vid) == 0:
             super(MTG, self).remove_vertex(vid, reparent_child=reparent_child)
             if vid in self._components:
