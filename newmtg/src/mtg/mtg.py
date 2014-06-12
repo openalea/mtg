@@ -860,7 +860,9 @@ class MTG(PropertyTree):
         pylab_colors = matplotlib.colors.cnames.keys()
         color = {}
         orders = algo.orders(self)
-        color = {k:pylab_colors[orders[k]] for k in props}
+        for k in props:
+            color[k]=pylab_colors[orders[k]]
+        #color = {k:pylab_colors[orders[k]] for k in props} # not in Py2.6
         
         heights = algo.heights(self)
         h = np.array([heights[v] for v in props])
