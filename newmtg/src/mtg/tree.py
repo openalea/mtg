@@ -719,7 +719,8 @@ class PropertyTree(Tree):
         Returns the property map between the vid and the data.
         :returns:  dict of {vid:data}
         '''
-        return self._properties.get(name, {})
+        self._properties.setdefault(name, {})
+        return self._properties[name]
 
     def add_property(self, property_name):
         """
