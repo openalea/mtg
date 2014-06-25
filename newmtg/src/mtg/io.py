@@ -107,15 +107,16 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
         MTG object
 
     """
-    def get_properties(name,vid=None):
+    def get_properties(name,vid=None, time=False):
         _type = dict([('INT', int), ('REAL', float), ('ALPHA', str), ('DD/MM/YY', str), ('DD/MM/YYYY', str), ('STRING', str)])
         args = {}
         l = name.strip().split('(')
-        label = get_label(name)
-        index = get_index(label)
-        if index.isdigit():
-            args['index'] = int(index)
-        args['label'] = label
+        if not time:
+            label = get_label(name)
+            index = get_index(label)
+            if index.isdigit():
+                args['index'] = int(index)
+            args['label'] = label
         if len(l) > 1:
             arg_string = l[1].strip()[:-1]
             if arg_string:
@@ -132,7 +133,36 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
                             print 'Args ', v, 'of type ', k, 'is not of type ', str(klass)
         return args
 
-    implicit_scale = bool(symbol_at_scale)
+    def add_dynamic_properties(mtg, vid, args):
+        print "Existing properties at ", vid, " ", mtg.get_vertex_property(vid)
+        print "New property: ", args
+
+        # a property can be a list but not a timeserie.
+        # Create a real timeserie object...
+        static_properties = ['index', 'label']
+        is_time_series= lambda x: isinstance(x,list)
+        date = 'Date'
+
+        new_date = args.get(date)
+
+        if new_date is None:
+            return 
+
+        old_date = mtg.property(date)[vid]
+        for prop in args:
+            if prop == date:
+                continue
+            old = mtg.property(prop).get(vid)
+            if is_time_series(old):
+                old.append((new_date, args[prop]))
+            elif old:
+                mtg.property(prop)[vid] = [(old_date, old), (new_date, args[prop])]
+            else:
+                mtg.property(prop)[vid] = [(new_date, args[prop])]
+
+
+
+    implicit_scale = bool(symbol_at_scale) 
 
     if debug:
         print symbol_at_scale.keys()
@@ -201,8 +231,10 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             current_vertex = vid
             scale = mtg.scale(vid)
         elif tag == '*':
-            args = get_properties(name, vid=vid)
-            print '*(', args, ')'
+            args = get_properties(name, vid=vid, time=True)
+            print vid, '*(', args, ')'
+            # CPL Manage Dynamic_MTG
+            add_dynamic_properties(mtg, vid, args)
         else:
             if class_type:
                 args = get_properties(name, vid=vid)
@@ -859,7 +891,7 @@ class Reader(object):
     The code contains topology relations and properties.
     """
 
-    def __init__(self, string, has_line_as_param=True, mtg=None):
+    def __init__(self, string, has_line_as_param=True, mtg=None, has_date=False):
         self.mtg = mtg
 
         # First implementation.
@@ -872,7 +904,7 @@ class Reader(object):
         self._symbols = {}
         self._description = None
         self._features = {}
-        self.has_date = False
+        self.has_date = has_date
 
         # debug
         self._no_line = 0
@@ -1049,7 +1081,6 @@ class Reader(object):
             name, _type = line
             if '/' in _type and name.lower() == 'date':
                 self.has_date = True
-                print 'HAS DATE'
             self._features[name] = _type
 
         if l.startswith('MTG'):
@@ -1113,7 +1144,7 @@ class Reader(object):
             else:
                 self._feature_head.append(feature)
 
-        code_topo = l[:l.find(features[0])]
+        code_topo = l[:l.find(features[0])] if self._nb_features else l[:]
         nb_cols = len(code_topo.split('\t'))
         self._feature_slice = slice(nb_cols-1, nb_cols-1+self._nb_features)
 
@@ -1235,7 +1266,7 @@ class Reader(object):
         self.mtg = multiscale_edit(self._new_code, self._symbols, self._features, self.has_date, mtg=self.mtg)
         #self.mtg = multiscale_edit(self._new_code, {}, self._features)
 
-def read_mtg(s, mtg=None):
+def read_mtg(s, mtg=None, has_date=False):
     """ Create an MTG from its string representation in the MTG format.
     
     :Parameter:
@@ -1255,11 +1286,11 @@ def read_mtg(s, mtg=None):
     .. seealso:: :func:`read_mtg_file`.
 
     """
-    reader = Reader(s, mtg=mtg)
+    reader = Reader(s, mtg=mtg, has_date=has_date)
     g = reader.parse()
     return g
 
-def read_mtg_file(fn, mtg=None):
+def read_mtg_file(fn, mtg=None, has_date=False):
     """ Create an MTG from a filename.
 
     :Usage:
@@ -1271,7 +1302,7 @@ def read_mtg_file(fn, mtg=None):
     f = open(fn)
     txt = f.read()
     f.close()
-    return read_mtg(txt, mtg=mtg)
+    return read_mtg(txt, mtg=mtg, has_date=has_date)
 
 
 def mtg_display(g, vtx_id, tab='  ', edge_type=None, label=None):

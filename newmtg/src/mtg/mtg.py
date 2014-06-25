@@ -67,7 +67,7 @@ class MTG(PropertyTree):
 
     '''
 
-    def __init__(self, filename=''):
+    def __init__(self, filename='', has_date=False):
         ''' Create a new MTG object.
 
         :Usage:
@@ -93,7 +93,7 @@ class MTG(PropertyTree):
 
         if filename:
             from io import read_mtg_file
-            self = read_mtg_file(filename, mtg=self)
+            self = read_mtg_file(filename, mtg=self, has_date=has_date)
 
     def __getitem__(self, vtx_id):
         """A simple getitem to extract relevant information on a vertex.
