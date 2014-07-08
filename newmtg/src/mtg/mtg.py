@@ -1057,9 +1057,23 @@ class MTG(PropertyTree):
 
             return self
 
-    def insert_scale(self, inf_scale=None, partition=None, default_label='A'):
+    def insert_scale(self, inf_scale=None, partition=None, default_label=None):
         """
+        Add a scale to MTG
 
+        :Parameters:
+        - `inf_scale` (int) - New scale is inserted between inf_scale and inf_scale-1
+        - `partition` (lambda v: bool) - Function defining new scale by quotienting vertices at inf_scale
+        - `default_label` (str) - default label of inserted vertices
+
+        :Returns:
+            MTG with inserted scale
+
+        :Remark:
+            - New scale is inserted in self as well.
+            - function partition should return True at roots of subtrees where partition changes
+            and False elsewhere.
+            
         """
         g = self
         if g.nb_scales() < 2:
@@ -1120,8 +1134,8 @@ class MTG(PropertyTree):
         # Add new complex 
         for component_id, complex_id in complex_inf.iteritems():
             g.add_component(complex_id, component_id)    
-            g._add_vertex_properties(complex_id, dict(label=default_label))
-
+            if not(default_label is None):
+                g._add_vertex_properties(complex_id, dict(label=default_label))            
 
         return fat_mtg(g)
 
