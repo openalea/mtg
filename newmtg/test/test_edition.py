@@ -71,6 +71,22 @@ def test_insert_scale():
 
     return g.insert_scale(inf_scale=2, partition=quotient) 
 
+def parent_of_components(g, u):
+	"""
+	Find parent of component root of g
+	in g.parent(u) (for connected MTGs)
+	"""
+	c = g.component_roots(u)[0]
+	p = g.parent(u)
+	if not(p is None):
+		p = g.component_roots(p)[0]
+		ch = set(g.children(p))
+		assert g.complex(p) != u
+		path = g.Path(p, c)
+		return list(set(path).intersection(ch))[0]
+	else:
+		return u
+
 def test_insert_scale_from_property():
     g = my_mtg_2scales()
     g_3scales = g.copy()       
@@ -85,12 +101,21 @@ def test_insert_scale_from_property():
         else:
             return False
     
-    g_3scales.insert_scale(inf_scale=2, partition=quotient)
+    g_3scales.insert_scale(inf_scale=2, partition=quotient, preserve_order=True)
     assert len(g_3scales.scales()) == 4
     assert len(g_3scales.vertices(scale=1)) == len(g.vertices(scale=1))
     assert len(g_3scales.vertices(scale=3)) == len(g.vertices(scale=2))
     assert len(g_3scales.vertices(scale=2)) == 9
-    
+    for v in g_3scales.vertices(scale=2):
+        c2 = g_3scales.children(v) #children at scale 2
+        if len(c2) > 1:
+            cpnt = g_3scales.component_roots(v)[0]
+            c3 = g_3scales.children(cpnt) #children at scale 3
+            cv = [parent_of_components(g_3scales, x) for x in c2]
+            msg = "Children inversion at: " + str(v)
+            assert cv == c3, msg
+			
+
 def test_remove_scale():
     g = my_mtg()
 
@@ -100,3 +125,7 @@ def test_remove_scale():
     g, _ = g.remove_scale(scale=2)
     return g
 
+if __name__ == "__main__":
+    test_insert_scale()
+    test_insert_scale_from_property()
+    test_remove_scale()

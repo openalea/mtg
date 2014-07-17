@@ -1057,7 +1057,7 @@ class MTG(PropertyTree):
 
             return self
 
-    def insert_scale(self, inf_scale=None, partition=None, default_label=None):
+    def insert_scale(self, inf_scale=None, partition=None, default_label=None, preserve_order=True):
         """
         Add a scale to MTG
 
@@ -1065,6 +1065,8 @@ class MTG(PropertyTree):
         - `inf_scale` (int) - New scale is inserted between inf_scale and inf_scale-1
         - `partition` (lambda v: bool) - Function defining new scale by quotienting vertices at inf_scale
         - `default_label` (str) - default label of inserted vertices
+        - `preserve_order` (bool) - True iif children at new scale are ordered consistently 
+            with children at inf_scale
 
         :Returns:
             MTG with inserted scale
@@ -1137,7 +1139,7 @@ class MTG(PropertyTree):
             if not(default_label is None):
                 g._add_vertex_properties(complex_id, dict(label=default_label))            
 
-        return fat_mtg(g)
+        return fat_mtg(g, preserve_order)
 
     def remove_scale(self, scale):
         """ Remove all the vertices at a given scale.
@@ -2319,11 +2321,28 @@ class MTG(PropertyTree):
 ################################################################################
 # Graph generators
 ################################################################################
+def parent_of_components(g, u):
+    """
+    Find parent of component root of g
+    in g.parent(u) (for connected MTGs)
+    """
+    c = g.component_roots(u)[0]
+    p = g.parent(u)
+    if not(p is None):
+        p = g.component_roots(p)[0]
+        ch = set(g.children(p))
+        assert g.complex(p) != u
+        path = g.Path(p, c)
+        return list(set(path).intersection(ch))[0]
+    else:
+        return u
 
-def fat_mtg(slim_mtg):
+def fat_mtg(slim_mtg, preserve_order=False):
     """
     Compute missing edges at each scales based on the explicit edges
     defines at finer scales and decomposition relationship.
+    If preserve_order is True, the order of children at coarsest scales
+    is deduced from the order of children at finest scale 
     """
     max_scale = slim_mtg.max_scale()
     #print 'max_scale %d'%max_scale
@@ -2333,6 +2352,22 @@ def fat_mtg(slim_mtg):
 
     for scale in range(max_scale-1,0,-1):
         _compute_missing_edges(slim_mtg, scale, edge_type_property)
+        if preserve_order:
+            # deduce the order of children 
+            # from the order of their components
+            for v in slim_mtg.vertices(scale=scale):
+                # children at current scale
+                cref = slim_mtg.children(v) 
+                 # children at lowest scale                
+                cl = slim_mtg.children(slim_mtg.component_roots(v)[0])
+                if len(cref) > 1:
+                    # children at lowest scale 
+                    cinf = dict(zip([parent_of_components(slim_mtg, x) for x in cref], cref))
+                    ch = [cinf[c] for c in cl if cinf.has_key(c)]
+                    msg = "Bad children at vertex " + str(v)
+                    msg += str(cref) + " / " + str(ch)
+                    assert set(ch) == set(cref), msg
+                    slim_mtg._children[v] = ch
     return slim_mtg
 
 
