@@ -510,3 +510,34 @@ def heights(g, scale=-1):
 
     return heights
 
+def lookForCommonAncestor(g, commonAncestors, currentNode):       
+    while not(currentNode is None):
+        for i in range(len(commonAncestors)):
+            node = commonAncestors[i]
+            if node == currentNode:
+                for j in range(i):
+                    commonAncestors.popleft()
+                return 
+            i += 1
+        currentNode = g.parent(currentNode)
+
+
+def lowestCommonAncestor(g, nodes):
+    """LCA algorithm"""     
+    from collections import deque
+    lca = None
+    if (len(nodes) > 1):
+        
+        firstNode = nodes[0];
+        firstAncestors = deque(g.Ancestors(firstNode))
+        i = 1
+        while i < len(nodes) and len(firstAncestors) > 0:
+            currentNode = nodes[i]
+            lookForCommonAncestor(g, firstAncestors, currentNode)
+            i += 1
+
+        if len(firstAncestors) > 0:
+            lca = firstAncestors[0]
+    
+    return lca
+   

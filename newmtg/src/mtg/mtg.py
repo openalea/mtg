@@ -2344,6 +2344,7 @@ def fat_mtg(slim_mtg, preserve_order=False):
     If preserve_order is True, the order of children at coarsest scales
     is deduced from the order of children at finest scale 
     """
+    from algo import lowestCommonAncestor
     max_scale = slim_mtg.max_scale()
     #print 'max_scale %d'%max_scale
     #roots = slim_mtg.roots(scale=max_scale)
@@ -2357,13 +2358,18 @@ def fat_mtg(slim_mtg, preserve_order=False):
             # from the order of their components
             for v in slim_mtg.vertices(scale=scale):
                 # children at current scale
-                cref = slim_mtg.children(v) 
-                 # children at lowest scale                
-                cl = slim_mtg.children(slim_mtg.component_roots(v)[0])
+                cref = slim_mtg.children(v)
                 if len(cref) > 1:
-                    # children at lowest scale 
-                    cinf = dict(zip([parent_of_components(slim_mtg, x) for x in cref], cref))
-                    ch = [cinf[c] for c in cl if cinf.has_key(c)]
+                    # boundary at lowest scale              
+                    cl = [parent_of_components(slim_mtg, x) for x in cref]
+                    cmp = [slim_mtg.component_roots(x)[0] for x in cref]
+                    lca = lowestCommonAncestor(slim_mtg, cl)
+                    # children of lca
+                    lca_children = slim_mtg.children(lca)                    
+                    lca_dic = {}
+                    for x in cmp:
+                        lca_dic[list(set(slim_mtg.Path(lca, x)).intersection(lca_children))[0]] = x
+                    ch = [slim_mtg.complex(lca_dic[c]) for c in lca_children if lca_dic.has_key(c)]
                     msg = "Bad children at vertex " + str(v)
                     msg += str(cref) + " / " + str(ch)
                     assert set(ch) == set(cref), msg

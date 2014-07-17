@@ -114,7 +114,8 @@ def test_insert_scale_from_property():
             cv = [parent_of_components(g_3scales, x) for x in c2]
             msg = "Children inversion at: " + str(v)
             assert cv == c3, msg
-			
+    from openalea.mtg.algo import lowestCommonAncestor
+    print lowestCommonAncestor(g, [8, 16])
 
 def test_remove_scale():
     g = my_mtg()
