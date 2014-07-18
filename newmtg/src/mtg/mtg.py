@@ -2321,22 +2321,6 @@ class MTG(PropertyTree):
 ################################################################################
 # Graph generators
 ################################################################################
-def parent_of_components(g, u):
-    """
-    Find parent of component root of g
-    in g.parent(u) (for connected MTGs)
-    """
-    c = g.component_roots(u)[0]
-    p = g.parent(u)
-    if not(p is None):
-        p = g.component_roots(p)[0]
-        ch = set(g.children(p))
-        assert g.complex(p) != u
-        path = g.Path(p, c)
-        return list(set(path).intersection(ch))[0]
-    else:
-        return u
-
 def fat_mtg(slim_mtg, preserve_order=False):
     """
     Compute missing edges at each scales based on the explicit edges
@@ -2356,20 +2340,28 @@ def fat_mtg(slim_mtg, preserve_order=False):
         if preserve_order:
             # deduce the order of children 
             # from the order of their components
+            # Do not use traversal.pre_order: 
+            # may switch < and + children 
+            from traversal import post_order
             for v in slim_mtg.vertices(scale=scale):
                 # children at current scale
                 cref = slim_mtg.children(v)
                 if len(cref) > 1:
-                    # boundary at lowest scale              
-                    cl = [parent_of_components(slim_mtg, x) for x in cref]
+                    # children at lowest scale
                     cmp = [slim_mtg.component_roots(x)[0] for x in cref]
-                    lca = lowestCommonAncestor(slim_mtg, cl)
-                    # children of lca
-                    lca_children = slim_mtg.children(lca)                    
-                    lca_dic = {}
-                    for x in cmp:
-                        lca_dic[list(set(slim_mtg.Path(lca, x)).intersection(lca_children))[0]] = x
-                    ch = [slim_mtg.complex(lca_dic[c]) for c in lca_children if lca_dic.has_key(c)]
+                    cmp_dic = dict(zip(cmp, cref))
+                    visitor = lambda x, g=slim_mtg, l=cmp: not(g.parent(x) in l)
+                    visitor.post_order = visitor
+                    visitor.pre_order = visitor
+                    # descendants of v at lowest scale, minus the descendants of cmp
+                    descendants = list(post_order(slim_mtg, slim_mtg.component_roots(v)[0], 
+                                                  visitor_filter=visitor))
+                    ordered_children = []
+                    # read the children wrt order defined by "descendants"
+                    for x in descendants:
+                        if x in cmp:
+                            ordered_children += [x]
+                    ch = [cmp_dic[c] for c in ordered_children if cmp_dic.has_key(c)]
                     msg = "Bad children at vertex " + str(v)
                     msg += str(cref) + " / " + str(ch)
                     assert set(ch) == set(cref), msg

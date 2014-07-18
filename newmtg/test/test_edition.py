@@ -72,20 +72,20 @@ def test_insert_scale():
     return g.insert_scale(inf_scale=2, partition=quotient) 
 
 def parent_of_components(g, u):
-	"""
-	Find parent of component root of g
-	in g.parent(u) (for connected MTGs)
-	"""
-	c = g.component_roots(u)[0]
-	p = g.parent(u)
-	if not(p is None):
-		p = g.component_roots(p)[0]
-		ch = set(g.children(p))
-		assert g.complex(p) != u
-		path = g.Path(p, c)
-		return list(set(path).intersection(ch))[0]
-	else:
-		return u
+    """
+    Find parent of component root of g
+    in g.parent(u) (for connected MTGs)
+    """
+    c = g.component_roots(u)[0]
+    p = g.parent(u)
+    if not(p is None):
+        p = g.component_roots(p)[0]
+        ch = set(g.children(p))
+        assert g.complex(p) != u
+        path = g.Path(p, c)
+        return list(set(path).intersection(ch))[0]
+    else:
+        return u
 
 def test_insert_scale_from_property():
     g = my_mtg_2scales()
