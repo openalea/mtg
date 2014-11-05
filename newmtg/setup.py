@@ -40,7 +40,7 @@ setup(
             },
 
     # Dependencies
-    install_requires = ['openalea.deploy'],
+    setup_requires = ['openalea.deploy'],
     dependency_links = ['http://openalea.gforge.inria.fr/pi'],
     pylint_packages = ['src/mtg', 'src/mtg/interface']
     )

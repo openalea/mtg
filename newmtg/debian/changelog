@@ -1,3 +1,9 @@
+openalea-mtg (1.2.0~ppa1) trusty; urgency=medium
+
+  * Port to Trusty  
+
+ -- Christophe Pradal <christophe.pradal@cirad.fr>  Thu, 02 Oct 2014 06:36:09 +0200
+
 openalea-mtg (1.0.2~ppa2) quantal; urgency=low
 
   * Port to Quantal 
