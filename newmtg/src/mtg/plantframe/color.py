@@ -3,6 +3,7 @@ from pylab import cm
 import matplotlib
 from matplotlib.colors import Normalize, LogNorm
 from matplotlib import pyplot, mpl
+import openalea.plantgl.all as pgl
 
 def get_cmap(cmap):
     _cmap = cmap
@@ -116,3 +117,39 @@ def colorbar_lut(g, property_name, colors=[], N=5, fmt='%d'):
     pyplot.show()
     return g, cb
 
+def plot3d(g):
+    """
+    Create a PlantGL scene from a MTG. Then, plot the created scene and return it.     
+    """
+    Material = pgl.Material
+    Color3 = pgl.Color3
+    Shape = pgl.Shape
+    Scene = pgl.Scene
+    
+    colors = g.property('color')    
+    geometries = g.property('geometry')
+
+    scene = Scene()
+
+    def geom2shape(vid, mesh, scene):
+        shape = None
+        if isinstance(mesh, list):
+            for m in mesh:
+                geom2shape(vid, m, scene)
+            return
+        if mesh is None:
+            return
+        if isinstance(mesh, Shape):
+            shape = mesh
+            mesh = mesh.geometry
+
+        if colors:
+            shape = Shape(mesh, Material(Color3(* colors.get(vid, [0,0,0]) )))
+
+        shape.id = vid
+        scene.add(shape)
+
+    for vid, mesh in geometries.iteritems():
+        geom2shape(vid, mesh, scene)
+    pgl.Viewer.display(scene)
+    return scene
