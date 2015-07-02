@@ -89,6 +89,8 @@ def __replace_and_produce__(mtg, vid, production):
             mtg.remove_vertex(compvid)
     remove_components(mtg, vid)
     mtg.remove_vertex(vid)
+    for property in mtg.properties().values():
+        if property.has_key(vid) : del property[vid]
 
 
 class RewritableNode(_ProxyNode):
