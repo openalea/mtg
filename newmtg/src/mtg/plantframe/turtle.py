@@ -1,7 +1,7 @@
 from openalea.mtg.mtg import *
 from openalea.mtg.io import *
 from openalea.mtg.traversal import *
-from vplants.plantgl.all import *
+from openalea.plantgl.all import *
 
 
 def visitor(g, v, turtle):

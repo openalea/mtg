@@ -51,7 +51,7 @@ from .. import algo
 from openalea.mtg.mtg import colored_tree, PropertyTree
 from openalea.mtg.plantframe import turtle
 
-from vplants.plantgl.all import * 
+from openalea.plantgl.all import * 
 
 error = True
 epsilon = 1e-5
@@ -1094,7 +1094,7 @@ class PlantFrame(object):
         diameters = self.compute_diameter()
         points = self.points
 
-        origins = kwds.get('origins', [])
+        origins = kwds.get('origins', [self.origin])
 
         def plantframe_visitor(g, v, turtle):
             radius = diameters.get(v)
