@@ -599,7 +599,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
 
     # The string represented by the axial tree...
 
-    geoms = scene.todict() # scene_id(scene)
+    geoms = scene.todict() if scene else dict() # scene_id(scene)
     mtg = MTG()
     if scene:
         mtg.add_property('geometry')
