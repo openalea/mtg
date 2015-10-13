@@ -1,0 +1,51 @@
+* mtg 01/02/08  
+--------------
+
+Reunion avec Christophe:
+
+MTG : arbre quotiente 
+
+parent / children : structure d'arbre
+complex / component : structure d'arbre en echelle
+
+vid ou vsid : identifiant identique pour chaque vertex avec la possibilite de retrouver l'echelle
+
+Implementation preconisee:
+Coloriage
+
+Probleme: lors de la construction, on construit l'arbre top / down et le coloriage est bottom / up
+De plus on a pas un quotientement parfait:
+Certain noeuds peuvent ne pas etre decomposes.
+
+Donc ajout d'un troisieme type d'edge (sewing edges ou inter scale edges). 
+Comment un noeud d'une echelle plus grossiere se racorde a un noeud d'une echelle plus fine.
+-> add_child(parent), add_component(complex), add_memory, add_loc, add_sewing(vids1, vids2)
+
+Representer le coloriage:
+
+vid -> couleurs: liste des echelles.
+Comment definir la relation d'ordre sur les echelles?
+cf latice.
+
+Type de decomposition de noeud a une echelle existante:
+on veut pouvoir dans un noeud ajouter:
+  * une sequence, un arborescence axiale (couture automatique car noeud debut
+  et noeud fin) et une arborescence (couture a definir dans la methode).
+  
+Questions non abordee:
+* comment mixer topologie et geometrie.
+* comment ajouter plusieurs instances d'une arborescence
+* ajouter des types aux noeuds
+* ajout de proprietes.
+
+04/02/08
+
+instantiation => propriete
+propriete des instance au niveau des edges.
+
+06/05/08
+* Interface et implementation pour arborescence.
+* Premiers pas dans l'implementation.
+* Pas d'echelles ni de proprietes.
+* Debut d'interface.
+

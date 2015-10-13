@@ -1,0 +1,99 @@
+TODO
+====
+
+* implement a mtg with colors
+  * operations on mtg
+    + add a scale
+    + intersection, union on mtg
+
+* dynamic mtg
+
+* interpolation
+  + mapping between mtgs
+  + interpolation to obtain a mtg from others
+
+* standard
+  + implement all the functions
+  + Compare both implementation
+    - result
+    - performances
+
+* Conversion: read / write methods
+  + tulip
+  + graphviz
+  + L-system
+  + GroIMP
+
+* PlantFrame
+  + write plantframe algorithm
+  + write Weber& Penn on mtg
+  + add new constraints
+
+* Benchmark
+  + test various implementation 
+    - tulip
+    - bgl
+    - NetworkX
+
+10/02/08
+========
+* PlantFrame
+
+22/09/08
+========
+* write a mtg in the MTG format
+
+01/09/08
+========
+* iterators on mtg
+
+* Construction of a mtg with colors
+  * mtg = tree + [colors(scale)]
+  * random mtg
+
+* standard
+  + Read a mtg from aml code (*.mtg file)
+  + Class acting as the old implementation/interface
+  + documentation
+
+* layout
+  + use graphviz
+
+* generators
+  + random tree
+  + random MTG
+
+23/06/08
+========
+* parse L-system: lsystem2mtg
+* parse mtg string
+* pre, post-order iterators on trees
+* mtg with properties
+* tests
+
+04/06/2008
+==========
+* write a component retrieval
+* add new test
+* add traversal algorithms for tree (pre and post order) without huge recursivity
+* add traversal with a visitor (usefullness?)
+* test mtg structure with lots of elements 
+  + 1200000 elts use 117MB of memory
+
+03/06/2008
+==========
+* first implementation
+* write tests
+
+
+05/05/2008
+==========
+* write a simple test
+* write the code as simple as possible
+* define interfaces & documentation
+* first implementation
+
+14/11/2007
+==========
+
+* build mtg package

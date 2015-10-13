@@ -1,0 +1,138 @@
+CODE :	FORM-A																							
+CLASSES:																								
+SYMBOL	SCALE	DECOMPOSITION	INDEXATION	DEFINITION																				
+$ 	0	FREE	FREE	IMPLICIT																				
+f	1	FREE	FREE	EXPLICIT																				
+b	1	FREE	FREE	EXPLICIT																				
+L	2	PURELINEAR	FREE	EXPLICIT																				
+M	2	PURELINEAR	FREE	EXPLICIT																				
+S	2	PURELINEAR	FREE	IMPLICIT																				
+I	3	FREE	FREE	EXPLICIT																				
+J	3	FREE	FREE	EXPLICIT																				
+U 	3	FREE	FREE	EXPLICIT																				
+W	3	FREE	FREE	EXPLICIT																				
+C	3	FREE	FREE	EXPLICIT																				
+E	4	FREE	FREE	EXPLICIT																				
+F	4	FREE	FREE	EXPLICIT																				
+DESCRIPTION :																								
+LEFT	RIGHT	RELTYPE	MAX																					
+L	L,M,S	+	?																					
+L	L,M,S	<	1																					
+M	L,M,S	+	?																					
+M	M,S	<	1																					
+S	L,M,S	+	?																					
+S	S	<	1																					
+U	U,W,I,J,C	+	?																					
+U	U,W,I,J,C	<	1																					
+W	U,W,I,J,C	+	?																					
+W	U,W,I,J,C	<	1																					
+I	U,W,I,J,C	+	?																					
+I	U,W,I,J,C	<	1																					
+J	U,W,I,J,C	+	?																					
+J	U,W,I,J,C	<	1																					
+C	U,W,I,J,C	+	?																					
+C	U,W,I,J,C	<	1																					
+E	E	+	?																					
+E	E	<	1																					
+F	F	+	?																					
+F	F	<	1																					
+FEATURES:																								
+NAME	TYPE																							
+Orient	ALPHA																							
+Date	DD/MM/YY																							
+Remark	ALPHA																							
+Mod	ALPHA																							
+Cultivar	ALPHA																							
+Index_tree	REAL																							
+BottomDia	REAL																							
+TopDia	REAL																							
+Long	REAL																							
+Chord	REAL																							
+Proj	REAL																							
+Coef_a	REAL																							
+AngBas	REAL																							
+AngSom	REAL																							
+AngChord	REAL																							
+AngPP	REAL																							
+NbLong	REAL																							
+NbMoyen	REAL																							
+NbCourt	REAL																							
+IndexLine	REAL																							
+MTG:																								
+ENTITY-CODE					Orient	Date	Remark	Mod	Cultivar	Index_tree	BottomDia	TopDia	Long	Chord	Proj	Coef_a	AngBas	AngSom	AngChord	AngPP	NbLong	NbMoyen	NbCourt	IndexLine
+/b105						16/07/2007	ES2	ES2	b	105														1050000
+^/L1/U7						16/07/2007		ES2	b	105	12.89	3.02	93.5											1050001
+*						31/12/2007		ES2	b	105	20.55	4.93	152											1050002
+*						01/12/2008		ES2	b	105	39.90													1050003
+^/E1						16/07/2007		ES2	b	105														1050004
+	+S1/C7					16/07/2007	X	ES2	b	105														1050005
+	^/E1<<E6					16/07/2007	X	ES2	b	105														1050006
+^<E2						16/07/2007		ES2	b	105														1050007
+	+L1/C7					16/07/2007	BR2	ES2	b	105														1050008
+	^/E1<E2					16/07/2007		ES2	b	105														1050009
+	^<U8					01/12/2008		ES2	b	105	16.16		82											1050010
+	^/E1<<E61					01/12/2008		ES2	b	105														1050011
+^<E3						16/07/2007		ES2	b	105														1050012
+	+L1/U7					16/07/2007	X	ES2	b	105	5.99	3.03	54											1050013
+	^/E1<<E27					16/07/2007	X	ES2	b	105														1050014
+	^<E28<<E34					09/08/2007	X	ES2	b	105														1050015
+	+S2/C7					31/12/2007		ES2	b	105														1050016
+	^/E1					31/12/2007		ES2	b	105														1050017
+^<E4						16/07/2007		ES2	b	105														1050018
+	+L1/U7					16/07/2007	X	ES2	b	105	4.56	2.79	34											1050019
+	^/E1<<E27					16/07/2007	X	ES2	b	105														1050020
+	^<E28<<E34					09/08/2007	X	ES2	b	105														1050021
+	+M2/W7				AXG	30/08/2007		ES2	b	105														1050022
+	*					31/12/2007		ES2	b	105	4.4	1.65	15											1050023
+	*					01/12/2008		ES2	b	105	6.75													1050024
+	^/E1					30/08/2007		ES2	b	105														1050025
+	^<E2					30/08/2007		ES2	b	105														1050026
+	^<E3					30/08/2007		ES2	b	105														1050027
+	^<E4					30/08/2007	LIEVRE	ES2	b	105														1050028
+	^<E5					30/08/2007	LIEVRE	ES2	b	105														1050029
+	^<E6					30/08/2007	LIEVRE	ES2	b	105														1050030
+	^<E7					06/09/2007	LIEVRE	ES2	b	105														1050031
+	^<E8					06/09/2007	LIEVRE	ES2	b	105														1050032
+	^<E9					06/09/2007	LIEVRE	ES2	b	105														1050033
+	^<E10					06/09/2007	LIEVRE	ES2	b	105														1050034
+	^<E11					13/09/2007	LIEVRE	ES2	b	105														1050035
+	^<E12					13/09/2007	LIEVRE	ES2	b	105														1050036
+	^<E13					13/09/2007	LIEVRE	ES2	b	105														1050037
+^<E5						16/07/2007		ES2	b	105														1050038
+	+L1/U7					16/07/2007	X	ES2	b	105	5.87	3.07	54.5											1050039
+	^/E1<<E30					16/07/2007	X	ES2	b	105														1050040
+	^<E31<<E38					09/08/2007	X	ES2	b	105														1050041
+	+L2/U7				AXD	31/12/2007		ES2	b	105	5.48	3.13	32											1050042
+	*					01/12/2008		ES2	b	105	16.96													1050043
+	^/E1					31/12/2007		ES2	b	105														1050044
+	^<E2					31/12/2007		ES2	b	105														1050045
+	^<E3					31/12/2007		ES2	b	105														1050046
+	^<E4					31/12/2007		ES2	b	105														1050047
+	^<E5					31/12/2007		ES2	b	105														1050048
+	^<E6					31/12/2007		ES2	b	105														1050049
+	^<E7					31/12/2007		ES2	b	105														1050050
+	^<E8					31/12/2007		ES2	b	105														1050051
+	^<E9					31/12/2007		ES2	b	105														1050052
+	^<E10					31/12/2007		ES2	b	105														1050053
+	^<E11					31/12/2007		ES2	b	105														1050054
+	^<E12					31/12/2007		ES2	b	105														1050055
+	^<E13					31/12/2007		ES2	b	105														1050056
+	^<E14					31/12/2007		ES2	b	105														1050057
+	^<E15					31/12/2007		ES2	b	105														1050058
+	^<E16					31/12/2007		ES2	b	105														1050059
+	^<E17					31/12/2007		ES2	b	105														1050060
+	^<E18					31/12/2007		ES2	b	105														1050061
+		+U8				01/12/2008		ES2	b	105			70											1050062
+		^/E1				01/12/2008		ES2	b	105														1050063
+	^<E19					31/12/2007	D	ES2	b	105														1050064
+^<E6						16/07/2007		ES2	b	105														1050065
+	+L1/U7					16/07/2007	X	ES2	b	105	6.11	2.7	58.5											1050066
+	^/E1<<E30					16/07/2007	X	ES2	b	105														1050067
+	^<E31<<E36					09/08/2007	X	ES2	b	105														1050068
+	+L2/U7				AXG	30/08/2007		ES2	b	105														1050069
+	*					31/12/2007		ES2	b	105	5.1	2.37	37											1050070
+	*					01/12/2008		ES2	b	105	15.27													1050071
+	^/E1					30/08/2007		ES2	b	105														1050072
+	^<E2					30/08/2007		ES2	b	105														1050073
+	^<E3					30/08/2007		ES2	b	105														1050074
+

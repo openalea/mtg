@@ -1,0 +1,8 @@
+**Openalea.Mtg** defines a Multiscale Tree Graph data structure or **MTG** for short.
+
+This data structure is compatible with the standard MTG format.
+For compatibility reasons, all the AMAPmod interfaces have been implemented in this package.
+However, this is a completly new implementation written in Python.
+
+If you have any problems, please contact the author or send a mail on the openalea mailing list <http://openalea.gforge.inria.fr>.
+

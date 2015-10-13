@@ -1,0 +1,12 @@
+Source: openalea-mtg
+Maintainer: Christophe Pradal <christophe.pradal@cirad.fr>
+Section: python
+Priority: optional
+Build-Depends: python-setuptools (>= 0.6b3), debhelper (>= 7), python-openalea.deploy, python-openalea.sconsx
+
+Package: python-openalea.mtg
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, python-vplants.aml, python-openalea.container
+Provides: ${python:Provides}
+Description: Multiscale Tree Graph datastructure and interfaces.
+
