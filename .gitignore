@@ -52,7 +52,6 @@ pip-delete-this-directory.txt
 target/
 
 
-
 # coverage
 .coverage
 
@@ -64,3 +63,5 @@ doc/_dvlpt/
 
 # user custom filters
 
+# Notebook
+.ipynb_checkpoints/
