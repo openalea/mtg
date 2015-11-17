@@ -37,12 +37,17 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
         visitor(g,v,turtle)
     if gc: turtle.stopGC()
     scene = turtle.getScene()
-    shapes = dict( (sh.getId(),sh) for sh in scene)
+    shapes = {}
+    for sh in scene:
+        shapes.setdefault(sh.getId(),[]).append(sh)
+    #shapes = dict( (sh.getId(),sh) for sh in scene)
     colors = g.property('color')
     for vid in colors:
+        color = colors[vid]
         if vid in shapes:
-            shapes[vid].appearance = Material(colors[vid])
-    scene = Scene(shapes.values())
+            for sh in shapes[vid]:
+                sh.appearance = Material(color)
+    scene = Scene([sh for shs in shapes.itervalues() for sh in shs])
     return scene
 
 def TurtleFrame(g, visitor=visitor, turtle=None, gc=True, all_roots = False):
