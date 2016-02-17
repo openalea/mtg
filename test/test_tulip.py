@@ -1,3 +1,5 @@
+
+"""
 TULIP = True
 try:
     import tulip
@@ -32,3 +34,6 @@ props['viewLayout'] = layout
 props['viewSize'] = size
 props={}
 iox.save_tulip(g, 'tulip_files/tulip_test8_2.tlp.gz', properties=props)
+"""
+def test_tulip():
+    pass
