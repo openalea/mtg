@@ -897,7 +897,7 @@ class Reader(object):
         # First implementation.
         # Do not store 3 time the structure (mtg, txt and lines)
         self.txt = string
-        self.lines = string.split('\n')
+        self.lines = string.splitlines()
 
         # header information
         self._code = ""
