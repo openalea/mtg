@@ -125,7 +125,7 @@ def draw(g, pos=None, ax=None, hold=None, **kwds):
     plt.hold(b)
     return
 
-def draw_mtg(G, pos=None, with_labels=True, **kwds):
+def draw_mtg(G, pos=None, with_labels=True, with_edge_labels=False, **kwds):
     """Draw the graph G using Matplotlib.
 
     Draw the graph with Matplotlib with options for node positions,
@@ -246,13 +246,18 @@ def draw_mtg(G, pos=None, with_labels=True, **kwds):
         raise
 
     if pos is None:
-        g=layout.layout2d(G) # default to spring layout
+        g=layout.simple_layout(G)
         pos = g.property('position')
 
     node_collection=draw_mtg_vertices(G, pos, **kwds)
     edge_collection=draw_mtg_edges(G, pos, **kwds)
+
     if with_labels:
         draw_mtg_labels(G, pos, **kwds)
+
+    if with_edge_labels:
+        draw_mtg_edge_labels(G, pos, **kwds)
+
     plt.draw_if_interactive()
 
 def draw_mtg_vertices(g, pos,
