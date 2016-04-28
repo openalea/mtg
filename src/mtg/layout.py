@@ -17,12 +17,12 @@
 import traversal, matrix
 from random import random
 
-def layout2d(g, vid=None, origin=(0,0), property_name='position'):
-	""" Compute 2d coordinates for each vertex.
+def layout2d(g, vid=None, origin=(0,0), steps=(4,8), property_name='position'):
+    """ Compute 2d coordinates for each vertex.
 
-	This method compute a 2D layout of a tree or a MTG at a specific scale.
-	This will allow to plot tree in matplotlib for instance. 
-	
+    This method compute a 2D layout of a tree or a MTG at a specific scale.
+    This will allow to plot tree in matplotlib for instance.
+
     :Usage:
 
     .. code-block:: python
@@ -37,99 +37,101 @@ def layout2d(g, vid=None, origin=(0,0), property_name='position'):
         - `origin` : a 2D point for the root of the tree.
         - `property` (str) : Name of the property storing the 2D coordinates.
 
-    :Returns:	
+    :Returns:
 
         - a MTG
-	"""
-	if vid is None:
-		vid = g.root
-		if hasattr(g, 'max_scale'):
-			vid = g.component_roots_at_scale_iter(g.root, g.max_scale()).next()
+    """
+    if vid is None:
+        vid = g.root
+        if hasattr(g, 'max_scale'):
+            vid = g.component_roots_at_scale_iter(g.root, g.max_scale()).next()
 
 	# Algorithm
 	# 1. the y is defined by the Height of a node
 	# 2. The x is computed using non intersecting bounding box
 
-	y= {}
-	vtxs = traversal.pre_order2(g,vid)
-	vtxs.next()
-	y[vid] = origin[1]
-	for v in vtxs:
-		y[v] = y[g.parent(v)]+1
+    x_step, y_step = steps
 
-	bbox = {}
-	for v in traversal.post_order2(g,vid):
-		children = g.children(v)
-		if not children:
-			bbox[v] = 2
-		else:
-			has_successor = [cid for cid in children if g.edge_type(cid)=='<'] 
-			# 2 is for symmetry
-			bbox[v] = sum(bbox[cid] for cid in children)
-			if not has_successor:
-				bbox[v]+=2
+    y= {}
+    vtxs = traversal.pre_order2(g,vid)
+    vtxs.next()
+    y[vid] = origin[1]
+    for v in vtxs:
+        y[v] = y[g.parent(v)]+y_step
 
-	x ={}
-	vtxs = traversal.pre_order2(g,vid)
-	x[vid] = bbox[vid]/2
+    bbox = {}
+    for v in traversal.post_order2(g,vid):
+        children = g.children(v)
+        if not children:
+            bbox[v] = 2*x_step
+        else:
+            has_successor = [cid for cid in children if g.edge_type(cid)=='<']
+            # 2 is for symmetry
+            bbox[v] = sum(bbox[cid] for cid in children)
+            if not has_successor:
+                bbox[v]+=2*x_step
 
-	for v in vtxs:
-		_width = bbox[v]
-		kids = g.children(v)
-		successor = [cid for cid in kids if g.edge_type(cid)=='<']
-		ramifs = [cid for cid in kids if g.edge_type(cid)=='+']
-		_min = x[v]; _max = x[v]  
-		for cid in successor:
-			_x = x[cid] = x[v]
-			width = bbox[cid]
-			_min = _x-max(1,width/2)-1
-			_max = _x+max(1,width/2)+1
-		
-		weights = [bbox[rid] for rid in ramifs]
+    x ={}
+    vtxs = traversal.pre_order2(g,vid)
+    x[vid] = int(bbox[vid]/2.)
 
-		def mean_ind(weights):
-			left = bool(random()<0.5)
-			mid= sum(weights)/2.
-			total = 0
-			n = 0
-			for w in weights:
-				if total+w <= mid:
-					total+= w
-				else:
-					break
-				n+=1
+    for v in vtxs:
+        _width = bbox[v]
+        kids = g.children(v)
+        successor = [cid for cid in kids if g.edge_type(cid)=='<']
+        ramifs = [cid for cid in kids if g.edge_type(cid)=='+']
+        _min = x[v]; _max = x[v]
+        for cid in successor:
+            _x = x[cid] = x[v]
+            width = bbox[cid]
+            _min = _x-max(1,width/2)-x_step
+            _max = _x+max(1,width/2)+x_step
 
-			if total-mid > 1 and left:
-				n+=1
-			if n == 0 and len(weights)>1:
-				n+=1
-			return n
+        weights = [bbox[rid] for rid in ramifs]
 
-		n = mean_ind(weights)
-		for rid in reversed(ramifs[:n]):
-			width = bbox[rid]
-			x[rid] = _min - max(1,width/2)
-			_min -= width
-		for rid in ramifs[n:]:
-			width = bbox[rid]
-			x[rid] = _max + max(1,width/2) 
-			_max += width
+        def mean_ind(weights):
+            left = bool(random()<0.5)
+            mid= sum(weights)/2.
+            total = 0
+            n = 0
+            for w in weights:
+                if total+w <= mid:
+                    total+= w
+                else:
+                    break
+                n+=1
 
-	# TODO: The tree s not well proportionned because we impose a constraint that the 
+            if total-mid > 1 and left:
+                n+=1
+            if n == 0 and len(weights)>1:
+                n+=1
+            return n
+
+        n = mean_ind(weights)
+        for rid in reversed(ramifs[:n]):
+            width = bbox[rid]
+            x[rid] = _min - max(1,width/2)
+            _min -= width
+        for rid in ramifs[n:]:
+            width = bbox[rid]
+            x[rid] = _max + max(1,width/2)
+            _max += width
+
+	# TODO: The tree s not well proportionned because we impose a constraint that the
 	# < is aligned to its parent
 
-	position = dict((k, (x[k],y[k])) for k in y)
-	g.properties()[property_name] = position
+    position = dict((k, (x[k],y[k])) for k in y)
+    g.properties()[property_name] = position
 
-	return g
+    return g
 
 
-def simple_layout(g, vid=None, origin=(0,0), property_name='position'):
+def simple_layout(g, vid=None, origin=(0,0), steps=(4,8), property_name='position'):
     """ Compute 2d coordinates for each vertex.
 
     This method compute a 2D layout of a tree or a MTG at a specific scale.
-    This will allow to plot tree in matplotlib for instance. 
-    
+    This will allow to plot tree in matplotlib for instance.
+
     :Usage:
 
     .. code-block:: python
@@ -141,24 +143,24 @@ def simple_layout(g, vid=None, origin=(0,0), property_name='position'):
         - `origin` : a 2D point for the root of the tree.
         - `property` (str) : Name of the property storing the 2D coordinates.
 
-    :Returns:   
+    :Returns:
 
         - a MTG
     """
 
     def shuffle_post_order(tree, vtx_id):
-        ''' 
+        '''
         Traverse a tree in a postfix way.
         (from leaves to root)
 
         Same algorithm than post_order.
         The goal is to replace the post_order implementation.
 
-            
+
         '''
 
         edge_type = tree.property('edge_type')
-        
+
         def shuffle_children(vid):
             ''' Internal function to retrieve the children in a correct order:
                 - Branch before successor.
@@ -181,7 +183,7 @@ def simple_layout(g, vid=None, origin=(0,0), property_name='position'):
             return child
 
         visited = set([])
-        
+
         queue = [vtx_id]
 
         # 1. select first '+' edges
@@ -197,7 +199,7 @@ def simple_layout(g, vid=None, origin=(0,0), property_name='position'):
                 yield vtx_id
                 visited.add(vtx_id)
                 queue.pop()
-            
+
     if vid is None:
         vid = g.root
         if hasattr(g, 'max_scale'):
@@ -207,7 +209,7 @@ def simple_layout(g, vid=None, origin=(0,0), property_name='position'):
     # 1. the y is defined by the Height of a node
     # 2. The x is computed using non intersecting bounding box
 
-    x_step, y_step = 4,8 
+    x_step, y_step = steps
     y= {}
     vtxs = traversal.pre_order2(g,vid)
     vtxs.next()
@@ -225,12 +227,12 @@ def simple_layout(g, vid=None, origin=(0,0), property_name='position'):
                 return cid
         return
 
-    x = {}   
+    x = {}
     x_pos = origin[0]
 
     for v in leaves(g,vid):
         x[v] = x_pos
-        x_pos += x_step
+        x_pos += x_step*10
 
     for v in shuffle_post_order(g,vid):
         if v in x:
@@ -240,7 +242,7 @@ def simple_layout(g, vid=None, origin=(0,0), property_name='position'):
             x[v] = x[son_id]
         else:
             children = g.children(v)
-            x[v] = int(float(sum(x[cid] for cid in children)) / len(children))
+            x[v] = int(float(sum(x[cid] for cid in children)) / (len(children)))
 
 
     position = dict((k, (x[k],y[k])) for k in y)
@@ -255,7 +257,7 @@ def fruchterman_reingold_layout(g,dim=2,k=None,
                                 iterations=50,
                                 weight='weight',
                                 scale=1.0):
-    """Position nodes using Fruchterman-Reingold force-directed algorithm. 
+    """Position nodes using Fruchterman-Reingold force-directed algorithm.
 
     Parameters
     ----------
@@ -286,8 +288,8 @@ def fruchterman_reingold_layout(g,dim=2,k=None,
         the edge weight.  If None, then all edge weights are 1.
 
     scale : float (default=1.0)
-        Scale factor for positions. The nodes are positioned 
-        in a box of size [0,scale] x [0,scale].  
+        Scale factor for positions. The nodes are positioned
+        in a box of size [0,scale] x [0,scale].
 
 
     Returns
@@ -342,7 +344,7 @@ def fruchterman_reingold_layout(g,dim=2,k=None,
 
 spring_layout=fruchterman_reingold_layout
 
-def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None, 
+def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
                           iterations=50):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
@@ -405,9 +407,9 @@ def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
     return pos
 
 
-def _sparse_fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None, 
+def _sparse_fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
                                  iterations=50):
-    # Position nodes in adjacency matrix A using Fruchterman-Reingold  
+    # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
     try:

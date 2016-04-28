@@ -18,7 +18,7 @@
 Matplotlib
 **********
 
-Draw networks with matplotlib.
+Draw MTG with matplotlib.
 
 See Also
 --------
@@ -65,18 +65,18 @@ def draw(g, pos=None, ax=None, hold=None, **kwds):
 
     See Also
     --------
-    draw_networkx()
-    draw_networkx_nodes()
-    draw_networkx_edges()
-    draw_networkx_labels()
-    draw_networkx_edge_labels()
+    draw_mtg()
+    draw_mtg_vertices()
+    draw_mtg_edges()
+    draw_mtg_labels()
+    draw_mtg_edge_labels()
 
     Notes
     -----
     This function has the same name as pylab.draw and pyplot.draw
     so beware when using
 
-    >>> from networkx import *
+    >>> from openalea.mtg.draw import *
 
     since you might overwrite the pylab.draw function.
 
@@ -116,7 +116,7 @@ def draw(g, pos=None, ax=None, hold=None, **kwds):
     if h is not None:
         plt.hold(h)
     try:
-        draw_mtg(G,pos=pos,ax=ax,**kwds)
+        draw_mtg(g, pos=pos,ax=ax,**kwds)
         ax.set_axis_off()
         plt.draw_if_interactive()
     except:
@@ -246,7 +246,8 @@ def draw_mtg(G, pos=None, with_labels=True, **kwds):
         raise
 
     if pos is None:
-        pos=layout.layout2d(G) # default to spring layout
+        g=layout.layout2d(G) # default to spring layout
+        pos = g.property('position')
 
     node_collection=draw_mtg_vertices(G, pos, **kwds)
     edge_collection=draw_mtg_edges(G, pos, **kwds)
@@ -326,13 +327,13 @@ def draw_mtg_vertices(g, pos,
 	>>> g = MTG()
 	>>> vid = g.add_component(g.root)
 	>>> random_tree(g, vid)
-	>>> nodes=nx.draw_networkx_nodes(G,pos=nx.spring_layout(G))
+	>>> nodes=nx.draw_mtg_vertices(G,pos=nx.spring_layout(G))
 
 
 	See Also
 	--------
 	draw()
-	draw_mtg()
+	draw_mtg_vertices()
 	draw_mtg_edges()
 	draw_mtg_labels()
 	draw_mtg_edge_labels()
