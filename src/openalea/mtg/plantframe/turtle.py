@@ -37,12 +37,16 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
         visitor(g,v,turtle)
     if gc: turtle.stopGC()
     scene = turtle.getScene()
-    shapes = dict( (sh.getId(),sh) for sh in scene)
+    shapes = {}
+    for sh in scene:
+        shapes.setdefault(sh.getId(), []).append(sh)
+    #dict( (sh.getId(),sh) for sh in scene)
     colors = g.property('color')
     for vid in colors:
         if vid in shapes:
-            shapes[vid].appearance = Material(colors[vid])
-    scene = Scene(shapes.values())
+            for sh in shapes[vid]:
+                sh.appearance = Material('Color%d'%vid, colors[vid])
+    scene = Scene([sh for shid in shapes.itervalues() for sh in shid ])
     return scene
 
 def TurtleFrame(g, visitor=visitor, turtle=None, gc=True, all_roots = False):
@@ -71,7 +75,7 @@ def test2():
 def test3():
     fn = r'/home/pradal/devlp/studies/plantframe/examples/PlantFrame/monopodial_plant.mtg'
     g = read_mtg_file(fn)
-    
+
     def visitor(g, v, turtle):
         if g.edge_type(v) == '+':
             turtle.down(90)
