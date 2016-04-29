@@ -345,6 +345,7 @@ def draw_mtg_vertices(g, pos,
 	"""
     try:
         import matplotlib.pyplot as plt
+        import matplotlib.cbook as cb
         import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -360,6 +361,36 @@ def draw_mtg_vertices(g, pos,
 
     if not nodelist or len(nodelist) == 0: # empty nodelist, no drawing
         return None
+
+    if not cb.is_string_like(node_shape) and cb.iterable(node_shape):
+        shapes = list(set(node_shape))
+        for sh in shapes:
+            sh_index = [i for i, nsh in enumerate(node_shape) if nsh == sh]
+            sh_nodelist = [ nodelist[i] for i in sh_index ]
+            sh_node_color = node_color
+            if not cb.is_string_like(sh_node_color) and cb.iterable(sh_node_color):
+                sh_node_color = [ sh_node_color[i] for i in sh_index ]
+            sh_node_size = node_size
+            if not cb.is_string_like(sh_node_size) and cb.iterable(sh_node_size):
+                sh_node_size = [ sh_node_size[i] for i in sh_index ]
+
+            xy = numpy.asarray([pos[v] for v in sh_nodelist])
+
+            node_collection = ax.scatter(xy[:, 0], xy[:, 1],
+                                         s=sh_node_size,
+                                         c=sh_node_color,
+                                         marker=sh,
+                                         cmap=cmap,
+                                         vmin=vmin,
+                                         vmax=vmax,
+                                         alpha=alpha,
+                                         linewidths=linewidths,
+                                         label=label)
+
+            node_collection.set_zorder(2)
+        return node_collection
+
+    # else
 
     try:
         xy = numpy.asarray([pos[v] for v in nodelist])
@@ -611,6 +642,7 @@ def draw_mtg_edges(g, pos,
     return edge_collection
 
 def draw_mtg_labels(G, pos,
+                         nodelist = None,
                          labels=None,
                          font_size=12,
                          font_color='k',
@@ -683,7 +715,9 @@ def draw_mtg_labels(G, pos,
         ax=plt.gca()
 
     if labels is None:
-        labels=dict( (n,n) for n in G.vertices(scale=G.max_scale()))
+        if nodelist is None:
+            nodelist = G.vertices(scale=G.max_scale())
+        labels=dict( (n,n) for n in nodelist)
 
     # set optional alignment
     horizontalalignment=kwds.get('horizontalalignment','center')
@@ -719,7 +753,7 @@ def draw_mtg_edge_labels(G, pos,
                               alpha=1.0,
                               bbox=None,
                               ax=None,
-                              rotate=True,
+                              rotate=False,
                               **kwds):
     """Draw edge labels.
 
@@ -841,7 +875,7 @@ def draw_mtg_edge_labels(G, pos,
                   rotation=trans_angle,
                   transform = ax.transData,
                   bbox = bbox,
-                  zorder = 1,
+                  zorder = 2,
                   clip_on=True,
                   )
         text_items[(n1,n2)]=t
