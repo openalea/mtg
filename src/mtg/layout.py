@@ -126,7 +126,7 @@ def layout2d(g, vid=None, origin=(0,0), steps=(4,8), property_name='position'):
     return g
 
 
-def simple_layout(g, vid=None, origin=(0,0), steps=(4,8), property_name='position'):
+def simple_layout(g, vid=None, origin=(0,0), steps=(4,8), property_name='position', multiscale=True):
     """ Compute 2d coordinates for each vertex.
 
     This method compute a 2D layout of a tree or a MTG at a specific scale.
@@ -246,6 +246,18 @@ def simple_layout(g, vid=None, origin=(0,0), steps=(4,8), property_name='positio
 
 
     position = dict((k, (x[k],y[k])) for k in y)
+
+    if multiscale:
+        # get the position at the lower scales
+        max_scale = g.scale(vid)
+
+        for s in range(max_scale-1,0,-1):
+            v_root = g.complex_at_scale(vid, scale=s)
+            vtxs = traversal.pre_order2(g, v_root)
+            for v in vtxs:
+                comp_id = g.component_roots_at_scale_iter(v, scale=max_scale).next()
+                position[v] = position[comp_id]
+
     g.properties()[property_name] = position
 
     return g

@@ -2,7 +2,7 @@
 #
 #       OpenAlea.mtg
 #
-#       Copyright 2014 INRIA - CIRAD - INRA
+#       Copyright 2014-2016 CIRAD - Inria
 #
 #       File author(s): Christophe Pradal <christophe.pradal.at.cirad.fr>
 #
@@ -29,7 +29,7 @@ matplotlib: http://matplotlib.sourceforge.net/
 
 from openalea.mtg import layout
 
-def draw(g, pos=None, ax=None, hold=None, **kwds):
+def draw(g, pos=None, ax=None, hold=None, ax_size=(0,0,1,1), **kwds):
     """Draw the graph g with Matplotlib.
 
     Draw the graph as a simple representation with no node
@@ -45,7 +45,7 @@ def draw(g, pos=None, ax=None, hold=None, **kwds):
     pos : dictionary, optional
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See mtg.layout for functions that compute node positions.
 
     ax : Matplotlib Axes object, optional
        Draw the graph in specified Matplotlib axes.
@@ -55,13 +55,13 @@ def draw(g, pos=None, ax=None, hold=None, **kwds):
        commands will be added to the current axes.
 
     **kwds : optional keywords
-       See networkx.draw_networkx() for a description of optional keywords.
+       See draw.draw_mtg() for a description of optional keywords.
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> nx.draw(G)
-    >>> nx.draw(G,pos=nx.spring_layout(G)) # use spring layout
+    >>> g = om.random_mtg()
+    >>> draw.draw(g)
+    >>> draw.draw(g,pos=om.spring_layout(G)) # use spring layout
 
     See Also
     --------
@@ -83,13 +83,13 @@ def draw(g, pos=None, ax=None, hold=None, **kwds):
     With pyplot use
 
     >>> import matplotlib.pyplot as plt
-    >>> import networkx as nx
-    >>> G=nx.dodecahedral_graph()
-    >>> nx.draw(G)  # networkx draw()
+    >>> import openalea.mtg as om
+    >>> g=om.random_mtg()
+    >>> om.draw(g)  # mtg draw()
     >>> plt.draw()  # pyplot draw()
 
-    Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    Also see the openalea.mtg drawing examples at
+    openalea gallery.
     """
     try:
         import matplotlib.pyplot as plt
@@ -106,7 +106,7 @@ def draw(g, pos=None, ax=None, hold=None, **kwds):
     cf.set_facecolor('w')
     if ax is None:
         if cf._axstack() is None:
-            ax=cf.add_axes((0,0,1,1))
+            ax=cf.add_axes(ax_size)
         else:
             ax=cf.gca()
 
@@ -135,12 +135,12 @@ def draw_mtg(G, pos=None, with_labels=True, with_edge_labels=False, **kwds):
     Parameters
     ----------
     G : graph
-       A networkx graph
+       A MTG graph
 
     pos : dictionary, optional
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See MTG.layout for functions that compute vertex positions.
 
     with_labels :  bool, optional (default=True)
        Set to True to draw labels on the nodes.
@@ -219,23 +219,22 @@ def draw_mtg(G, pos=None, with_labels=True, with_edge_labels=False, **kwds):
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> nx.draw(G)
-    >>> nx.draw(G,pos=nx.spring_layout(G)) # use spring layout
+    >>> g = om.random_mtg()
+    >>> om.draw(g)
+    >>> om.draw(g, pos=om.spring_layout(g)) # use spring layout
 
     >>> import matplotlib.pyplot as plt
     >>> limits=plt.axis('off') # turn of axis
 
-    Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+
 
     See Also
     --------
     draw()
-    draw_networkx_nodes()
-    draw_networkx_edges()
-    draw_networkx_labels()
-    draw_networkx_edge_labels()
+    draw_mtg_vertices()
+    draw_mtg_edges()
+    draw_mtg_labels()
+    draw_mtg_edge_labels()
     """
     try:
         import matplotlib.pyplot as plt
@@ -280,7 +279,7 @@ def draw_mtg_vertices(g, pos,
 	Parameters
 	----------
 	G : graph
-		A networkx graph
+		A MTG graph
 
 	pos : dictionary
 		A dictionary with nodes as keys and positions as values.
@@ -332,7 +331,7 @@ def draw_mtg_vertices(g, pos,
 	>>> g = MTG()
 	>>> vid = g.add_component(g.root)
 	>>> random_tree(g, vid)
-	>>> nodes=nx.draw_mtg_vertices(G,pos=nx.spring_layout(G))
+	>>> nodes=om.draw_mtg_vertices(G,pos=om.spring_layout(G))
 
 
 	See Also
@@ -433,12 +432,12 @@ def draw_mtg_edges(g, pos,
     Parameters
     ----------
     g : graph
-       A networkx graph
+       A MTG graph
 
     pos : dictionary
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See mtg.layout for functions that compute node positions.
 
     edgelist : collection of edge tuples
        Draw only specified edges(default=G.edges())
@@ -482,17 +481,18 @@ def draw_mtg_edges(g, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> edges=nx.draw_networkx_edges(G,pos=nx.spring_layout(G))
+    >>> g = om.random_mtg()
+    >>> edges = om.draw_mtg_edges(g, pos=om.simple_layout(G))
 
 
     See Also
     --------
     draw()
-    draw_networkx()
-    draw_networkx_nodes()
-    draw_networkx_labels()
-    draw_networkx_edge_labels()
+    draw_mtg()
+    draw_mtg_vertices()
+    draw_mtg_labels()
+    draw_mtg_edge_labels()
+
     """
     try:
         import matplotlib
@@ -625,15 +625,15 @@ def draw_mtg_edges(g, pos,
 
 
     # update view
-    minx = numpy.amin(numpy.ravel(edge_pos[:,:,0]))
+    miom = numpy.amin(numpy.ravel(edge_pos[:,:,0]))
     maxx = numpy.amax(numpy.ravel(edge_pos[:,:,0]))
     miny = numpy.amin(numpy.ravel(edge_pos[:,:,1]))
     maxy = numpy.amax(numpy.ravel(edge_pos[:,:,1]))
 
-    w = maxx-minx
+    w = maxx-miom
     h = maxy-miny
     padx, pady = 0.05*w, 0.05*h
-    corners = (minx-padx, miny-pady), (maxx+padx, maxy+pady)
+    corners = (miom-padx, miny-pady), (maxx+padx, maxy+pady)
     ax.update_datalim( corners)
     ax.autoscale_view()
 
@@ -661,7 +661,7 @@ def draw_mtg_labels(G, pos,
     pos : dictionary, optional
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See mtg.layout for functions that compute node positions.
 
     labels : dictionary, optional (default=None)
        Node labels in a dictionary keyed by node of text labels
@@ -687,20 +687,22 @@ def draw_mtg_labels(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> labels=nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
+    >>> G=om.dodecahedral_graph()
+    >>> labels=om.draw_mtg_labels(G,pos=om.spring_layout(G))
 
-    Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    Also see the MTG drawing examples at
+    gallery.html
 
 
     See Also
     --------
     draw()
-    draw_networkx()
-    draw_networkx_nodes()
-    draw_networkx_edges()
-    draw_networkx_edge_labels()
+    draw_mtg()
+    draw_mtg_vertices()
+    draw_mtg_edges()
+    draw_mtg_labels()
+    draw_mtg_edge_labels()
+
     """
     try:
         import matplotlib.pyplot as plt
@@ -750,7 +752,7 @@ def draw_mtg_edge_labels(G, pos,
                               font_color='k',
                               font_family='sans-serif',
                               font_weight='normal',
-                              alpha=1.0,
+                              alpha=.5,
                               bbox=None,
                               ax=None,
                               rotate=False,
@@ -765,7 +767,7 @@ def draw_mtg_edge_labels(G, pos,
     pos : dictionary, optional
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       See mtg.layout for functions that compute node positions.
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
@@ -801,19 +803,19 @@ def draw_mtg_edge_labels(G, pos,
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> edge_labels=nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
+    >>> G=om.random_graph()
+    >>> edge_labels=om.draw_mtg_edge_labels(G,pos=om.layout.spring_layout(G))
 
-    Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    Also see the MTG drawing examples at
+    gallery
 
     See Also
     --------
     draw()
-    draw_networkx()
-    draw_networkx_nodes()
-    draw_networkx_edges()
-    draw_networkx_labels()
+    draw_mtg()
+    draw_mtg_vertices()
+    draw_mtg_edges()
+    draw_mtg_labels()
     """
     try:
         import matplotlib.pyplot as plt
@@ -877,6 +879,7 @@ def draw_mtg_edge_labels(G, pos,
                   bbox = bbox,
                   zorder = 2,
                   clip_on=True,
+                  alpha=alpha,
                   )
         text_items[(n1,n2)]=t
 
