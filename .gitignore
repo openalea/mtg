@@ -1,27 +1,35 @@
+# {# pkglts, github
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 
-# C extensions
-*.so
+# pkglts files
+.pkglts/info.log*
 
-# Distribution / packaging
+# Packages
+*.egg
+*.egg-info
+.eggs
 .Python
-env/
-build/
-develop-eggs/
 dist/
+build/
+env/
 downloads/
 eggs/
-.eggs/
+parts/
+bin/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
 lib/
 lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
+
+# editors
+.idea/
+
+# C extensions
+*.so
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -33,16 +41,6 @@ var/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-
 # Translations
 *.mo
 *.pot
@@ -50,8 +48,19 @@ coverage.xml
 # Django stuff:
 *.log
 
-# Sphinx documentation
-docs/_build/
-
 # PyBuilder
 target/
+
+
+
+# coverage
+.coverage
+
+# sphinx autogen file
+doc/_dvlpt/
+
+
+# #}
+
+# user custom filters
+

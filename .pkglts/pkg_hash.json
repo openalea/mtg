@@ -2,7 +2,9 @@
   ".coveragerc": {
     "coverage": "wQeZ1HO+HJcluftUU8BQ9HgsG2CL89jidhzTV65zFWjhmD3KNcoyW8CNnXWDu3WwbV3BqBHD3vDtIP5b3oFL1g=="
   }, 
-  ".gitignore": {}, 
+  ".gitignore": {
+    "github": "JBFVvS/5R+7jHXhwLTspKaBcopxdpZ0nEwRy78CJnankSdhc5QpA4n4IIxxjNW9fMHc1ZM5Up2ihTC/3TjsT8g=="
+  }, 
   "AUTHORS.rst": {}, 
   "CONTRIBUTING.rst": {}, 
   "HISTORY.rst": {}, 
