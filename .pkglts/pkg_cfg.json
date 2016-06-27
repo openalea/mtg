@@ -1,0 +1,54 @@
+{
+  "_pkglts": {
+    "auto_install": true, 
+    "install_front_end": "stdout", 
+    "use_prompts": false, 
+    "version": 2
+  }, 
+  "base": {
+    "authors": [
+      [
+        "Christophe Pradal", 
+        "christophe pradal __at__ cirad fr"
+      ], 
+      [
+        "Thomas Cokelaer", 
+        "thomas cokelaer __at__ inria fr"
+      ]
+    ], 
+    "namespace": "openalea", 
+    "pkgname": "mtg", 
+    "url": "http://openalea.gforge.inria.fr"
+  }, 
+  "coverage": {}, 
+  "doc": {
+    "description": "Multiscale Tree Graph datastructure and interfaces", 
+    "keywords": []
+  }, 
+  "github": {
+    "owner": "{{ base.authors[0][0] }}", 
+    "project": "{{ base.pkgname }}", 
+    "url": "https://github.com/{{ github.owner }}/{{ github.project }}"
+  }, 
+  "license": {
+    "name": "cecill-c", 
+    "organization": "OpenAlea", 
+    "project": "{{ base.pkgname }}", 
+    "year": 2015
+  }, 
+  "pysetup": {
+    "intended_versions": [
+      "27"
+    ]
+  }, 
+  "sphinx": {
+    "autodoc_dvlpt": true, 
+    "theme": "default"
+  }, 
+  "test": {}, 
+  "version": {
+    "major": 1, 
+    "minor": 2, 
+    "post": 0
+  }
+}

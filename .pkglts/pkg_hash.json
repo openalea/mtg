@@ -1,0 +1,54 @@
+{
+  ".coveragerc": {
+    "coverage": "wQeZ1HO+HJcluftUU8BQ9HgsG2CL89jidhzTV65zFWjhmD3KNcoyW8CNnXWDu3WwbV3BqBHD3vDtIP5b3oFL1g=="
+  }, 
+  ".gitignore": {}, 
+  "AUTHORS.rst": {}, 
+  "CONTRIBUTING.rst": {}, 
+  "HISTORY.rst": {}, 
+  "LICENSE": {
+    "license": "21ExMhSzB2uXQuU1VoH7++nrb4u6TbesqGtJDpM39OLPWft9SJ2tJ956R6foYmkI9VuJay7SUrhFLPxxMEHLxg=="
+  }, 
+  "MANIFEST.in": {
+    "pysetup": "vzgcfdwg7fafu0G3HEmFsZnC8jB8sa4zeSFQ2ReZO+pUfGeynOcw4+CIzP/ZV7n5nmpGGI7xqcdcPtOFfoivdQ=="
+  }, 
+  "README.rst": {
+    "doc": "z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=="
+  }, 
+  "doc/Makefile": {
+    "sphinx": "C58jxdu8XJNOoaWOw7VWy4LwFmS8lTQt/JeZLt5JozMSJ503plOZchucx+vAEzELbx/Czs/h9pshe9s+9HeOeQ=="
+  }, 
+  "doc/authors.rst": {}, 
+  "doc/conf.py": {
+    "sphinx": "YoujmuQ4mcyvjEKAU1bmep7boDpSUaYzDIB7ANqLOUOlqd+ktTaeLA6uracGgcX3U0Jv5SCa5+aWDAZfB+62+A=="
+  }, 
+  "doc/contributing.rst": {}, 
+  "doc/history.rst": {}, 
+  "doc/index.rst": {}, 
+  "doc/installation.rst": {}, 
+  "doc/make.bat": {
+    "sphinx": "oA67PK7JSR3w9u1V0gOXFZAb8qgfgUJ0wQ46cVXu7M3iJyAbLf76WkEqw6Y1r5Q6EvHAogcjmImdGsOpiYZ22g=="
+  }, 
+  "doc/readme.rst": {}, 
+  "doc/usage.rst": {}, 
+  "dvlpt_requirements.txt": {
+    "pysetup": "3+3ypRIiSRJu4qfh2VRoDgFw8mgXrR5XArs2YhJ3pidji2TRU8cDtUExYqZUx6c3RNzLGGXkOTgnL+TtAfpObg=="
+  }, 
+  "requirements.txt": {
+    "pysetup": "z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=="
+  }, 
+  "setup.cfg": {
+    "pysetup": "dw9GoLQ5BWCh+KFEqH5cjt+SSI9HgME1VZqOO59UpaT8xdoCX4ZPKWlPa35PsFob2Gj5eYlxP1tGGNxEeMpSNQ=="
+  }, 
+  "setup.py": {
+    "pysetup.call": "2wHuP94SpWKZpqOzExkQGTxnhGPgBHK3qOdPn0Ncstj5FkZ7FBGGM/inqAXaI4QLKQtTNlOUYRGSkYUWAUcf1w==", 
+    "pysetup.kwds": "vvOSC1j3Za/PXP7XkK8UVUgdiovUzkBy1zqb55dXB8MeQ40cLLlL6zCucOYQ5Bzw/U8gAzohQVmSjrfbvfTS6Q=="
+  }, 
+  "src/openalea/mtg/__init__.py": {
+    "base": "gR33dW0qqYmsV9NSNB+DD8XmuxnC2t0mKjnMoU5728qh97fSER6MbX+3QKxpZDLByZToaAay4xhx8acxketJmA=="
+  }, 
+  "src/openalea/mtg/version.py": {
+    "version": "42Yi2ofZ7QVKzof1G8fSJ2mXG16nDoilE6oZdwxX5UttbFanc5hGfdeZfqNjICnyXNw/Pre7hlyqJJPDB3gz3Q=="
+  }, 
+  "test/__init__.py": {}
+}
