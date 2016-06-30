@@ -35,9 +35,9 @@ setup_kwds = dict(
     version=version["__version__"],
     description=short_descr,
     long_description=readme + '\n\n' + history,
-    author="Christophe Pradal, Thomas Cokelaer, ",
-    author_email="christophe pradal __at__ cirad fr, thomas cokelaer __at__ inria fr, ",
-    url='http://openalea.gforge.inria.fr',
+    author="Christophe Pradal, Christophe Godin, ",
+    author_email="christophe pradal __at__ cirad fr, christophe godin __at__ inria fr, ",
+    url='http://github.com/openalea/mtg',
     license='cecill-c',
     zip_safe=False,
 

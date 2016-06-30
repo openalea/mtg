@@ -34,7 +34,7 @@
   "doc/readme.rst": {}, 
   "doc/usage.rst": {}, 
   "dvlpt_requirements.txt": {
-    "pysetup": "3+3ypRIiSRJu4qfh2VRoDgFw8mgXrR5XArs2YhJ3pidji2TRU8cDtUExYqZUx6c3RNzLGGXkOTgnL+TtAfpObg=="
+    "pysetup": "UQJqyb7YIaBZSsbBzHa4g943V6w4PfULzPZwHKLPmkkKthgekqqdh4XqGpVjQrr3D9hF4m1qAu34UIT1ceUidw=="
   }, 
   "requirements.txt": {
     "pysetup": "z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=="
@@ -44,13 +44,13 @@
   }, 
   "setup.py": {
     "pysetup.call": "2wHuP94SpWKZpqOzExkQGTxnhGPgBHK3qOdPn0Ncstj5FkZ7FBGGM/inqAXaI4QLKQtTNlOUYRGSkYUWAUcf1w==", 
-    "pysetup.kwds": "vvOSC1j3Za/PXP7XkK8UVUgdiovUzkBy1zqb55dXB8MeQ40cLLlL6zCucOYQ5Bzw/U8gAzohQVmSjrfbvfTS6Q=="
+    "pysetup.kwds": "cTNI6ScSMzNZZkaeA6LFSOkeq73zUyHSGW//fJg8JGhhnuOggSJNON1cuUVvOUu3FrEL2l8LasCL1MP19z5ryw=="
   }, 
   "src/openalea/mtg/__init__.py": {
     "base": "gR33dW0qqYmsV9NSNB+DD8XmuxnC2t0mKjnMoU5728qh97fSER6MbX+3QKxpZDLByZToaAay4xhx8acxketJmA=="
   }, 
   "src/openalea/mtg/version.py": {
-    "version": "42Yi2ofZ7QVKzof1G8fSJ2mXG16nDoilE6oZdwxX5UttbFanc5hGfdeZfqNjICnyXNw/Pre7hlyqJJPDB3gz3Q=="
+    "version": "gTCIeWNNmBdua8c9OaCnjZX3E8INsa5qbxUTzF4Htp9NXmlSJW5pdi3IyHkGZkOinh6e+BErjZmuJ++tlgSYQw=="
   }, 
   "test/__init__.py": {}
 }

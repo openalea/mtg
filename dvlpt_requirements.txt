@@ -1,7 +1,6 @@
 # {# pkglts, pysetup
 
 coverage
-github3.py
 mock
 nose
 sphinx
