@@ -1,48 +1,65 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__revision__ = "$Id$"
 
-import os, sys
-pj = os.path.join
+# {# pkglts, pysetup.kwds
+# format setup arguments
+
 from setuptools import setup, find_packages
-from openalea.deploy.metainfo import read_metainfo
 
 
-metadata = read_metainfo('metainfo.ini', verbose=True)
-for key,value in metadata.iteritems():
-    exec("%s = '%s'" % (key, value))
+short_descr = "Multiscale Tree Graph datastructure and interfaces"
+readme = open('README.rst').read()
+history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 
-packages = [ namespace+"."+pkg for pkg in find_packages('src') if 'openalea' not in pkg]
+def parse_requirements(fname):
+    with open(fname, 'r') as f:
+        txt = f.read()
 
-setup(
-    name=name,
-    version=version,
-    description=description,
-    author=authors,
-    author_email=authors_email,
-    url=url,
-    license=license,
+    reqs = []
+    for line in txt.splitlines():
+        line = line.strip()
+        if len(line) > 0 and not line.startswith("#"):
+            reqs.append(line)
 
-    namespace_packages=['openalea'],
-    create_namespaces = True,
-    zip_safe = False,
+    return reqs
 
-    packages = packages,
-    package_dir={ pkg_name : pj('src','mtg'), 
-                  'openalea.mtg_wralea' : 'src/mtg_wralea', 
-                  '' : 'src' },
-
-    share_dirs = {'share':'share'},
-
-    entry_points = {
-        "wralea": ["mtg = openalea.mtg_wralea",
-                  ]
-            },
-
-    # Dependencies
-    setup_requires = ['openalea.deploy'],
-    dependency_links = ['http://openalea.gforge.inria.fr/pi'],
-    pylint_packages = ['src/mtg', 'src/mtg/interface']
-    )
+# find version number in src/openalea/mtg/version.py
+version = {}
+with open("src/openalea/mtg/version.py") as fp:
+    exec(fp.read(), version)
 
 
+setup_kwds = dict(
+    name='openalea.mtg',
+    version=version["__version__"],
+    description=short_descr,
+    long_description=readme + '\n\n' + history,
+    author="Christophe Pradal, Christophe Godin, ",
+    author_email="christophe pradal __at__ cirad fr, christophe godin __at__ inria fr, ",
+    url='http://github.com/openalea/mtg',
+    license='cecill-c',
+    zip_safe=False,
+
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
+    install_requires=parse_requirements("requirements.txt"),
+    tests_require=parse_requirements("dvlpt_requirements.txt"),
+    entry_points={},
+    keywords='',
+    test_suite='nose.collector',
+)
+# #}
+# change setup_kwds below before the next pkglts tag
+
+setup_kwds['share_dirs'] = {'share': 'share'},
+
+setup_kwds['entry_points']["wralea"] = ["mtg = openalea.mtg_wralea"]
+setup_kwds['setup_requires'] = ['openalea.deploy']
+setup_kwds['dependency_links'] = ['http://openalea.gforge.inria.fr/pi']
+setup_kwds['pylint_packages'] = ['src/mtg', 'src/mtg/interface']
+
+# do not change things below
+# {# pkglts, pysetup.call
+setup(**setup_kwds)
+# #}
