@@ -51,8 +51,6 @@ pip-delete-this-directory.txt
 # PyBuilder
 target/
 
-
-
 # coverage
 .coverage
 
@@ -64,3 +62,5 @@ doc/_dvlpt/
 
 # user custom filters
 
+# Notebook
+.ipynb_checkpoints/
