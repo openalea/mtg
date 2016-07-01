@@ -413,8 +413,8 @@ class MTG(PropertyTree):
             children = list(self.children_iter(vid)) # should do a copy because the list will be modified by replace_parent
             for cid in children:
                 self.replace_parent(cid, new_parent_id)
-        
-        
+
+
         if self.nb_components(vid) == 0:
             super(MTG, self).remove_vertex(vid, reparent_child=reparent_child)
             if vid in self._components:
@@ -440,7 +440,7 @@ class MTG(PropertyTree):
         This also removes all vertex properties.
         Don't change references to object such as internal dictionaries.
 
-        :Example: 
+        :Example:
             .. code-block:: python
 
                 >>> g.clear()
@@ -462,7 +462,7 @@ class MTG(PropertyTree):
     def clear_properties(self, exclude=[]):
         """Remove all the properties of the MTG.
 
-        :Example: 
+        :Example:
             .. code-block:: python
 
                 >>> g.clear_properties()
@@ -488,11 +488,11 @@ class MTG(PropertyTree):
 
     def roots_iter(self, scale=0):
         ''' Returns an iterator of the roots of the tree graphs at a given scale.
-        
-        In an MTG, the MTG root vertex, namely the vertex `g.root`, 
-        can be decomposed into several, non-connected, tree graphs at a given scale. 
+
+        In an MTG, the MTG root vertex, namely the vertex `g.root`,
+        can be decomposed into several, non-connected, tree graphs at a given scale.
         This is for example the case of an MTG containing the description of several plants.
-        
+
         :Usage: ::
 
             roots = list(g.roots(scale=g.max_scale())
@@ -508,11 +508,11 @@ class MTG(PropertyTree):
 
     def roots(self, scale=0):
         ''' Returns a list of the roots of the tree graphs at a given scale.
-        
-        In an MTG, the MTG root vertex, namely the vertex `g.root`, 
-        can be decomposed into several, non-connected, tree graphs at a given scale. 
+
+        In an MTG, the MTG root vertex, namely the vertex `g.root`,
+        can be decomposed into several, non-connected, tree graphs at a given scale.
         This is for example the case of an MTG containing the description of several plants.
-        
+
         :Usage: ::
 
             roots = g.roots(scale=g.max_scale()
@@ -678,7 +678,7 @@ class MTG(PropertyTree):
 
     def components(self, vid):
         '''
-        returns the components of a vertex 
+        returns the components of a vertex
 
         :param vid: The vertex identifier.
 
@@ -716,7 +716,7 @@ class MTG(PropertyTree):
         :returns: iter of vertex identifier
         '''
         return list(self.components_at_scale_iter(vid, scale))
-    
+
     def component_roots_iter(self, vtx_id):
         '''Return an iterator of the roots of the tree graphs that compose a vertex.
         '''
@@ -821,7 +821,7 @@ class MTG(PropertyTree):
 
     def __str__(self):
         l = ["MTG : nb_vertices=%d, nb_scales=%d"%(self.nb_vertices(), self.nb_scales())]
-        
+
         """
         from . import io
         s = io.display(self, display_id=True)
@@ -832,7 +832,7 @@ class MTG(PropertyTree):
     def display(self, max_scale=0, display_id=True, display_scale=False,
                 nb_tab=12, **kwds):
         """ Print an MTG on the console.
-        
+
         :Optional Parameters:
             - `max_scale`: do not print vertices of scale greater than max_scale
             - `display_id`: display the vid of the vertices
@@ -863,13 +863,13 @@ class MTG(PropertyTree):
         for k in props:
             color[k]=pylab_colors[orders[k]]
         #color = {k:pylab_colors[orders[k]] for k in props} # not in Py2.6
-        
+
         heights = algo.heights(self)
         h = np.array([heights[v] for v in props])
         _prop = np.array(props.values())
         for v in props:
             matplotlib.pyplot.plot(heights[v], props[v], 'o', color = color[v])
-        
+
 
     #########################################################################
     # Algorithms to copy extract and extend sub_mtg
@@ -1024,7 +1024,7 @@ class MTG(PropertyTree):
 
             # Skip the first vertex vtx_id
             subtree.next()
-                
+
             # Traverse all the sub_mtg.
             # Every vertex has a complex in this sub_mtg.
             # Complex vertices are traversed before there components and
@@ -1052,7 +1052,7 @@ class MTG(PropertyTree):
             self._components = dict((mapping[k], [mapping[v] for v in l]) for k, l in self._components.iteritems())
             self._scale = dict((mapping[k], s) for k, s in self._scale.iteritems())
             for name in self._properties:
-                d = self._properties[name] 
+                d = self._properties[name]
                 self._properties[name] = dict((mapping[k], s) for k, s in d.iteritems())
 
             return self
@@ -1065,7 +1065,7 @@ class MTG(PropertyTree):
         - `inf_scale` (int) - New scale is inserted between inf_scale and inf_scale-1
         - `partition` (lambda v: bool) - Function defining new scale by quotienting vertices at inf_scale
         - `default_label` (str) - default label of inserted vertices
-        - `preserve_order` (bool) - True iif children at new scale are ordered consistently 
+        - `preserve_order` (bool) - True iif children at new scale are ordered consistently
             with children at inf_scale
 
         :Returns:
@@ -1075,7 +1075,7 @@ class MTG(PropertyTree):
             - New scale is inserted in self as well.
             - function partition should return True at roots of subtrees where partition changes
             and False elsewhere.
-            
+
         """
         g = self
         if g.nb_scales() < 2:
@@ -1085,13 +1085,13 @@ class MTG(PropertyTree):
             inf_scale = g.max_scale()
 
         if partition is None:
-            partition = lambda v: g.edge_type(v) != '<' 
-        
+            partition = lambda v: g.edge_type(v) != '<'
+
         inf_vertices = g.components_at_scale(g.root, scale=inf_scale)
         colors = [v  for v in inf_vertices if partition(v)]
 
         sup_vertices = g.components_at_scale(g.root, scale=inf_scale-1)
-        
+
         # compute the component_roots
         sup_components = dict((v, g.component_roots_iter(v).next()) for v in sup_vertices)
         complexes = sup_components.values()
@@ -1100,7 +1100,7 @@ class MTG(PropertyTree):
             raise Exception("Error: the scale you want to insert is not included in the upper scale. Please modify the partition.")
 
         # Modification in_place:
-        # Algo: 
+        # Algo:
         # - Modify the _scale of the vertices at scale >= inf_scale
         # - create new ids
         # - Modify the _components of sup_vertices
@@ -1114,7 +1114,7 @@ class MTG(PropertyTree):
 
         max_id = max(g._scale)
         complex_inf = dict((colors[i], max_id+i+1) for i in range(len(colors)))
-        components_sup = dict((vid, complex_inf[cid]) for vid ,cid in sup_components.iteritems()) 
+        components_sup = dict((vid, complex_inf[cid]) for vid ,cid in sup_components.iteritems())
 
         # add the new vertices
         g._scale.update( (vid, inf_scale) for vid in complex_inf.itervalues())
@@ -1133,11 +1133,11 @@ class MTG(PropertyTree):
         for vid, component_id in components_sup.iteritems():
             g.add_component(vid,component_id)
 
-        # Add new complex 
+        # Add new complex
         for component_id, complex_id in complex_inf.iteritems():
-            g.add_component(complex_id, component_id)    
+            g.add_component(complex_id, component_id)
             if not(default_label is None):
-                g._add_vertex_properties(complex_id, dict(label=default_label))            
+                g._add_vertex_properties(complex_id, dict(label=default_label))
 
         return fat_mtg(g, preserve_order)
 
@@ -1205,7 +1205,7 @@ class MTG(PropertyTree):
             g.add_component(complex_id,component_id)
 
         # Update components
-        g._components = dict((v, [cid for cid in components if g.parent(cid) is None or g.complex(g.parent(cid)) !=v]) 
+        g._components = dict((v, [cid for cid in components if g.parent(cid) is None or g.complex(g.parent(cid)) !=v])
             for v, components in g._components.iteritems())
 
         g = fat_mtg(g)
@@ -1357,7 +1357,7 @@ class MTG(PropertyTree):
     #########################################################################
 
     def VtxList(self, Scale=-1):
-        """	
+        """
         Array of vertices contained in a MTG
 
         The set of all vertices in the :func:`MTG` is returned as an array.
@@ -1400,7 +1400,7 @@ class MTG(PropertyTree):
         Vertices from a given class only appear at a given scale
         which can be retrieved using this function.
 
-        :Usage: 
+        :Usage:
 
         .. code-block:: python
 
@@ -1854,7 +1854,7 @@ class MTG(PropertyTree):
 
         .. seealso:: :func:`MTG`, :func:`Extremities`.
         """
-        return algo.root(self, v, RestrictedTo=RestrictedTo, 
+        return algo.root(self, v, RestrictedTo=RestrictedTo,
                          ContainedIn=ContainedIn)
 
     def Complex(self, v, Scale=-1):
@@ -1935,7 +1935,7 @@ class MTG(PropertyTree):
 
             When the option EdgeType is applied, the function returns the set of sons
             that are connected to the argument with the specified type of relation.
-            
+
         .. note:: `Sons(v, EdgeType= '<')` is not equivalent to `Successor(v)`.
             The first function returns an array of vertices while the second function
             returns a vertex.
@@ -1958,9 +1958,9 @@ class MTG(PropertyTree):
 
         .. seealso:: :func:`MTG`, :func:`Father`, :func:`Successor`, :func:`Descendants`.
         """
-        return algo.sons(self, v, EdgeType=EdgeType, 
-                         RestrictedTo=RestrictedTo, 
-                         Scale=Scale, 
+        return algo.sons(self, v, EdgeType=EdgeType,
+                         RestrictedTo=RestrictedTo,
+                         Scale=Scale,
                          ContainedIn=ContainedIn)
 
     def Ancestors(self, v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
@@ -2326,7 +2326,7 @@ def fat_mtg(slim_mtg, preserve_order=False):
     Compute missing edges at each scales based on the explicit edges
     defines at finer scales and decomposition relationship.
     If preserve_order is True, the order of children at coarsest scales
-    is deduced from the order of children at finest scale 
+    is deduced from the order of children at finest scale
     """
     from algo import lowestCommonAncestor
     max_scale = slim_mtg.max_scale()
@@ -2338,10 +2338,10 @@ def fat_mtg(slim_mtg, preserve_order=False):
     for scale in range(max_scale-1,0,-1):
         _compute_missing_edges(slim_mtg, scale, edge_type_property)
         if preserve_order:
-            # deduce the order of children 
+            # deduce the order of children
             # from the order of their components
-            # Do not use traversal.pre_order: 
-            # may switch < and + children 
+            # Do not use traversal.pre_order:
+            # may switch < and + children
             from traversal import post_order
             for v in slim_mtg.vertices(scale=scale):
                 # children at current scale
@@ -2354,7 +2354,7 @@ def fat_mtg(slim_mtg, preserve_order=False):
                     visitor.post_order = visitor
                     visitor.pre_order = visitor
                     # descendants of v at lowest scale, minus the descendants of cmp
-                    descendants = list(post_order(slim_mtg, slim_mtg.component_roots(v)[0], 
+                    descendants = list(post_order(slim_mtg, slim_mtg.component_roots(v)[0],
                                                   visitor_filter=visitor))
                     ordered_children = []
                     # read the children wrt order defined by "descendants"
@@ -2431,16 +2431,16 @@ def simple_tree(tree, vtx_id, nb_children=3, nb_vertices=20):
     :Examples:
 
         .. code-block:: python
-            
+
             g = MTG()
             vid = g.add_component(g.root)
             simple_tree(g, vid, nb_children=2, nb_vertices=20)
             print len(g) # 22
-            
+
     .. seealso:: :func:`random_tree`, :func:`random_mtg`
 
     """
-    
+
     vid = vtx_id
     l=[vid]
     while nb_vertices > 0:
@@ -2456,9 +2456,9 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
     """ Generate and add a random tree to an existing one.
 
     Add a random sub tree at a given vertex id position `root`.
-    The length of the sub_tree is `nb_vertices`. 
+    The length of the sub_tree is `nb_vertices`.
     The number of children for each vertex is sampled according to `nb_children` distribution.
-    If nb_children is an interger, the random distribution is uniform between [1, nb_children]. 
+    If nb_children is an interger, the random distribution is uniform between [1, nb_children].
     Otherwise, you can give your own discrete distribution sampling function.
 
     :Parameters:
@@ -2476,12 +2476,12 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
     :Examples:
 
         .. code-block:: python
-            
+
             g = MTG()
             vid = g.add_component(g.root)
             random_tree(g, vid, nb_children=2, nb_vertices=20)
             print len(g) # 22
-            
+
         .. code-block:: python
             from scipy.stats import poisson, binom
 
@@ -2536,11 +2536,11 @@ def random_mtg(tree, nb_scales):
     :Examples:
 
         .. code-block:: python
-            
+
             g = MTG()
             random_tree(g, g.root, nb_children=2, nb_vertices=20)
             print len(g) # 21
-            
+
     .. seealso:: :func:`simple_tree`, :func:`random_tree`
 
     """
@@ -2575,7 +2575,7 @@ def colored_tree(tree, colors):
         from random import randint, sample
         g = MTG()
         random_tree(g, g.root, nb_vertices=200)
-        
+
         # At each scale, define the vertices which will define a complex
         nb_scales=4
         colors = {}
@@ -2587,7 +2587,7 @@ def colored_tree(tree, colors):
         colors[1] = [g.root]
 
         g, mapping = colored_tree(g, colors)
-        
+
     """
 
     nb_scales = max(colors.keys())+1
@@ -2674,7 +2674,7 @@ def display_tree(tree, vid, tab = "", labels = {}, edge_type = {}):
 
 def display_mtg(mtg, vid):
     """ Display an MTG
-    
+
     ..todo:: Write doc.
     """
     label = mtg.property('label')
