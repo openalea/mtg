@@ -1,0 +1,7 @@
+# {# pkglts, pysetup
+
+coverage
+mock
+nose
+sphinx
+# #}
