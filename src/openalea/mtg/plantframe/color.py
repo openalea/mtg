@@ -2,7 +2,8 @@ import numpy as np
 from pylab import cm
 import matplotlib
 from matplotlib.colors import Normalize, LogNorm
-from matplotlib import pyplot, mpl
+import matplotlib as mpl
+from matplotlib import pyplot
 import openalea.plantgl.all as pgl
 
 def get_cmap(cmap):
@@ -21,7 +22,7 @@ def colormap(g, property_name, cmap='jet',lognorm=True):
     #m, M = int(values.min()), int(values.max())
 
     _cmap = get_cmap(cmap)
-    norm = Normalize() if not lognorm else LogNorm() 
+    norm = Normalize() if not lognorm else LogNorm()
     values = norm(values)
     #my_colorbar(values, _cmap, norm)
 
@@ -64,7 +65,7 @@ def colorbar(g, property_name, cmap='jet',lognorm=True, N=5, fmt='%.1e'):
     ticks = np.linspace(m,M,N)
 
     _cmap = get_cmap(cmap)
-    norm = Normalize() if not lognorm else LogNorm() 
+    norm = Normalize() if not lognorm else LogNorm()
     values = norm(values)
 
 
@@ -119,14 +120,14 @@ def colorbar_lut(g, property_name, colors=[], N=5, fmt='%d'):
 
 def plot3d(g):
     """
-    Create a PlantGL scene from a MTG. Then, plot the created scene and return it.     
+    Create a PlantGL scene from a MTG. Then, plot the created scene and return it.
     """
     Material = pgl.Material
     Color3 = pgl.Color3
     Shape = pgl.Shape
     Scene = pgl.Scene
-    
-    colors = g.property('color')    
+
+    colors = g.property('color')
     geometries = g.property('geometry')
 
     scene = Scene()

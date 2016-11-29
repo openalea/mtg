@@ -2,14 +2,14 @@
 #
 #       OpenAlea.mtg
 #
-#       Copyright 2008-2009 INRIA - CIRAD - INRA  
+#       Copyright 2008-2016 INRIA - CIRAD - INRA
 #
 #       File author(s): Christophe Pradal <christophe.pradal.at.cirad.fr>
 #
 #       Distributed under the Cecill-C License.
 #       See accompanying file LICENSE.txt or copy at
 #           http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-# 
+#
 #       OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
 ################################################################################
@@ -25,7 +25,7 @@ from traversal import iter_mtg, iter_mtg_with_filter
 
 try:
     from openalea.core.logger import get_logger, logging
-    
+
     logger = get_logger('openalea.mtg')
     _ch = logging.StreamHandler()
     logger.addHandler(_ch)
@@ -33,6 +33,7 @@ except:
     logger = None
 
 debug = 0
+
 
 def log(*args):
     if debug:
@@ -42,6 +43,7 @@ def log(*args):
             print '  '.join(map(str, args))
 
 ################## UTILS
+
 def get_expr(s, expr):
     res = re.search(expr, s)
     _str = ''
@@ -99,7 +101,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
     - `class_type`: A dict containing the type of the properties.
 	- `has_date`: Is the MTG is a Dynamic MTG?
 	- `mtg`: An existing MTG
-	  
+
 
 
     :Return:
@@ -146,7 +148,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
         new_date = args.get(date)
 
         if new_date is None:
-            return 
+            return
 
         old_date = mtg.property(date)[vid]
         for prop in args:
@@ -162,7 +164,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
 
 
 
-    implicit_scale = bool(symbol_at_scale) 
+    implicit_scale = bool(symbol_at_scale)
 
     if debug:
         print symbol_at_scale.keys()
@@ -289,8 +291,8 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
                     scale += 1
                     component = mtg.add_component(current_vertex, **args)
                     if mtg.scale(vid) == scale and pending_edge != '/':
-                        vid = mtg.add_child(vid, 
-                                            child=component, 
+                        vid = mtg.add_child(vid,
+                                            child=component,
                                             edge_type=pending_edge)
                         assert vid == component
                         current_vertex = vid
@@ -346,7 +348,7 @@ def read_lsystem_string( string,
         matrix.translate(turtle.getPosition())
         mesh = mesh.transform(matrix)
         return mesh
-        
+
 
     # 1. Create the mtg structure.
     if mtg is None:
@@ -371,7 +373,7 @@ def read_lsystem_string( string,
 
     index = dict(zip(symbol_at_scale.keys(), [0]*len(symbol_at_scale)))
 
-    is_ramif = False 
+    is_ramif = False
 
     # 2. Create a PlantGL Turtle...
     turtle = pgl.Turtle()
@@ -440,7 +442,7 @@ def read_lsystem_string( string,
             if name not in modules:
                 print 'Unknow element %s'% name
                 continue
-            
+
             module_scale = symbol_at_scale[name]
             if is_ramif:
                 edge_type = '+'
@@ -448,25 +450,25 @@ def read_lsystem_string( string,
                 edge_type = '<'
 
             log(node, module_scale, edge_type )
-            
+
             if module_scale == scale:
                 if mtg.scale(vid) == scale:
                     vid = mtg.add_child(vid, edge_type=edge_type, label=name)
                     current_vertex = vid
                     pending_edge = ''
 
-                    log('','Cas 1.1', scale, 
-                        'mtg.scale(vid)', mtg.scale(vid), 
+                    log('','Cas 1.1', scale,
+                        'mtg.scale(vid)', mtg.scale(vid),
                         'generated vertex', vid)
 
                     assert mtg.scale(vid) == module_scale
                 else:
                     # add the edge to the current vertex
-                    current_vertex = mtg.add_child(current_vertex, 
-                                                   edge_type=edge_type, 
+                    current_vertex = mtg.add_child(current_vertex,
+                                                   edge_type=edge_type,
                                                    label=name)
-                    log('', 'Cas 1.2', scale, 
-                        'mtg.scale(vid)', mtg.scale(vid), 
+                    log('', 'Cas 1.2', scale,
+                        'mtg.scale(vid)', mtg.scale(vid),
                         'generated vertex', current_vertex)
                     assert mtg.scale(current_vertex) == module_scale
                 is_ramif = False
@@ -502,7 +504,7 @@ def read_lsystem_string( string,
                 else:
                     current_vertex = mtg.add_child(current_vertex, edge_type=edge_type, label=name)
                     assert mtg.scale(current_vertex) == module_scale
-        
+
             # MANAGE the properties, the geometry and the indices!!!
             index[name] += 1
             if name == plant_name:
@@ -533,7 +535,7 @@ def read_lsystem_string( string,
                     plant_id = mtg.complex_at_scale(current_vertex, scale=1)
                     canlabel.plant_id = mtg.property('index')[plant_id]
                     mtg.property('can_label')[current_vertex] = canlabel
-        
+
     mtg = fat_mtg(mtg)
     return mtg
 
@@ -541,7 +543,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
     """Create an MTG from an AxialTree.
 
     Tha axial tree has been generated by LPy. It contains both modules with parameters.
-    The geometry is provided by the scene. 
+    The geometry is provided by the scene.
     The shape ids are the same that the module ids in the axial tree.
     For each module name in the axial tree, a `scale` and a list of parameters should be defined.
     The `scale` dict allow to add a module at a given scale in the MTG.
@@ -554,7 +556,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
       - `scale`: A dict containing the scale for each symbol name.
       - `scene`: The scene containing the geometry.
       - `parameters`: list of parameter names for each module.
-    
+
     :Return: mtg
 
     :Example:
@@ -603,9 +605,9 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
     mtg = MTG()
     if scene:
         mtg.add_property('geometry')
-        
+
     mtg.add_property('_axial_id')
-    
+
     if parameters is None:
         parameters = {}
     for label in parameters:
@@ -634,7 +636,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
         else:
             _scale = scale[label]
             _params = parameters.get(label, [])
-            
+
             params = {}
             params['label'] = label
             for p in _params:
@@ -678,8 +680,8 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
                         edge_type = '<'
                     params['edge_type'] = edge_type
 
-                    vid = mtg.add_child(vid, 
-                                        child=current_vertex, 
+                    vid = mtg.add_child(vid,
+                                        child=current_vertex,
                                         **params)
                     assert vid == current_vertex
                     pending_edge = ''
@@ -704,10 +706,10 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
 
     :Parameters:
 
-      - `axial_tree`: The axial tree managed by the L-system. 
+      - `axial_tree`: The axial tree managed by the L-system.
         Use an empty AxialTree if you do not want to concatenate this axial_tree with previous results.
       - `parameters`: list of parameter names for each module.
-    
+
     :Return: mtg
 
     :Example:
@@ -745,11 +747,11 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
             tree += '['
 
         name = g.class_name(vid)
-        if not name: 
+        if not name:
             return False
 
         l = [name]
-        
+
         params = parameters.get(name, [])
         if 'parameter_set' in params and len(params) is 1:
             from openalea.lpy.parameterset import ParameterSet
@@ -779,8 +781,8 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
             tree += ']'
 
 
-    for v in traversal.iter_mtg2_with_filter(g, vtx_id, 
-                    axialtree_pre_order_visitor, 
+    for v in traversal.iter_mtg2_with_filter(g, vtx_id,
+                    axialtree_pre_order_visitor,
                     axialtree_post_order_visitor):
 
         pass
@@ -825,14 +827,14 @@ def mtg2lpy(g, lsystem, axial_tree=None):
 
     :Parameters:
 
-        - `g`: The mtg which have been generated by an LSystem. 
+        - `g`: The mtg which have been generated by an LSystem.
         - `lsystem`: A lsystem object containing various information.
-            The `lsystem` is only used to retrieve the context and 
+            The `lsystem` is only used to retrieve the context and
             the parameters associated with each module name.
-    
+
     :Optional Parameters:
 
-        - `axial_tree`: an empty axial tree. 
+        - `axial_tree`: an empty axial tree.
             It is used to avoid complex import in the code.
 
     :Return: axial tree
@@ -876,7 +878,7 @@ def mtg2mss(name, mtg, scene, envelop_type = 'CvxHull'):
             d[vid] = mtg.components(vid)
         l.append(d)
     return ssFromDict(name, scene, l, envelop_type)
-    
+
 
 ###############################################################################
 # Class and methods to read the famous MTG file format.
@@ -916,23 +918,23 @@ class Reader(object):
         """
         self.header()
         self.code()
-        
+
         self.errors()
         return self.mtg
-        
+
     def header(self):
         """
         Parse an MTG header and create the mtg datastructure.
 
         An mtg header contains different parts:
             - code:  definition
-            - classes: symbol name and scale 
+            - classes: symbol name and scale
             - description: allowed relationship between symbols
             - features: property name and type
         """
 
         # 1. Read the file from the begining
-        self._no_line = -1 
+        self._no_line = -1
         self.code_form()
         self.classes()
         self.description()
@@ -954,7 +956,7 @@ class Reader(object):
         l = l.split('#')[0]
         code = l.split(':')
         if len(code) == 2 and 'CODE' in code[0] and 'FORM-' in code[1]:
-            self._code = code[1] 
+            self._code = code[1]
         else:
             # error
             self.warnings.append((self._no_line, "Code form error"))
@@ -969,13 +971,13 @@ class Reader(object):
         l = self._next_line()
         if not l.startswith('CLASSES'):
             self.warnings.append((self._no_line, "CLASSES section not found."))
-            
+
         l = self._next_line()
         l = l.split('#')[0]
         class_header = l.split()
         if class_header != ['SYMBOL', 'SCALE', 'DECOMPOSITION', 'INDEXATION', 'DEFINITION']:
             self.warnings.append((self._no_line, "CLASS header error."))
-        
+
         while l:
             l = self._next_line()
             if l.startswith('DESCRIPTION'):
@@ -992,7 +994,7 @@ class Reader(object):
                     self.warnings.append((self._no_line, "Bad symbol %s."%symbol))
                 if not scale.isdigit():
                     self.warnings.append((self._no_line, "Bad scale %s."%scale))
-                if decomposition not in decomp: 
+                if decomposition not in decomp:
                     self.warnings.append((self._no_line, "Bad decomposition id %s."%decomposition))
                 # TODO: validate indexation
                 if definition not in ['IMPLICIT', 'EXPLICIT']:
@@ -1014,7 +1016,7 @@ class Reader(object):
         l = self._next_line()
         if not l.startswith('DESCRIPTION'):
             self.warnings.append((self._no_line, "DESCRIPTION section not found."))
-            
+
         l = self._next_line()
         l = l.split('#')[0]
         desc_header = l.split()
@@ -1039,11 +1041,11 @@ class Reader(object):
             bad_right= filter(lambda x: x not in self._symbols, rights)
             if bad_right:
                 self.warnings.append((self._no_line, "Unknown right symbols %s."%bad_right))
-                
+
             reltype, _max = line[-2:]
             if reltype not in ['+', '<']:
                 self.warnings.append((self._no_line, "Unknown relation type %s."%reltype))
-                
+
             if _max != '?' and not _max.isdigit():
                 msg = "Error in the maximum number of relationships (%s)."%_max
                 msg += "Give a number or ?"
@@ -1061,7 +1063,7 @@ class Reader(object):
         l = self._next_line()
         if not l.startswith('FEATURES'):
             self.warnings.append((self._no_line, "FEATURES section not found."))
-            
+
         l = self._next_line()
         l = l.split('#')[0]
         f_header = l.split()
@@ -1074,7 +1076,7 @@ class Reader(object):
                 break
             l = l.split('#')[0]
             line = l.split()
-            
+
             if len(line) != 2:
                 self.warnings.append((self._no_line, "FEATURE description error."))
                 continue
@@ -1094,7 +1096,7 @@ class Reader(object):
         if self._no_line == len(self.lines):
             self._no_line -= 1
             return ""
-        
+
         l = self.lines[self._no_line]
         l1 = l.strip()
         if not l1 or l1[0] == '#':
@@ -1126,14 +1128,14 @@ class Reader(object):
         Parse the code and populate the MTG.
         """
         l = self._next_line()
-        
+
         if not l.startswith('MTG'):
             self.warnings.append((self._no_line, "MTG section not found."))
 
         l = self._next_line()
         if not l.startswith('ENTITY-CODE') and not l.startswith('TOPO'):
             self.warnings.append((self._no_line, "ENTITY-CODE or TOPO not found."))
-        
+
         l = l.split('#')[0]
         features = l.split()[1:]
         self._nb_features = len(features)
@@ -1158,11 +1160,11 @@ class Reader(object):
         Preprocess a line.
         """
         if (debug):
-            print 'line :%s, nb_spaces: %d, diff_space: %d, edge_type:%s, %s'%(s, 
-                                                                               nb_spaces, 
-                                                                               diff_space, 
-                                                                               str(edge_type), 
-                                                                               str(indent)) 
+            print 'line :%s, nb_spaces: %d, diff_space: %d, edge_type:%s, %s'%(s,
+                                                                               nb_spaces,
+                                                                               diff_space,
+                                                                               str(edge_type),
+                                                                               str(indent))
         if diff_space == 0:
             if s.startswith('^') or s.startswith('*'):
                 s = s[1:]
@@ -1198,7 +1200,7 @@ class Reader(object):
                     edge = edge_type.pop()
                     if edge in ['+','/']:
                         brackets.append(']')
-                
+
             # Same case as diff_space == 0
             assert nb_spaces - indent[-1] == 0
             if s.startswith('^'):
@@ -1212,7 +1214,7 @@ class Reader(object):
                         edge_type.pop()
                     edge_type.append(s[0])
                     s = elt+'[' + s
-  
+
             s = ''.join(brackets+[s])
 
 
@@ -1240,8 +1242,8 @@ class Reader(object):
                 params.append("_line=%d"%self._no_line)
             if params:
                 s = s + "("+','.join(params)+")"
-            
-            # build 
+
+            # build
             nb_spaces = len(l) - len(l.lstrip('\t'))
 
             diff_space = nb_spaces - indent[-1]
@@ -1250,7 +1252,7 @@ class Reader(object):
             s, edge_type = self.preprocess_line(s, diff_space, indent, nb_spaces, edge_type)
 
             new_code.append(s)
-            
+
         while edge_type:
             edge = edge_type.pop()
             if edge in ['+','/']:
@@ -1268,7 +1270,7 @@ class Reader(object):
 
 def read_mtg(s, mtg=None, has_date=False):
     """ Create an MTG from its string representation in the MTG format.
-    
+
     :Parameter:
         - s (string) - a multi-lines string
 
@@ -1343,7 +1345,7 @@ def mtg_display(g, vtx_id, tab='  ', edge_type=None, label=None):
             space = '^'
         elif prev_scale == scale and et == '<':
             space = '^'
-        
+
         if scale < prev_scale:
             yield ''
 
@@ -1356,7 +1358,7 @@ def mtg_display(g, vtx_id, tab='  ', edge_type=None, label=None):
             indent = 0
 
         yield (order*tab) +space+et+ name
-        
+
 
 ###############################################################################
 # Class and methods to write in the famous MTG file format.
@@ -1382,7 +1384,7 @@ class Writer(object):
 
         An mtg header contains different parts:
             - code:  definition
-            - classes: symbol name and scale 
+            - classes: symbol name and scale
             - description: allowed relationship between symbols
             - features: property name and type
         """
@@ -1392,14 +1394,14 @@ class Writer(object):
         desc = self.description()
         features = self.features()
 
-    def code(self, property_names, nb_tab=12, 
+    def code(self, property_names, nb_tab=12,
              display_id=False, display_scale=False, filter=None):
         """
         Traverse the MTG and write the code.
         """
         head = ['MTG :']
 
-        entity = ['ENTITY-CODE'] 
+        entity = ['ENTITY-CODE']
         entity.extend((nb_tab-1)*[''])
         entity.extend(property_names)
         head.append('\t'.join(entity))
@@ -1431,7 +1433,7 @@ class Writer(object):
                 continue
 
             # Algorithm description:
-            # prev_scale >= cur_scale: 
+            # prev_scale >= cur_scale:
             #   1. search the parent
             #   2. if < same column elif + : tab = col+1
             complex = self.g.complex(vtx)
@@ -1439,7 +1441,7 @@ class Writer(object):
                 et = '/'
                 if current_vertex != self.g.root:
                     et = '^'+et
-                
+
                 log('  ','Cas / ',self.g.node(current_vertex).label, vtx, et)
 
             else:
@@ -1462,7 +1464,7 @@ class Writer(object):
                         # Even if the complex are linked together, several solution can coexist
                         vtx_proj = self.g.component_roots_at_scale_iter(vtx,scale=vscale).next()
                         parent_proj = self.g.parent(vtx_proj)
-                        
+
                     if vc == parent and v == parent_proj:
                         log('   ==> cas 1')
                         if et == '<':
@@ -1490,7 +1492,7 @@ class Writer(object):
                         if not possible_et:
                             tab = 0
                             break
-                        
+
                 else:
                     #print sy
                     log('    Possible Error. Use hypothetic state if possible.')
@@ -1510,7 +1512,7 @@ class Writer(object):
 
             # Create a valid line with properties.
             label = labels.get(vtx, str(vtx))
-            
+
             if not display_id and not display_scale:
                 name = '%s%s'%(et,get_label(label))
             elif display_id and display_scale:
@@ -1527,7 +1529,7 @@ class Writer(object):
 
             for pname in property_names:
                 if properties[pname].has_key(vtx):
-                    p = properties[pname].get(vtx,'') 
+                    p = properties[pname].get(vtx,'')
                     line.append(str(p))
                 else:
                     line.append('')
@@ -1562,32 +1564,32 @@ class Writer(object):
         Define the different symbols with their scale.
         symbols is a list of dictionary with specific keys:
             - symbol is the class name
-            - scale is an positive integer 
+            - scale is an positive integer
             - decomposition (optional) is in [FREE, LINEAR, CONNECTED, +-LINEAR, <-LINEAR, NOTCONNECTED, NONE]
             - indexation (optional) is FREE or CONSECUTIVE
             - definition (optional) is EXPLICIT or IMPLICIT
         """
-        
+
         klass = ['CLASSES :']
-    
+
         head = ['SYMBOL', 'SCALE', 'DECOMPOSITION', 'INDEXATION', 'DEFINITION']
         klass.append('\t'.join(head))
-    
+
         default = dict(decomposition='FREE', indexation='FREE', definition='EXPLICIT')
         template = Template('\t'.join(['$symbol', '$scale', '$decomposition', '$indexation', '$definition']))
-        
+
         d = default.copy()
         d.update(dict(symbol='$', scale='0', definition='IMPLICIT'))
-    
-        s = template.substitute(d) 
+
+        s = template.substitute(d)
         klass.append(s)
-    
+
         for sdict in symbols:
             d = default.copy()
             d.update(sdict)
-            s = template.substitute(d) 
+            s = template.substitute(d)
             klass.append(s)
-        
+
         return '\n'.join(klass)
 
     @staticmethod
@@ -1596,13 +1598,13 @@ class Writer(object):
         Generate the description header file for a MTG.
         scale_symbol is a dict that associate a scale integer with the different symbols at this scale.
         """
-    
+
         desc = ['DESCRIPTION :']
         head = ['LEFT', 'RIGHT', 'RELTYPE', 'MAX']
         desc.append('\t'.join(head))
-    
+
         template = Template('\t'.join(['$left', '$right', '$reltype', '$max']))
-    
+
         d = {}
         d['max'] = '?'
         scales = sorted(scale_symbol.keys())
@@ -1615,7 +1617,7 @@ class Writer(object):
                     d['reltype'] = edge_type
                     l = template.substitute(d)
                     desc.append(l)
-    
+
         return '\n'.join(desc)
 
     @staticmethod
@@ -1625,12 +1627,12 @@ class Writer(object):
         name_type is a list of tuple containing the property name and the associated property type.
         type is INT, REAL, ALPHA or DATE (DD/MM, DD/MM/YY, DD/MM-TIME, DD/MM/YY-TIME).
         """
-        predefined_types = ['INT', 'REAL', 'ALPHA', 'DD/MM', 'DD/MM/YY', 'DD/MM-TIME', 'DD/MM/YY-TIME']
+        predefined_types = ['INT', 'REAL', 'ALPHA', 'DD/MM', 'DD/MM/YY', 'DD/MM-TIME', 'DD/MM/YY-TIME', 'STRING']
         features = ['FEATURES :']
         features.append('\t'.join(['NAME', 'TYPE']))
         for name, type_ in name_type:
             if type_ not in predefined_types:
-                warn('The type %s for the feature %s is not allow'%(type_, name), SyntaxWarning) 
+                warn('The type %s for the feature %s is not allow'%(type_, name), SyntaxWarning)
                 continue
             features.append('\t'.join([name, type_]))
 
@@ -1647,20 +1649,20 @@ class Writer(object):
         for s, classes in scales.iteritems():
             for class_ in classes:
                 symbols.append(dict(scale=str(s), symbol=class_))
-    
-        return symbols 
+
+        return symbols
 
 def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False):
     """ Transform an MTG into a multi-line string in the MTG format.
 
     This method build a generic header, then traverses the MTG and transform
-    each vertex into a line with its label, topoloical relationship and 
+    each vertex into a line with its label, topoloical relationship and
     specific `properties`.
 
     :Parameters:
 
         - `g` (MTG)
-        - `properties` (list): a list of tuples associating a property name with its type. 
+        - `properties` (list): a list of tuples associating a property name with its type.
             Only these properties will be written in the out file.
 
 
@@ -1669,7 +1671,7 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False
         - `class_at_scale` (dict(name->int)): a map between a class name and its scale.
             If `class _at_scale` is None, its value will be computed from `g`.
         - `nb_tab` (int): the number of tabs used to write the code.
-        - `display_id` (bool): display the id for each vertex 
+        - `display_id` (bool): display the id for each vertex
 
     :Returns: a list of strings.
 
@@ -1677,7 +1679,7 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False
 
     .. code-block:: python
 
-        # Export all the properties defined in `g`. 
+        # Export all the properties defined in `g`.
         # We consider that all the properties are real numbers.
 
         properties = [(p, 'REAL') for p in g.property_names() if p not in ['edge_type', 'index', 'label']]
@@ -1736,6 +1738,6 @@ def display(g, max_scale=0, display_id=True, display_scale=False, nb_tab=12,**kw
         f = None
 
     code = w.code([], nb_tab=nb_tab, display_id=display_id, display_scale=display_scale, filter=f)
-    
+
     return '\n'.join(code[2:])
 
