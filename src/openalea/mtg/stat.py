@@ -2,7 +2,7 @@
 #
 #       OpenAlea.mtg.stat
 #
-#       Copyright 2008-2009 INRIA - CIRAD - INRA  
+#       Copyright 2008-2009 INRIA - CIRAD - INRA
 #
 #       File author(s): Christophe Pradal <christophe.pradal.at.cirad.fr>
 #                       Thomas Cokelaer <thomas.cokelaer@inria.fr>
@@ -10,14 +10,14 @@
 #       Distributed under the Cecill-C License.
 #       See accompanying file LICENSE.txt or copy at
 #           http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-# 
+#
 #       OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
 ################################################################################
 ''' This module implements methods to create statistical sequences from an MTG.
 
 :Principles:
-    
+
 
 :Algorithm:
 
@@ -25,14 +25,18 @@
 :Examples:
 
 
-:TODO: 
+:TODO:
     - Extract sequence identifier as a property and add it as input of the sequence
     - explicit identifier for sequence (e.g. year of growth or date of observation)
 
 '''
 from itertools import chain, ifilter, imap
+try:
+    from openalea.sequence_analysis import *
+except ImportError:
+    Vectors = None
+    Sequences = None
 
-from openalea.sequence_analysis import *
 from openalea.mtg import algo
 
 
@@ -55,7 +59,7 @@ def check_vids(g, vids):
 
 def property_list(g, vid, variables):
     props = g.properties()
-    return [float(props[variable][vid])  for variable in variables] 
+    return [float(props[variable][vid]) for variable in variables]
 
 def extract_vectors(g, vids, variables=[], **kwds):
     ''' Extract a set of Vectors from an MTG.
@@ -88,7 +92,10 @@ def extract_vectors(g, vids, variables=[], **kwds):
     check_variables(g, variables)
     #check_vids(g, vids)
     vectors = [property_list(g, vid, variables) for vid in vids]
-    return Vectors(vectors, Identifiers=vids, **kwds)
+    if Vectors:
+        return Vectors(vectors, Identifiers=vids, **kwds)
+    else:
+        return vectors_as_txt(vectors, Identifiers=vids, **kwds)
 
 def build_sequences(g, vid_sequences, variables=[], **kwds):
     ''' Extract a set of Vectors from an MTG.
@@ -120,7 +127,10 @@ def build_sequences(g, vid_sequences, variables=[], **kwds):
     #check_vids(g, vids)
     vertex_ids = [vids for vids in vid_sequences if bool(vids and filter_sequence(vids,predicate)) ]
     sequences = [[property_list(g, vid, variables) for vid in vids ] for vids in vertex_ids]
-    return Sequences(sequences, VertexIdentifiers=vertex_ids)
+    if Sequences:
+        return Sequences(sequences, VertexIdentifiers=vertex_ids)
+    else:
+        sequences_as_txt(sequences, variables, VertexIdentifiers=vertex_ids)
 
 def extract_sequences(g, variables=[], vid=-1, scale=0, mode='axes', **kwds):
     ''' Implement different strategies to extract a set of vids.
@@ -129,11 +139,10 @@ def extract_sequences(g, variables=[], vid=-1, scale=0, mode='axes', **kwds):
         - extremities: seqs from root to leaves.
         - axes: split each sequence when a + is found
     '''
-    if scale < 1: 
+    if scale < 1:
         scale = g.max_scale()
     if vid < 0:
         vid = g.root
-    vids = g.component_roots_at_scale(vid, scale)
 
     if mode == 'extremities':
         seqs = extract_extremities(g, scale=scale, vid=vid, **kwds)
@@ -179,5 +188,54 @@ def first_component_root(g, vid):
     else:
         return vid
 
+def vectors_as_txt(vectors):
+    """ Write Vectors objects into a txt file.
+
+    """
+    pass
+
+
+def write_sequences(seqs, variables, VertexIdentifiers):
+    """ Write Sequences into a txt file.
+
+    """
+    sep = '\t'
+    txts = []
+
+    # header
+    header = "INDEX_PARAMETER : TIME   # vertex_id"
+    txts.append(header)
+    txts.append('')
+
+    n = len(variables)
+    header = "%d VARIABLES"%n
+    txts.append(header)
+    txts.append('')
+
+    for i in range(1, n+1):
+        txts.append('VARIABLE %d: INT  # %s'%(i, variables[i-1]))
+
+    txts.append('')
+    txts.append('')
+    txts.append('#Index'+sep+sep.join(variables))
+
+    for i, seq in enumerate(seqs):
+        n = len(seq)
+        for j, value in enumerate(seq):
+            vid = VertexIdentifiers[i][j]
+            record = [str(vid)] + map(str,value)
+            if j < n-1:
+                record.append('\\')
+            else:
+                # end of the sequence
+                record.append('')
+
+            record.append('#')
+
+            txt = sep.join(record)
+            txts.append(txt)
+        txts.append('')
+
+    return '\n'.join(txts)
 
 
