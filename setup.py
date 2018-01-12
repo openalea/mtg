@@ -9,20 +9,8 @@ from setuptools import setup, find_packages
 
 short_descr = "Multiscale Tree Graph datastructure and interfaces"
 readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+history = open('HISTORY.rst').read()
 
-
-def parse_requirements(fname):
-    with open(fname, 'r') as f:
-        txt = f.read()
-
-    reqs = []
-    for line in txt.splitlines():
-        line = line.strip()
-        if len(line) > 0 and not line.startswith("#"):
-            reqs.append(line)
-
-    return reqs
 
 # find version number in src/openalea/mtg/version.py
 version = {}
@@ -35,20 +23,30 @@ setup_kwds = dict(
     version=version["__version__"],
     description=short_descr,
     long_description=readme + '\n\n' + history,
-    author="Christophe Pradal, Christophe Godin, ",
-    author_email="christophe pradal __at__ cirad fr, christophe godin __at__ inria fr, ",
+    author="Christophe Pradal",
+    author_email="christophe pradal __at__ cirad fr",
     url='http://github.com/openalea/mtg',
     license='cecill-c',
     zip_safe=False,
 
     packages=find_packages('src'),
+    namespace_packages=['openalea'],
     package_dir={'': 'src'},
-    install_requires=parse_requirements("requirements.txt"),
-    tests_require=parse_requirements("dvlpt_requirements.txt"),
+    setup_requires=[
+        "pytest-runner",
+        ],
+    install_requires=[
+        ],
+    tests_require=[
+        "coverage",
+        "mock",
+        "pytest",
+        "pytest-cov",
+        "sphinx",
+        ],
     entry_points={},
     keywords='',
-    test_suite='nose.collector',
-)
+    )
 # #}
 # change setup_kwds below before the next pkglts tag
 
