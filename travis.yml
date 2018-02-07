@@ -36,6 +36,8 @@ before_deploy:
 deploy:
   skip_cleanup: true
   provider: script
+  on:
+    all_branches: true
   script: bash deploy_script.sh
 
 after_deploy:

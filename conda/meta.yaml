@@ -21,7 +21,7 @@ requirements:
     - numpy
     - matplotlib
     - pandas
-    - vplants.plantgl
+    - openalea.plantgl
 
 test:
   imports:
