@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Package (Undefined, u'mtg') documentation build configuration file, created by
+# Package mtg documentation build configuration file, created by
 # sphinx-quickstart on Tue Jul  9 22:26:36 2013.
 #
 # This file is execfile()d with the current directory set to its
@@ -46,11 +46,12 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.graphviz',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.inheritance_diagram',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
     'sphinx.ext.viewcode'
 ]
 
@@ -314,30 +315,15 @@ texinfo_documents = [
 # use apidoc to generate developer doc
 import os
 from os import path
-from sphinx.apidoc import create_modules_toc_file, recurse_tree
-
-
-class Opt(object):
-    pass
+from sphinx.apidoc import main
 
 
 rootpath = path.abspath(path.join(project_root, "src"))
-opts = Opt()
-opts.modulefirst = None
-opts.separatemodules = None
-opts.noheadings = None
-opts.destdir = path.abspath(path.join(project_root, "doc", "_dvlpt"))
-opts.suffix = source_suffix
-opts.dryrun = None
-opts.force = None
-opts.header = 'src'
-opts.maxdepth = 4
-opts.includeprivate = False
+destdir = path.abspath(path.join(project_root, "doc", "_dvlpt"))
 
-if not path.isdir(opts.destdir):
-    os.makedirs(opts.destdir)
+if not path.isdir(destdir):
+    os.makedirs(destdir)
 
-modules = recurse_tree(rootpath, [], opts)
-create_modules_toc_file(modules, opts)
+main(['-e', '-o', destdir, '-d', '4', '-s', source_suffix[1:], '--force', rootpath])
 
 # #}
