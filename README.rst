@@ -8,7 +8,8 @@ openalea.mtg
 
 Multiscale Tree Graph datastructure and interfaces
 
-=== Description ===
+Description
+===========
 
 MTG (Multi-scale Tree Graph) is a common data structure to represent
 plant architecture at various scales.
