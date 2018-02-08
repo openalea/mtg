@@ -1,3 +1,9 @@
+.. image:: https://travis-ci.org/openalea/mtg.svg?branch=master
+    :target: https://travis-ci.org/openalea/mtg
+
+.. image:: https://ci.appveyor.com/api/projects/status/wc3p28tg6jbf8t0k/branch/master?svg=true
+   :target: https://ci.appveyor.com/project/fredboudon/mtg
+
 ============
 openalea.mtg
 ============
