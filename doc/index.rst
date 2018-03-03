@@ -8,13 +8,9 @@ Contents:
    :maxdepth: 2
 
    readme
-   installation
-   usage
-   contributing
-   authors
-   history
    user/index.rst
    user/autosum.rst
+   authors
 
 Indices and tables
 ==================

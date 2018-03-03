@@ -1,12 +1,9 @@
 Install
 =======
 
-Download sources and use setup::
+Use conda to install openalea.mtg::
 
-    $ python setup.py install
-    or
-    $ python setup.py develop
-
+    conda install openalea.mtg -c openalea
 
 Use
 ===
@@ -17,7 +14,3 @@ Simple usage:
 
     from openalea.mtg import *
 
-
-
-Acknowledgments
-===============
