@@ -14,8 +14,10 @@ build:
 
 requirements:
   build:
+    - python
     - openalea.deploy
   run:
+    - python
     - openalea.deploy
     - openalea.core
     - numpy
