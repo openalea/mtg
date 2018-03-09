@@ -3,6 +3,10 @@
 
 .. image:: https://ci.appveyor.com/api/projects/status/wc3p28tg6jbf8t0k/branch/master?svg=true
    :target: https://ci.appveyor.com/project/fredboudon/mtg
+    
+..  image:: https://readthedocs.org/projects/mtg/badge/?version=latest
+    :target: http://mtg.readthedocs.io/en/latest/
+
 
 ============
 openalea.mtg
