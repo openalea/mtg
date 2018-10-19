@@ -99,12 +99,15 @@ class MTG(PropertyTree):
         """A simple getitem to extract relevant information on a vertex.
 
         """
-        d = self.get_vertex_property(vtx_id)
-        d.update({"vid":vtx_id,
-                "index":self.index(vtx_id),
-                "complex":self.complex(vtx_id),
-                "parent":self.parent(vtx_id),
-                "scale":self._scale.get(vtx_id)})
+        if self.has_vertex(vtx_id):
+            d = self.get_vertex_property(vtx_id)
+            d.update({"vid":vtx_id,
+                      "index":self.index(vtx_id),
+                      "complex":self.complex(vtx_id),
+                      "parent":self.parent(vtx_id),
+                      "scale":self._scale.get(vtx_id)})
+        else:
+            raise IndexError('MTG index out of range')
         return d
 
 
