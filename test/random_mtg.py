@@ -51,6 +51,6 @@ def height(g, v1, v2=None):
 
 def reindex(g):
     vtxs = list(traversal.iter_mtg2(g,g.root))
-    mapping = dict(zip(vtxs, range(len(g))))
+    mapping = dict(list(zip(vtxs, list(range(len(g))))))
     return g.reindex(mapping, copy=True)
 
