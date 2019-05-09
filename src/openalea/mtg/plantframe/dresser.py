@@ -200,7 +200,7 @@ def dressing_data(file):
             continue
         else: 
             status = grammar.parse(l, line)
-    print '\n'.join(grammar.errors)
+    print('\n'.join(grammar.errors))
     return dresser
 
 ###############################################################

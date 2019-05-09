@@ -146,7 +146,7 @@ def father(g, vid, scale=-1, **kwds):
         vid = g.complex_at_scale(vid)
         p = g.parent(vid)
     else:
-        vid = g.component_roots_at_scale_iter(vid, scale=scale).next()
+        vid = next(g.component_roots_at_scale_iter(vid, scale=scale))
         p = g.parent(vid)
 
     if et != '*':
@@ -248,7 +248,7 @@ def sons(g, vid, **kwds):
     if scale < current_scale:
         vid = g.complex_at_scale(vid, scale = scale)
     elif scale > current_scale:
-        vid = g.component_roots_at_scale_iter(vid, scale=scale).next()
+        vid = next(g.component_roots_at_scale_iter(vid, scale=scale))
     children = g.children_iter(vid)
     
     if et != '*':
@@ -399,7 +399,7 @@ def vertex_at_scale(g, vtx_id, scale):
     if scale < current_scale:
         vtx_id = g.complex_at_scale(vtx_id, scale=scale)
     elif scale > current_scale:
-        vtx_id = g.component_roots_at_scale_iter(vtx_id, scale=scale).next()
+        vtx_id = next(g.component_roots_at_scale_iter(vtx_id, scale=scale))
     return vtx_id
 
 def trunk(g, vtx_id, scale=-1, **kwds):
@@ -441,9 +441,9 @@ def union(g1, g2, vid1=None, vid2=None, edge_type='<'):
     subtree = traversal.iter_mtg2(g2, v2)
     if v1 is g1.root and v2 is g2.root:
         treeid_id[v2] = v1
-        subtree.next()
+        next(subtree)
     else:
-        v2 = subtree.next()
+        v2 = next(subtree)
         v = g.add_child(v1)
         treeid_id[v2] = v
         g._add_vertex_properties(v,g2.get_vertex_property(v2))

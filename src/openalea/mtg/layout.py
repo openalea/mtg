@@ -44,7 +44,7 @@ def layout2d(g, vid=None, origin=(0,0), steps=(4,8), property_name='position'):
     if vid is None:
         vid = g.root
         if hasattr(g, 'max_scale'):
-            vid = g.component_roots_at_scale_iter(g.root, g.max_scale()).next()
+            vid = next(g.component_roots_at_scale_iter(g.root, g.max_scale()))
 
 	# Algorithm
 	# 1. the y is defined by the Height of a node
@@ -54,7 +54,7 @@ def layout2d(g, vid=None, origin=(0,0), steps=(4,8), property_name='position'):
 
     y= {}
     vtxs = traversal.pre_order2(g,vid)
-    vtxs.next()
+    next(vtxs)
     y[vid] = origin[1]
     for v in vtxs:
         y[v] = y[g.parent(v)]+y_step
@@ -203,7 +203,7 @@ def simple_layout(g, vid=None, origin=(0,0), steps=(4,8), property_name='positio
     if vid is None:
         vid = g.root
         if hasattr(g, 'max_scale'):
-            vid = g.component_roots_at_scale_iter(g.root, g.max_scale()).next()
+            vid = next(g.component_roots_at_scale_iter(g.root, g.max_scale()))
 
     # Algorithm
     # 1. the y is defined by the Height of a node
@@ -212,7 +212,7 @@ def simple_layout(g, vid=None, origin=(0,0), steps=(4,8), property_name='positio
     x_step, y_step = steps
     y= {}
     vtxs = traversal.pre_order2(g,vid)
-    vtxs.next()
+    next(vtxs)
     y[vid] = origin[1]
     for v in vtxs:
         y[v] = y[g.parent(v)]+y_step
@@ -255,7 +255,7 @@ def simple_layout(g, vid=None, origin=(0,0), steps=(4,8), property_name='positio
             v_root = g.complex_at_scale(vid, scale=s)
             vtxs = traversal.pre_order2(g, v_root)
             for v in vtxs:
-                comp_id = g.component_roots_at_scale_iter(v, scale=max_scale).next()
+                comp_id = next(g.component_roots_at_scale_iter(v, scale=max_scale))
                 position[v] = position[comp_id]
 
     g.properties()[property_name] = position
@@ -325,7 +325,7 @@ def fruchterman_reingold_layout(g,dim=2,k=None,
     max_scale = g.max_scale()
     vertexlist = g.vertices(scale=max_scale)
     if fixed is not None:
-        nfixed=dict(zip(vertexlist,range(len(vertexlist))))
+        nfixed=dict(list(zip(vertexlist,list(range(len(vertexlist))))))
         fixed=np.asarray([nfixed[v] for v in fixed])
 
     if pos is not None:
@@ -352,7 +352,7 @@ def fruchterman_reingold_layout(g,dim=2,k=None,
         pos=_fruchterman_reingold(A,dim,k,pos_arr,fixed,iterations)
     if fixed is None:
         pos=_rescale_layout(pos,scale=scale)
-    return dict(zip(vertexlist,pos))
+    return dict(list(zip(vertexlist,pos)))
 
 spring_layout=fruchterman_reingold_layout
 
