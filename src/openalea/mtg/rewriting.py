@@ -16,7 +16,7 @@
 ################################################################################
 """ MTG rewriting facilities """
 
-from mtg import _ProxyNode, MTG
+from .mtg import _ProxyNode, MTG
 
 #### Module declaration #######
 
@@ -255,15 +255,15 @@ class MTGProducer(object):
 #### Traversal of the MTG for the rewriting
 
 def forward_rewriting_traversal(mtg):
-    from traversal import iter_mtg2
+    from .traversal import iter_mtg2
     return [RewritableNode(mtg, vid) for vid in list(iter_mtg2(mtg, mtg.root))]
 
 def backward_rewriting_traversal(mgt):
-    from traversal import iter_mtg2
+    from .traversal import iter_mtg2
     return [RewritableNode(mtg, vid) for vid in reversed(iter_mtg2(mtg, mtg.root))]
 
 def nodes_forward_traversal(mtg, pre_order, post_order):
-    from traversal import iter_mtg2_with_filter
+    from .traversal import iter_mtg2_with_filter
 
     def pre_order_filter(vid):
         pre_order(mtg.node(vid))

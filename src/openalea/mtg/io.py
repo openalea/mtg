@@ -20,8 +20,8 @@ from string import Template
 from warnings import warn
 
 
-from mtg import *
-from traversal import iter_mtg, iter_mtg_with_filter
+from .mtg import *
+from .traversal import iter_mtg, iter_mtg_with_filter
 
 try:
     from openalea.core.logger import get_logger, logging
@@ -1312,7 +1312,7 @@ def mtg_display(g, vtx_id, tab='  ', edge_type=None, label=None):
     Test the traversal of an mtg.
     A first step before writing it.
     """
-    import traversal
+    from . import traversal
     if not edge_type:
         edge_type = g.properties().get('edge_type', {})
     if not label:

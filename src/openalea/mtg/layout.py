@@ -14,7 +14,7 @@
 #
 ###############################################################################
 
-import traversal, matrix
+from . import traversal, matrix
 from random import random
 
 def layout2d(g, vid=None, origin=(0,0), steps=(4,8), property_name='position'):

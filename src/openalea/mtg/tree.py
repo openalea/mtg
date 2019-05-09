@@ -31,7 +31,7 @@ __revision__ = " $Id$ "
 #from interface.tree import ITree, IMutableTree, IEditableTree
 #from interface.graph import IRootedGraph, InvalidVertex, InvalidEdge
 #from traversal.tree import pre_order, post_order
-from traversal import *
+from .traversal import *
 
 class GraphError(Exception):
     """

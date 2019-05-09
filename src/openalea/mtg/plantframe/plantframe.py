@@ -46,7 +46,7 @@ based on various infomation.
 from math import sqrt, pi
 
 from .. import traversal
-from dresser import DressingData
+from .dresser import DressingData
 from .. import algo
 from openalea.mtg.mtg import colored_tree, PropertyTree
 from openalea.mtg.plantframe import turtle

@@ -20,10 +20,10 @@
 
 __docformat__ = "restructuredtext"
 
-import traversal
+from . import traversal
 
 try:
-    from tree import InvalidVertex
+    from .tree import InvalidVertex
 except ImportError:
     from openalea.container.tree import InvalidVertex
 

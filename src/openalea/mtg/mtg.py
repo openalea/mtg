@@ -29,10 +29,10 @@ import warnings
 import random
 import copy
 
-import traversal
-import algo
+from . import traversal
+from . import algo
 
-from tree import PropertyTree, InvalidVertex
+from .tree import PropertyTree, InvalidVertex
 
 
 class MTG(PropertyTree):
@@ -92,7 +92,7 @@ class MTG(PropertyTree):
         self.add_property('label')
 
         if filename:
-            from io import read_mtg_file
+            from .io import read_mtg_file
             self = read_mtg_file(filename, mtg=self, has_date=has_date)
 
     def __getitem__(self, vtx_id):
@@ -2328,7 +2328,7 @@ def fat_mtg(slim_mtg, preserve_order=False):
     If preserve_order is True, the order of children at coarsest scales
     is deduced from the order of children at finest scale
     """
-    from algo import lowestCommonAncestor
+    from .algo import lowestCommonAncestor
     max_scale = slim_mtg.max_scale()
     #print 'max_scale %d'%max_scale
     #roots = slim_mtg.roots(scale=max_scale)
@@ -2342,7 +2342,7 @@ def fat_mtg(slim_mtg, preserve_order=False):
             # from the order of their components
             # Do not use traversal.pre_order:
             # may switch < and + children
-            from traversal import post_order
+            from .traversal import post_order
             for v in slim_mtg.vertices(scale=scale):
                 # children at current scale
                 cref = slim_mtg.children(v)
