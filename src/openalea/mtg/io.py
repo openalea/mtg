@@ -1420,7 +1420,7 @@ class Writer(object):
 
         for vtx in traversal.iter_mtg2(self.g, current_vertex):
 
-            if filter and not list(filter(self.g, vtx)):
+            if filter and not filter(self.g, vtx):
                 continue
 
             log('Process ',vtx, self.g.node(vtx).label)
