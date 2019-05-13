@@ -1081,7 +1081,7 @@ class Reader(object):
                 self.warnings.append((self._no_line, "FEATURE description error."))
                 continue
             name, _type = line
-            if '/' in _type and name.lower() == 'date':
+            if '/' in _type and 'date' in name.lower():
                 self.has_date = True
             self._features[name] = _type
 
