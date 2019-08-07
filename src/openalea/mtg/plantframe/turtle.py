@@ -47,13 +47,13 @@ def traverse_with_turtle(g, vid, visitor=visitor, turtle=None, gc=True):
         if vid in shapes:
             for sh in shapes[vid]:
                 sh.appearance = Material('Color%d'%vid, color)
-    scene = Scene([sh for shid in shapes.itervalues() for sh in shid ])
+    scene = Scene([sh for shid in shapes.values() for sh in shid ])
     return scene
 
 def TurtleFrame(g, visitor=visitor, turtle=None, gc=True, all_roots = False):
     n = g.max_scale()
     if not all_roots:
-        v = g.component_roots_at_scale_iter(g.root, scale=n).next()
+        v = next(g.component_roots_at_scale_iter(g.root, scale=n))
         s = traverse_with_turtle(g,v, visitor, turtle=turtle, gc=gc)
     else:
         for v in g.component_roots_at_scale_iter(g.root, scale=n):

@@ -20,8 +20,8 @@ from string import Template
 from warnings import warn
 
 
-from mtg import *
-from traversal import iter_mtg, iter_mtg_with_filter
+from .mtg import *
+from .traversal import iter_mtg, iter_mtg_with_filter
 
 try:
     from openalea.core.logger import get_logger, logging
@@ -40,7 +40,7 @@ def log(*args):
         if logger:
             logger.debug('  '.join(map(str, args)))
         else:
-            print '  '.join(map(str, args))
+            print('  '.join(map(str, args)))
 
 ################## UTILS
 
@@ -130,14 +130,14 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
                         args[k] = klass(v)
                     except:
                         if vid is not None:
-                            print 'Args ', v, 'of vertex ', vid, 'of type ', k, 'is not of type ', str(klass)
+                            print('Args ', v, 'of vertex ', vid, 'of type ', k, 'is not of type ', str(klass))
                         else:
-                            print 'Args ', v, 'of type ', k, 'is not of type ', str(klass)
+                            print('Args ', v, 'of type ', k, 'is not of type ', str(klass))
         return args
 
     def add_dynamic_properties(mtg, vid, args):
-        print "Existing properties at ", vid, " ", mtg.get_vertex_property(vid)
-        print "New property: ", args
+        print("Existing properties at ", vid, " ", mtg.get_vertex_property(vid))
+        print("New property: ", args)
 
         # a property can be a list but not a timeserie.
         # Create a real timeserie object...
@@ -167,7 +167,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
     implicit_scale = bool(symbol_at_scale)
 
     if debug:
-        print symbol_at_scale.keys()
+        print(list(symbol_at_scale.keys()))
 
     mtg = mtg if mtg else MTG()
 
@@ -190,8 +190,8 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
 
     # remove from the date format the /
     if has_date:
-        print 'replace all the date format by -'
-        if 'DD/MM/YY' in class_type.values():
+        print('replace all the date format by -')
+        if 'DD/MM/YY' in list(class_type.values()):
             date_format = 'DD/MM/YY'
         else:
             date_format = 'DD/MM/YYYY'
@@ -203,7 +203,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             s = s.replace(edge_type, '\n%s'%edge_type)
         else:
             # do not consider the date format
-            for klass in symbol_at_scale.keys():
+            for klass in list(symbol_at_scale.keys()):
                 s = s.replace('/%s'%klass, '\n/%s'%klass)
     s = s.replace('<\n<', '<<')
     # TODO: Write a regular expression to allow several spaces
@@ -234,7 +234,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             scale = mtg.scale(vid)
         elif tag == '*':
             args = get_properties(name, vid=vid, time=True)
-            print vid, '*(', args, ')'
+            print(vid, '*(', args, ')')
             # CPL Manage Dynamic_MTG
             add_dynamic_properties(mtg, vid, args)
         else:
@@ -252,7 +252,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
                 try:
                     new_scale = symbol_at_scale[symbol_class]
                 except:
-                    print 'NODE ',node, bool(tag=='*')
+                    print('NODE ',node, bool(tag=='*'))
                 if tag == '/' and new_scale <= scale:
                     new_scale -= 1
                     pending_edge = '/'
@@ -368,10 +368,10 @@ def read_lsystem_string( string,
     scale = 0
 
     lsys_symbols = ['[', ']', '/', '+', '^', 'f']
-    modules = symbol_at_scale.keys()
+    modules = list(symbol_at_scale.keys())
     symbols = lsys_symbols + modules
 
-    index = dict(zip(symbol_at_scale.keys(), [0]*len(symbol_at_scale)))
+    index = dict(list(zip(list(symbol_at_scale.keys()), [0]*len(symbol_at_scale))))
 
     is_ramif = False
 
@@ -388,7 +388,7 @@ def read_lsystem_string( string,
     l = s.split()
 
     try:
-        plant_name = [s for s in symbol_at_scale.keys() if 'plant' in s.lower()][0]
+        plant_name = [s for s in list(symbol_at_scale.keys()) if 'plant' in s.lower()][0]
     except:
         ValueError("""Incorrect plant name (should be plant)""")
 
@@ -440,7 +440,7 @@ def read_lsystem_string( string,
             # add new modules to the mtg (i.e. add nodes)
             name = get_name(node)
             if name not in modules:
-                print 'Unknow element %s'% name
+                print('Unknow element %s'% name)
                 continue
 
             module_scale = symbol_at_scale[name]
@@ -508,7 +508,7 @@ def read_lsystem_string( string,
             # MANAGE the properties, the geometry and the indices!!!
             index[name] += 1
             if name == plant_name:
-                for k in index.keys():
+                for k in list(index.keys()):
                     if k != name:
                         index[k] = 0
 
@@ -591,7 +591,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
         """
         mtg.property('_axial_id')[mtg_id] = axial_id
         if geoms:
-            if geoms.has_key(axial_id):
+            if axial_id in geoms:
                 for shape in geoms[axial_id]:
                     shape.id = mtg_id
                 mtg.property('geometry')[mtg_id]=geoms[axial_id]
@@ -621,7 +621,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
 
     pending_edge = '' # edge type for the next edge to be created
 
-    max_scale = max(scale.itervalues())
+    max_scale = max(scale.values())
     for aid, module in enumerate(tree):
         label = module.name
         if label == '[':
@@ -646,7 +646,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
                 elif module.argSize() is 1:
                     try:
                         pset = module.args[0]
-                        if p in pset.__dict__.keys():
+                        if p in list(pset.__dict__.keys()):
                             params[p] = pset.__dict__[p]
                     except:
                         pass
@@ -736,7 +736,7 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
         tree = lpy.AxialTree()
 
     # Root of the MTG at scale 0
-    vtx_id = g.roots_iter(scale=0).next()
+    vtx_id = next(g.roots_iter(scale=0))
 
     def axialtree_pre_order_visitor(vid, tree=tree):
         if vid == g.root:
@@ -804,7 +804,7 @@ def lpy2mtg(axial_tree, lsystem, scene = None):
             if axial_tree.count(label) > 0:
                 index = axial_tree.find(label + '(p)')
                 pset = axial_tree[index].args[0]
-                parameters[label] = pset.__dict__.keys()
+                parameters[label] = list(pset.__dict__.keys())
         scales[label] = m.scale
 
     tree = axial_tree
@@ -1114,10 +1114,10 @@ class Reader(object):
         nb_lines = len(self.lines)
         for id, warning in self.warnings:
             if id < nb_lines:
-                print "== Line %d: %s"%(id, self.lines[id])
-                print warning
+                print("== Line %d: %s"%(id, self.lines[id]))
+                print(warning)
             else:
-                print id, " ", warning
+                print(id, " ", warning)
     ############################################################################
     ### Parsing of the MTG code
     ### That's the real stuff...
@@ -1160,11 +1160,11 @@ class Reader(object):
         Preprocess a line.
         """
         if (debug):
-            print 'line :%s, nb_spaces: %d, diff_space: %d, edge_type:%s, %s'%(s,
+            print('line :%s, nb_spaces: %d, diff_space: %d, edge_type:%s, %s'%(s,
                                                                                nb_spaces,
                                                                                diff_space,
                                                                                str(edge_type),
-                                                                               str(indent))
+                                                                               str(indent)))
         if diff_space == 0:
             if s.startswith('^') or s.startswith('*'):
                 s = s[1:]
@@ -1183,7 +1183,7 @@ class Reader(object):
         elif diff_space > 0:
             # indent
             if s.startswith('^'):
-                print 'ERROR %s'%s
+                print('ERROR %s'%s)
             indent.append(nb_spaces)
             if s[0] in ['+','/']:
                 edge_type.append(s[0])
@@ -1260,7 +1260,7 @@ class Reader(object):
 
         self._new_code = ''.join(new_code)
         if debug:
-            print self._new_code
+            print(self._new_code)
 
     def build_mtg(self):
         """
@@ -1312,7 +1312,7 @@ def mtg_display(g, vtx_id, tab='  ', edge_type=None, label=None):
     Test the traversal of an mtg.
     A first step before writing it.
     """
-    import traversal
+    from . import traversal
     if not edge_type:
         edge_type = g.properties().get('edge_type', {})
     if not label:
@@ -1462,7 +1462,7 @@ class Writer(object):
                             vc = self.g.complex(vc)
                         #down
                         # Even if the complex are linked together, several solution can coexist
-                        vtx_proj = self.g.component_roots_at_scale_iter(vtx,scale=vscale).next()
+                        vtx_proj = next(self.g.component_roots_at_scale_iter(vtx,scale=vscale))
                         parent_proj = self.g.parent(vtx_proj)
 
                     if vc == parent and v == parent_proj:
@@ -1500,8 +1500,8 @@ class Writer(object):
                         et = possible_et
                         tab = possible_tab
                     else:
-                        print tab
-                        print sym_at_col
+                        print(tab)
+                        print(sym_at_col)
                         raise Exception("Error in the MTG for vertex %d"%vtx)
 
             if tab >= nb_tab:
@@ -1528,7 +1528,7 @@ class Writer(object):
             log(' -> Add vertex', line[:tab+1], '(%d)'%tab )
 
             for pname in property_names:
-                if properties[pname].has_key(vtx):
+                if vtx in properties[pname]:
                     p = properties[pname].get(vtx,'')
                     line.append(str(p))
                 else:
@@ -1646,7 +1646,7 @@ class Writer(object):
         Returns a list of dict with two keys symbol and scale.
         """
         symbols = []
-        for s, classes in scales.iteritems():
+        for s, classes in scales.items():
             for class_ in classes:
                 symbols.append(dict(scale=str(s), symbol=class_))
 
@@ -1700,10 +1700,10 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False
 
     if not class_at_scale:
         label = g.property('label')
-        class_at_scale = dict(((get_name(lab),g.scale(id)) for id, lab in label.iteritems()))
+        class_at_scale = dict(((get_name(lab),g.scale(id)) for id, lab in label.items()))
 
     scales = {}
-    for class_, scale in class_at_scale.iteritems():
+    for class_, scale in class_at_scale.items():
         scales.setdefault(scale, []).append(class_)
 
     symbols = w._scale2symbol(scales)

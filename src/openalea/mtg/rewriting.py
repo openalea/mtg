@@ -16,7 +16,7 @@
 ################################################################################
 """ MTG rewriting facilities """
 
-from mtg import _ProxyNode, MTG
+from .mtg import _ProxyNode, MTG
 
 #### Module declaration #######
 
@@ -50,11 +50,11 @@ def retrieve_modules(mtg, namespace):
     uniquelabels = set(labels.values())
     modules = dict()
     for l in uniquelabels:
-        for vid, label in labels.items():
+        for vid, label in list(labels.items()):
             if l == label:
                 modules[l] = mtg.scale(vid)
                 break
-    for name, scale in modules.items():
+    for name, scale in list(modules.items()):
         module(name, scale, namespace) 
 
 
@@ -73,7 +73,7 @@ def __apply_production__(mtg, current, production, edge_type, lasts = None):
             assert (abs(module.scale - current.scale()) == 1 and edge_type != '+') and 'Should decompose at next scale only. No scale jump allowed'
             cvid = mtg.add_component(current._vid, label = module.name, **module.parameters )
             ## obliger de faire les liens a toutes les echelles
-            if mtg.property('_r_parent').has_key(current._vid) :
+            if current._vid in mtg.property('_r_parent') :
                 parent_at_scale = current._r_parent
                 if mtg.scale(parent_at_scale) > module.scale:
                     parent_at_scale = mtg.complex_at_scale(parent_at_scale, scale = module.scale)
@@ -130,7 +130,7 @@ def __apply_production__(mtg, current, production, edge_type, lasts = None):
                 edge_type = '<'
         elif isinstance(module, _ProxyNode):
             vid = module._vid
-            params = dict([(pname, mtg.property(pname)[vid]) for pname in mtg.property_names() if not pname in ['edge_type', 'label'] and mtg.property(pname).has_key(vid)])
+            params = dict([(pname, mtg.property(pname)[vid]) for pname in mtg.property_names() if not pname in ['edge_type', 'label'] and vid in mtg.property(pname)])
             pmodule = Module(module.label, module.scale(), **params)
             current = add_module(current, pmodule, edge_type, lasts)
             edge_type = '<'
@@ -141,7 +141,7 @@ def macro_children_at_maxscale(mtg, vid, macroscale):
     children = list(mtg.children(vid))
 
     vidcomplexes = dict()
-    for s in xrange(mtg.scale(vid)-1,macroscale-1,-1):
+    for s in range(mtg.scale(vid)-1,macroscale-1,-1):
         vidcomplexes[s] = mtg.complex_at_scale(vid, s)
 
     while len(children) > 0:
@@ -198,8 +198,8 @@ def __replace_and_produce__(mtg, vid, production):
     mtg.remove_vertex(vid)
 
     # removal of properties of vid
-    for property in mtg.properties().values():
-        if property.has_key(vid) : del property[vid]
+    for property in list(mtg.properties().values()):
+        if vid in property : del property[vid]
 
 
 ############   The rewritable node and production structures ######
@@ -255,15 +255,15 @@ class MTGProducer(object):
 #### Traversal of the MTG for the rewriting
 
 def forward_rewriting_traversal(mtg):
-    from traversal import iter_mtg2
+    from .traversal import iter_mtg2
     return [RewritableNode(mtg, vid) for vid in list(iter_mtg2(mtg, mtg.root))]
 
 def backward_rewriting_traversal(mgt):
-    from traversal import iter_mtg2
+    from .traversal import iter_mtg2
     return [RewritableNode(mtg, vid) for vid in reversed(iter_mtg2(mtg, mtg.root))]
 
 def nodes_forward_traversal(mtg, pre_order, post_order):
-    from traversal import iter_mtg2_with_filter
+    from .traversal import iter_mtg2_with_filter
 
     def pre_order_filter(vid):
         pre_order(mtg.node(vid))
@@ -311,7 +311,7 @@ class MTGLsystem(object):
 
     def init(self):
         self.currentmtg = self.axiom()
-        if self.__dict__.has_key('start') : self.start(self.currentmtg)
+        if 'start' in self.__dict__ : self.start(self.currentmtg)
 
     def __get_rules(self, tag = '__isproduction__'):
         import inspect
@@ -335,19 +335,19 @@ class MTGLsystem(object):
             mtg = self.currentmtg
         else : mtg = inputmtg 
 
-        if self.__dict__.has_key('startEach') : self.startEach(mtg)
+        if 'startEach' in self.__dict__ : self.startEach(mtg)
 
         rules = self.__get_rules()
         if self.direction == eForward:
             for node in mtg.forward_rewriting_traversal():
-                if rules.has_key(node.label):
+                if node.label in rules:
                     rules[node.label](node)
         elif self.direction == eBackward:
             for node in mtg.backward_rewriting_traversal():
-                if rules.has_key(node.label):
+                if node.label in rules:
                     rules[node.label](node)
 
-        if self.__dict__.has_key('endEach') : self.endEach(mtg)
+        if 'endEach' in self.__dict__ : self.endEach(mtg)
 
         if inputmtg is None:
             self.currentmtg = mtg
@@ -356,9 +356,9 @@ class MTGLsystem(object):
 
     def run(self, nbiter = 1):
         self.init()
-        for i in xrange(nbiter):
+        for i in range(nbiter):
             self.iterate()
-        if self.__dict__.has_key('end') : self.end(self.currentmtg)
+        if 'end' in self.__dict__ : self.end(self.currentmtg)
         return self.currentmtg
 
 
@@ -379,7 +379,7 @@ class MTGLsystem(object):
         def preorder(node):
             if node.edge_type() == '+': turtle.push()
             turtle.setId(node._vid)
-            if rules.has_key(node.label):
+            if node.label in rules:
                 rules[node.label](node, turtle)
 
         def postorder(node):
@@ -411,10 +411,10 @@ class MTGLsystem(object):
         self.init()
         self.plot()
         s.touch()
-        for i in xrange(nbiter):
+        for i in range(nbiter):
             self.iterate()
             self.plot()
             s.touch()
-        if self.__dict__.has_key('end') : self.end(self.currentmtg)
+        if 'end' in self.__dict__ : self.end(self.currentmtg)
         return self.currentmtg
 

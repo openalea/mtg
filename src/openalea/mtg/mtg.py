@@ -29,10 +29,10 @@ import warnings
 import random
 import copy
 
-import traversal
-import algo
+from . import traversal
+from . import algo
 
-from tree import PropertyTree, InvalidVertex
+from .tree import PropertyTree, InvalidVertex
 
 
 class MTG(PropertyTree):
@@ -92,7 +92,7 @@ class MTG(PropertyTree):
         self.add_property('label')
 
         if filename:
-            from io import read_mtg_file
+            from .io import read_mtg_file
             self = read_mtg_file(filename, mtg=self, has_date=has_date)
 
     def __getitem__(self, vtx_id):
@@ -147,7 +147,7 @@ class MTG(PropertyTree):
 
         .. note:: The complexity is :math:`O(n)`.
         '''
-        return len(set(self._scale.itervalues()))
+        return len(set(self._scale.values()))
 
     def scales_iter(self):
         '''Return the different scales of the mtg.
@@ -157,7 +157,7 @@ class MTG(PropertyTree):
 
         .. note:: The complexity is :math:`O(n)`.
         '''
-        return iter(set(self._scale.itervalues()))
+        return iter(set(self._scale.values()))
 
     def scales(self):
         '''Return the different scales of the mtg.
@@ -279,9 +279,9 @@ class MTG(PropertyTree):
         .. seealso:: :meth:`children`, :meth:`components`.
         '''
         if scale < 0:
-            return self._scale.iterkeys()
+            return iter(self._scale.keys())
         else:
-            return (vid for vid, sid in self._scale.iteritems() if sid == scale)
+            return (vid for vid, sid in self._scale.items() if sid == scale)
 
 
     #########################################################################
@@ -356,9 +356,9 @@ class MTG(PropertyTree):
             iter
         """
         if scale < 0:
-            return ((v,k) for k,v in self._parent.iteritems())
+            return ((v,k) for k,v in self._parent.items())
         else:
-            return ((parent, child) for child, parent in self._parent.iteritems() if self.scale(parent) == scale)
+            return ((parent, child) for child, parent in self._parent.items() if self.scale(parent) == scale)
 
     def edges(self, scale=-1):
         """
@@ -857,7 +857,7 @@ class MTG(PropertyTree):
         import matplotlib.pyplot
         import numpy as np
         props = self.property(prop)
-        pylab_colors = matplotlib.colors.cnames.keys()
+        pylab_colors = list(matplotlib.colors.cnames.keys())
         color = {}
         orders = algo.orders(self)
         for k in props:
@@ -866,7 +866,7 @@ class MTG(PropertyTree):
 
         heights = algo.heights(self)
         h = np.array([heights[v] for v in props])
-        _prop = np.array(props.values())
+        _prop = np.array(list(props.values()))
         for v in props:
             matplotlib.pyplot.plot(heights[v], props[v], 'o', color = color[v])
 
@@ -956,7 +956,7 @@ class MTG(PropertyTree):
 
 
             # Skip the first vertex vtx_id
-            subtree.next()
+            next(subtree)
             # Traverse all the sub_mtg.
             # Every vertex has a complex in this sub_mtg.
             # Complex vertices are traversed before there components and
@@ -1011,7 +1011,7 @@ class MTG(PropertyTree):
         """
         # Manage also mapping as a function
         if not mapping:
-            mapping = dict(zip(traversal.iter_mtg2(self, self.root), range(len(self))))
+            mapping = dict(list(zip(traversal.iter_mtg2(self, self.root), list(range(len(self))))))
 
         if copy:
             g = MTG()
@@ -1023,7 +1023,7 @@ class MTG(PropertyTree):
             subtree = traversal.iter_mtg2(self, self.root)
 
             # Skip the first vertex vtx_id
-            subtree.next()
+            next(subtree)
 
             # Traverse all the sub_mtg.
             # Every vertex has a complex in this sub_mtg.
@@ -1046,14 +1046,14 @@ class MTG(PropertyTree):
             return g
         else:
             # recreate new dict for _parent, _children, _complex, _components
-            self._parent = dict((mapping[k], mapping.get(v)) for k, v in self._parent.iteritems())
-            self._children = dict((mapping[k], [mapping[v] for v in l]) for k, l in self._children.iteritems())
-            self._complex = dict((mapping[k], mapping.get(v)) for k, v in self._complex.iteritems())
-            self._components = dict((mapping[k], [mapping[v] for v in l]) for k, l in self._components.iteritems())
-            self._scale = dict((mapping[k], s) for k, s in self._scale.iteritems())
+            self._parent = dict((mapping[k], mapping.get(v)) for k, v in self._parent.items())
+            self._children = dict((mapping[k], [mapping[v] for v in l]) for k, l in self._children.items())
+            self._complex = dict((mapping[k], mapping.get(v)) for k, v in self._complex.items())
+            self._components = dict((mapping[k], [mapping[v] for v in l]) for k, l in self._components.items())
+            self._scale = dict((mapping[k], s) for k, s in self._scale.items())
             for name in self._properties:
                 d = self._properties[name]
-                self._properties[name] = dict((mapping[k], s) for k, s in d.iteritems())
+                self._properties[name] = dict((mapping[k], s) for k, s in d.items())
 
             return self
 
@@ -1093,8 +1093,8 @@ class MTG(PropertyTree):
         sup_vertices = g.components_at_scale(g.root, scale=inf_scale-1)
 
         # compute the component_roots
-        sup_components = dict((v, g.component_roots_iter(v).next()) for v in sup_vertices)
-        complexes = sup_components.values()
+        sup_components = dict((v, next(g.component_roots_iter(v))) for v in sup_vertices)
+        complexes = list(sup_components.values())
 
         if (set(complexes) - set(colors)):
             raise Exception("Error: the scale you want to insert is not included in the upper scale. Please modify the partition.")
@@ -1109,15 +1109,15 @@ class MTG(PropertyTree):
 
         nb_scales = g.max_scale()
 
-        new_scale = dict((vid,sid+1) for vid, sid in g._scale.iteritems() if sid >= inf_scale)
+        new_scale = dict((vid,sid+1) for vid, sid in g._scale.items() if sid >= inf_scale)
         g._scale.update(new_scale)
 
         max_id = max(g._scale)
         complex_inf = dict((colors[i], max_id+i+1) for i in range(len(colors)))
-        components_sup = dict((vid, complex_inf[cid]) for vid ,cid in sup_components.iteritems())
+        components_sup = dict((vid, complex_inf[cid]) for vid ,cid in sup_components.items())
 
         # add the new vertices
-        g._scale.update( (vid, inf_scale) for vid in complex_inf.itervalues())
+        g._scale.update( (vid, inf_scale) for vid in complex_inf.values())
 
         # remove all the components of sup_vertices
         for v in sup_vertices:
@@ -1130,11 +1130,11 @@ class MTG(PropertyTree):
                 del g._complex[v]
 
         # And new components
-        for vid, component_id in components_sup.iteritems():
+        for vid, component_id in components_sup.items():
             g.add_component(vid,component_id)
 
         # Add new complex
-        for component_id, complex_id in complex_inf.iteritems():
+        for component_id, complex_id in complex_inf.items():
             g.add_component(complex_id, component_id)
             if not(default_label is None):
                 g._add_vertex_properties(complex_id, dict(label=default_label))
@@ -1178,7 +1178,7 @@ class MTG(PropertyTree):
         # Remove complex at scale +1
         # Add component between sup and inf scale
 
-        new_scale = dict((vid,sid-1) for vid, sid in g._scale.iteritems() if sid > scale)
+        new_scale = dict((vid,sid-1) for vid, sid in g._scale.items() if sid > scale)
         g._scale.update(new_scale)
 
         for v in vertices:
@@ -1201,12 +1201,12 @@ class MTG(PropertyTree):
                 del g._complex[v]
 
         # And new components
-        for component_id, complex_id in new_complex.iteritems():
+        for component_id, complex_id in new_complex.items():
             g.add_component(complex_id,component_id)
 
         # Update components
         g._components = dict((v, [cid for cid in components if g.parent(cid) is None or g.complex(g.parent(cid)) !=v])
-            for v, components in g._components.iteritems())
+            for v, components in g._components.items())
 
         g = fat_mtg(g)
         return g, results
@@ -2328,7 +2328,7 @@ def fat_mtg(slim_mtg, preserve_order=False):
     If preserve_order is True, the order of children at coarsest scales
     is deduced from the order of children at finest scale
     """
-    from algo import lowestCommonAncestor
+    from .algo import lowestCommonAncestor
     max_scale = slim_mtg.max_scale()
     #print 'max_scale %d'%max_scale
     #roots = slim_mtg.roots(scale=max_scale)
@@ -2342,14 +2342,14 @@ def fat_mtg(slim_mtg, preserve_order=False):
             # from the order of their components
             # Do not use traversal.pre_order:
             # may switch < and + children
-            from traversal import post_order
+            from .traversal import post_order
             for v in slim_mtg.vertices(scale=scale):
                 # children at current scale
                 cref = slim_mtg.children(v)
                 if len(cref) > 1:
                     # children at lowest scale
                     cmp = [slim_mtg.component_roots(x)[0] for x in cref]
-                    cmp_dic = dict(zip(cmp, cref))
+                    cmp_dic = dict(list(zip(cmp, cref)))
                     visitor = lambda x, g=slim_mtg, l=cmp: not(g.parent(x) in l)
                     visitor.post_order = visitor
                     visitor.pre_order = visitor
@@ -2361,7 +2361,7 @@ def fat_mtg(slim_mtg, preserve_order=False):
                     for x in descendants:
                         if x in cmp:
                             ordered_children += [x]
-                    ch = [cmp_dic[c] for c in ordered_children if cmp_dic.has_key(c)]
+                    ch = [cmp_dic[c] for c in ordered_children if c in cmp_dic]
                     msg = "Bad children at vertex " + str(v)
                     msg += str(cref) + " / " + str(ch)
                     assert set(ch) == set(cref), msg
@@ -2386,7 +2386,7 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
     for vid in roots:
         components = mtg._components.get(vid)
         if components is None:
-            print 'ERROR: Missing component for vertex %d'%vid
+            print('ERROR: Missing component for vertex %d'%vid)
             continue
         #assert len(components) == 1
         cid = components[0]
@@ -2395,7 +2395,7 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
         parent_id = mtg.complex(mtg.parent(cid))
         if parent_id is None:
             #roots.append(vid)
-            print 'ERROR: Missing parent for vertex %d'%cid
+            print('ERROR: Missing parent for vertex %d'%cid)
             continue
         if edge_type_property:
             edge_type = edge_type_property.get(cid)
@@ -2625,25 +2625,25 @@ def colored_tree(tree, colors):
     if isinstance(tree, MTG):
         max_scale = tree.max_scale()
         g._parent.update(dict(((index_scale[k], index_scale[v])
-                                for k, v in tree._parent.iteritems() if v is not None and tree.scale(v) == max_scale)))
-        for parent, children in tree._children.iteritems():
+                                for k, v in tree._parent.items() if v is not None and tree.scale(v) == max_scale)))
+        for parent, children in tree._children.items():
 
             if tree.scale(parent) == max_scale:
                 g._children[index_scale[parent]] = [index_scale[id] for id in children]
     else:
         g._parent.update(dict(((index_scale[k], index_scale[v])
-                                for k, v in tree._parent.iteritems() )))
-        for parent, children in tree._children.iteritems():
+                                for k, v in tree._parent.items() )))
+        for parent, children in tree._children.items():
             g._children[index_scale[parent]] = [index_scale[id] for id in children]
 
     # Copy the properties of the tree
-    for pname, prop in tree.properties().iteritems():
+    for pname, prop in tree.properties().items():
         property = g._properties.setdefault(pname, {})
-        for id, v in prop.iteritems():
+        for id, v in prop.items():
             if tree.scale(id) == max_scale:
                 property[index_scale[id]] = v
 
-    return fat_mtg(g), dict(zip(index_scale.values(),index_scale.keys()))
+    return fat_mtg(g), dict(list(zip(list(index_scale.values()),list(index_scale.keys()))))
 
 
 
@@ -2714,7 +2714,7 @@ def display_mtg(mtg, vid):
 
 
 def return_proxy(f):
-    mtg_f = getattr(MTG, f.func_name)
+    mtg_f = getattr(MTG, f.__name__)
 
     def new_f(self, *args, **kwds):
         id = mtg_f(self._g,self._vid,*args,**kwds)
@@ -2722,31 +2722,31 @@ def return_proxy(f):
             return self.__class__(self._g, id)
         else:
             return
-    new_f.func_name = f.func_name
+    new_f.__name__ = f.__name__
     new_f.__doc__ = mtg_f.__doc__
     return new_f
 
 def proxy(f):
-    mtg_f = getattr(MTG, f.func_name)
+    mtg_f = getattr(MTG, f.__name__)
     def new_f(self, *args, **kwds):
         return mtg_f(self._g,self._vid,*args,**kwds)
-    new_f.func_name = f.func_name
+    new_f.__name__ = f.__name__
     new_f.__doc__ = mtg_f.__doc__
     return new_f
 
 def return_iter_proxy(f):
-    mtg_f = getattr(MTG, f.func_name)
+    mtg_f = getattr(MTG, f.__name__)
     def new_f(self, *args, **kwds):
         return [self.__class__(self._g, id) for id in mtg_f(self._g,self._vid,*args,**kwds)]
-    new_f.func_name = f.func_name
+    new_f.__name__ = f.__name__
     new_f.__doc__ = mtg_f.__doc__
     return new_f
 
 def return_tuple_proxy(f):
-    mtg_f = getattr(MTG, f.func_name)
+    mtg_f = getattr(MTG, f.__name__)
     def new_f(self, *args, **kwds):
         return tuple(self.__class__(self._g, id) for id in mtg_f(self._g,self._vid,*args,**kwds))
-    new_f.func_name = f.func_name
+    new_f.__name__ = f.__name__
     new_f.__doc__ = mtg_f.__doc__
     return new_f
 

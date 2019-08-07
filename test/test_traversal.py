@@ -24,17 +24,17 @@ def test_traversal():
     t = clock()
     mtg = simple_tree(mtg, mtg.root, nb_vertices=1000)
     t1 = clock()
-    print t1-t; t = t1
+    print(t1-t); t = t1
     
     l1 = list(pre_order(mtg, mtg.root))
     t1 = clock()
-    print t1-t; t = t1
+    print(t1-t); t = t1
     l2 = list(pre_order2(mtg, mtg.root))
     t1 = clock()
-    print t1-t; t = t1
+    print(t1-t); t = t1
     l3 = list(pre_order2_with_filter(mtg, mtg.root))
     t1 = clock()
-    print t1-t; t = t1
+    print(t1-t); t = t1
 
     assert l1 == l2 
     assert l1 == l3
@@ -66,10 +66,10 @@ def test_iter_mtg_nplants():
     a2 = g.add_component(p2)
     simple_tree(g, a2)
 
-    print len(list(iter_mtg(g, g.root))), len(g)
-    print len(list(iter_mtg2(g, g.root))), len(g)
-    print len(list(iter_mtg_with_filter(g, g.root))), len(g)
-    print len(list(iter_mtg2_with_filter(g, g.root))), len(g)
+    print(len(list(iter_mtg(g, g.root))), len(g))
+    print(len(list(iter_mtg2(g, g.root))), len(g))
+    print(len(list(iter_mtg_with_filter(g, g.root))), len(g))
+    print(len(list(iter_mtg2_with_filter(g, g.root))), len(g))
     #assert len(list(iter_mtg(g, g.root))) == len(g)
     assert len(list(iter_mtg(g, p1))) ==  22
     assert len(list(iter_mtg(g, p2))) ==  22

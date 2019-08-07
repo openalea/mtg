@@ -46,7 +46,7 @@ based on various infomation.
 from math import sqrt, pi
 
 from .. import traversal
-from dresser import DressingData
+from .dresser import DressingData
 from .. import algo
 from openalea.mtg.mtg import colored_tree, PropertyTree
 from openalea.mtg.plantframe import turtle
@@ -168,7 +168,7 @@ class PlantFrame(object):
         else:
             return name_property
 
-        for k, v in name_property.iteritems():
+        for k, v in name_property.items():
             name_property[k] = factor * v
 
         return name_property
@@ -292,14 +292,14 @@ class PlantFrame(object):
         max_scale = g.max_scale()
         # Between scale constraints
         # Copy of the keys because we modify the
-        for vid in self.bottom_diameter.keys():
+        for vid in list(self.bottom_diameter.keys()):
             scale = g.scale(vid)
             if scale == max_scale:
                 continue
             for s in range(scale+1, max_scale+1):
                 roots = g.component_roots_at_scale_iter(vid, s)
                 try:
-                    component_id = roots.next()
+                    component_id = next(roots)
                     self.bottom_diameter[component_id] = self.bottom_diameter[vid]
                 except StopIteration:
                     pass
@@ -318,7 +318,7 @@ class PlantFrame(object):
 
 
         # WARNING: We may have several extremities for the components.
-        for vid in self.top_diameter.keys():
+        for vid in list(self.top_diameter.keys()):
             scale = g.scale(vid)
             if scale == max_scale:
                 continue
@@ -339,19 +339,19 @@ class PlantFrame(object):
     # Methods that extend MTG
     @staticmethod
     def _first_component(g, vid):
-        return self.g.component_roots_iter(vid).next()
+        return next(self.g.component_roots_iter(vid))
     @staticmethod
     def _last_component(g, vid):
         leaves = algo.extremities(g, vid, scale=g.scale(vid)+1, ContainedIn=vid)
-        return leaves.next()
+        return next(leaves)
 
     @staticmethod
     def _first_component_at_scale(g, vid, scale):
-        return g.component_roots_at_scale_iter(vid, scale).next()
+        return next(g.component_roots_at_scale_iter(vid, scale))
     @staticmethod
     def _last_component_at_scale(g, vid, scale):
         leaves = algo.extremities(g, vid, scale=scale, ContainedIn=vid)
-        return leaves.next()
+        return next(leaves)
 
     @staticmethod
     def is_linear(g, cid):
@@ -412,7 +412,7 @@ class PlantFrame(object):
         """
         g = self.g
         max_scale = g.max_scale()
-        v = g.roots_iter(scale=max_scale).next()
+        v = next(g.roots_iter(scale=max_scale))
 
         # Compute default diameter
         dresser = self.dresser
@@ -424,7 +424,7 @@ class PlantFrame(object):
             strands[vid] = max(sum([strands[c] for c in g.children(vid)]), 1)
 
         diameters = {}
-        for vid, s in strands.iteritems():
+        for vid, s in strands.items():
             diameters[vid] = default_diameter * pow(s, 1./power)
 
         return diameters
@@ -471,7 +471,7 @@ class PlantFrame(object):
             if old_v in self.bottom_diameter:
                 bottom_diameter[v] = self.bottom_diameter[old_v]
 
-        for k,td in top_diameter.iteritems():
+        for k,td in top_diameter.items():
             diameters[k] = td**power
         ###
         error_vertex = []
@@ -479,7 +479,7 @@ class PlantFrame(object):
 
         for cid in g.vertices_iter(scale=1):
             # traverse the tree in a post_order way only for all vid in cid
-            root = g.component_roots_iter(cid).next()
+            root = next(g.component_roots_iter(cid))
             has_root_diameter = root in diameters or root in bottom_diameter or g.parent(root) in diameters
             if has_root_diameter:
                 pid = g.parent(root)
@@ -502,12 +502,12 @@ class PlantFrame(object):
                 if has_root_diameter and diam > root_diameter:
                     if error:
                         if max(children_diam) < root_diameter:
-                            print "ONE children has a greater radius value than its root."
-                            print children, children_diam
+                            print("ONE children has a greater radius value than its root.")
+                            print(children, children_diam)
                         else:
-                            print 'WARNING: The pipe model compute at %d for power=%f a too large diameter.'%(vid, power)
-                            print '       -> decrease the power of the pipe model.'
-                        print 'root ', root, 'root_diam ', root_diameter, 'current ', diam
+                            print('WARNING: The pipe model compute at %d for power=%f a too large diameter.'%(vid, power))
+                            print('       -> decrease the power of the pipe model.')
+                        print('root ', root, 'root_diam ', root_diameter, 'current ', diam)
                     error_vertex.append(new_map[vid])
 
                 if diam > 0:
@@ -569,11 +569,11 @@ class PlantFrame(object):
 
         # compute the final diameters
         factor = 1./power
-        result = dict(( (new_map[v], d**factor) for v, d in diameters.iteritems()))
+        result = dict(( (new_map[v], d**factor) for v, d in diameters.items()))
 
         self.error_vertex = error_vertex
         if error_vertex:
-            print 'Warnings on diameter for %d vertices'%len(error_vertex)
+            print('Warnings on diameter for %d vertices'%len(error_vertex))
         return result
 
     def advanced_algo_diameter2(self, power, default_diameter=None):
@@ -617,14 +617,14 @@ class PlantFrame(object):
         top_diameter = self.top_diameter
         bottom_diameter = self.bottom_diameter
 
-        for k,td in top_diameter.iteritems():
+        for k,td in top_diameter.items():
             if g.scale(k) == max_scale:
                 diameters[k] = td**power
         ###
         error_vertex = []
         # For each independant sub_systems
 
-        for tree in trees.itervalues():
+        for tree in trees.values():
             # traverse the tree in a post_order way only for all vid in cid
             root = tree.root
             pid = g.parent(root)
@@ -651,12 +651,12 @@ class PlantFrame(object):
                 if has_root_diameter and diam > root_diameter:
                     if error:
                         if max(children_diam) < root_diameter:
-                            print "ONE children has a greater radius value than its root."
-                            print g.children(vid), children_diam
+                            print("ONE children has a greater radius value than its root.")
+                            print(g.children(vid), children_diam)
                         else:
-                            print 'WARNING: The pipe model compute at %d for power=%f a too large diameter.'%(vid, power)
-                            print '       -> decrease the power of the pipe model.'
-                        print 'root ', root, 'root_diam ', root_diameter, 'current ', diam
+                            print('WARNING: The pipe model compute at %d for power=%f a too large diameter.'%(vid, power))
+                            print('       -> decrease the power of the pipe model.')
+                        print('root ', root, 'root_diam ', root_diameter, 'current ', diam)
                     error_vertex.append(vid)
 
                 if diam > 0:
@@ -680,7 +680,7 @@ class PlantFrame(object):
                     # Add diameter only at the branching where
                     # Select only the vertices which do not have a diam value.
                     strands_diameter = default_diameter
-                    for vid, nb_strands in strands.iteritems():
+                    for vid, nb_strands in strands.items():
                         if vid not in diameters:
                             diameters[vid]= nb_strands * strands_diameter
 
@@ -689,7 +689,7 @@ class PlantFrame(object):
                     n = strands.get(root,0)
                     if n > 0:
                         strands_diameter = delta_diameter / n
-                        for vid, nb_strands in strands.iteritems():
+                        for vid, nb_strands in strands.items():
                             diameters[vid] = diameters.get(vid,0) + nb_strands * strands_diameter
 
             else:
@@ -709,18 +709,18 @@ class PlantFrame(object):
                     nb_leaves = len([v for v in traversal.pre_order2(g, root) if special_leaf(v)])
                     strands_diameter = diameters[root] / (nb_leaves - strands[root])
 
-                for vid, nb_strands in strands.iteritems():
+                for vid, nb_strands in strands.items():
                     diameters[vid] = diameters.get(vid,0) + nb_strands * strands_diameter
 
 
         # compute the final diameters
         factor = 1./power
-        for v, d in diameters.iteritems():
+        for v, d in diameters.items():
             diameters[v] = d**factor
 
         self.error_vertex = error_vertex
         if error_vertex:
-            print 'Warnings on diameter for %d vertices'%len(error_vertex)
+            print('Warnings on diameter for %d vertices'%len(error_vertex))
 
         return diameters
 
@@ -791,7 +791,7 @@ class PlantFrame(object):
         g = self.g
 
         max_scale = g.max_scale()
-        tree_root = g.roots_iter(scale=max_scale).next()
+        tree_root = next(g.roots_iter(scale=max_scale))
 
         colors = {}
         tv = colors[2] = list(traversal.pre_order(g, tree_root))
@@ -806,7 +806,7 @@ class PlantFrame(object):
 
         mtg, new_map = colored_tree(g, colors)
 
-        mtg_root = mtg.roots_iter(scale=1).next()
+        mtg_root = next(mtg.roots_iter(scale=1))
 
         label = mtg.property('label')
         for v in mtg.vertices_iter(scale=1):
@@ -932,7 +932,7 @@ class PlantFrame(object):
                 elif vid in _unknows:
                     d = _unknows[vid]
                     complex_unknow = _unknows.setdefault(cid,{})
-                    for name, x in d.iteritems():
+                    for name, x in d.items():
                         complex_unknow[name] = d.get(name) + x
 
                 else:
@@ -956,7 +956,7 @@ class PlantFrame(object):
         visitor = Visitor()
 
         # A possible alternative is to add a weight depending on the ClassName.
-        for vid in length.keys():
+        for vid in list(length.keys()):
             if vid not in _unknows:
                 continue
             n = sum(_unknows.get(vid).values())
@@ -964,7 +964,7 @@ class PlantFrame(object):
 
             for v in traversal.pre_order_in_scale(g,vid, visitor):
                 if v not in length:
-                    print v
+                    print(v)
                     length[v] = _length.get(v,0) + x * sum(_unknows.get(vid).values())
 
         # Solve all the others without length
@@ -973,7 +973,7 @@ class PlantFrame(object):
             for v in traversal.pre_order_in_scale(g, root, visitor):
                 if v not in length:
                     l = _length.get(v,0)
-                    for name, weight in _unknows.get(v,{}).iteritems():
+                    for name, weight in _unknows.get(v,{}).items():
                         l+= weight * min_length.get(name, default_length) / unit
                     length[v] = l
 
@@ -1103,7 +1103,7 @@ class PlantFrame(object):
                 radius = radius /2.
             elif g.scale(v) < max_scale:
                 try:
-                    vm = g.component_roots_at_scale_iter(v, scale=max_scale).next()
+                    vm = next(g.component_roots_at_scale_iter(v, scale=max_scale))
                     radius = diameters.get(vm, 0.)/2.
                 except:
                     radius = 0.
@@ -1112,7 +1112,7 @@ class PlantFrame(object):
                 pt = points.get(v)
                 if not pt and g.scale(v) != max_scale:
                     try:
-                        vm = g.component_roots_at_scale_iter(v, scale=max_scale).next()
+                        vm = next(g.component_roots_at_scale_iter(v, scale=max_scale))
                         pt = points.get(vm)
                     except: pass
 
@@ -1146,7 +1146,7 @@ class PlantFrame(object):
             d = diameters.get(rid)
             if not d and scale != max_scale:
                 try:
-                    vm = g.component_roots_at_scale_iter(rid, scale=max_scale).next()
+                    vm = next(g.component_roots_at_scale_iter(rid, scale=max_scale))
                     d = diameters.get(vm)
                 except:
                     pass
@@ -1174,10 +1174,10 @@ class PlantFrame(object):
         import matplotlib
         import matplotlib.pyplot
         props = getattr(self, prop)
-        pylab_colors = matplotlib.colors.cnames.keys()
+        pylab_colors = list(matplotlib.colors.cnames.keys())
         color = {}
         orders = algo.orders(self.g)
-        color = dict([(k, pylab_colors[orders[k]]) for k in props.iterkeys()])
+        color = dict([(k, pylab_colors[orders[k]]) for k in props.keys()])
 
         heights = algo.heights(self.g)
         h = dict([(v, heights[v]) for v in props])
@@ -1228,15 +1228,15 @@ def compute_axes(g, v, fixed_points, origin):
         _axe = list(simple_axe(g,vid, marked, fixed_points))
         _axe.reverse()
 
-        _axe, other = zip(*_axe)
+        _axe, other = list(zip(*_axe))
         axes.setdefault(g.order(_axe[0]),[]).append(list(_axe))
         others.setdefault(g.order(_axe[0]),[]).append(list(other))
 
-    orders = axes.keys().sort()
+    orders = list(axes.keys()).sort()
     for order in axes:
         for i, axe in enumerate(axes[order]):
             other = others[order][i]
-            _axe = zip(axe, other)
+            _axe = list(zip(axe, other))
             if order == 0:
                 new_points = compute_missing_points(g, _axe, fixed_points, origin=origin)
             else:
@@ -1371,7 +1371,7 @@ def compute_missing_points(g, axe, fixed_points, origin=None):
                                 if g.parent(v) in fixed_points:
                                     print step - (p1-fixed_points[g.parent(v)])
             """
-            print 'TODO : point for ', i0[0]
+            print('TODO : point for ', i0[0])
 
     if i1 and (i1 != i0):
         v1 = i1[0]
@@ -1394,7 +1394,7 @@ def compute_radius(g, v, last_radius):
     for vid in traversal.post_order(g, v):
         r2 = max(sum([all_r2[c] for c in g.children(vid)]), last_radius)
         all_r2[vid] = r2
-    for k, v in all_r2.iteritems():
+    for k, v in all_r2.items():
         all_r2[k] = sqrt(v)
     return all_r2
 
@@ -1553,7 +1553,7 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
 def debug(g, scene, points, order, scale=3, color=(255,0,0)):
     c = Material(Color3(*color))
     sphere = Sphere(radius=30)
-    for id, pt in points.iteritems():
+    for id, pt in points.items():
         if g.order(id) == order and g.scale(id) == scale:
             scene+= Shape(Translated(pt,sphere), c)
     return scene

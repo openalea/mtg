@@ -19,7 +19,7 @@ requirements:
   run:
     - python
     - openalea.deploy
-    - openalea.core
+    # - openalea.core
     - numpy
     - matplotlib
     - pandas

@@ -15,7 +15,7 @@
 ################################################################################
 
 import os
-from itertools import izip, repeat
+from itertools import repeat
 from glob import glob
 
 from openalea.mtg import *
@@ -41,7 +41,7 @@ def build_mtg_and_check(fn):
     g = read_mtg_file(fn)
 
     props = (p for p in g.property_names() if p not in ['edge_type', 'index', 'label'])
-    props = list(izip(props, repeat('REAL')))
+    props = list(zip(props, repeat('REAL')))
 
     # Write it on a string
     #try:
@@ -60,7 +60,7 @@ def check(g, s, fn):
     f.close()
     try:
         g1 = aml.MTG('tmp.mtg')
-    except Exception, e:
+    except Exception as e:
         os.remove('tmp.mtg')
         assert False, fn
     
