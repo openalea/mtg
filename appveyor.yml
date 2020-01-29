@@ -5,12 +5,14 @@ platform:
 environment:
   matrix:
     - CONDA_RECIPE: conda
-      CONDA_VERSION: 2
+      CONDA_VERSION: 3
 
 install:
   - git clone https://github.com/OpenAlea/appveyor-ci.git
   - cd appveyor-ci
   - call install.bat
+  - conda config --prepend channels conda-forge
+  - conda config --prepend channels fredboudon
 
 before_build:
   - call before_build.bat
