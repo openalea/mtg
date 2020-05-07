@@ -80,7 +80,7 @@ They will return an iterator on the traversed vertices.
 .. code-block:: python
     :linenos:
 
-    from openalea.container.traversal.tree import *
+    from openalea.mtg.traversal import *
 
     print list(g.components(root))
 

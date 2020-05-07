@@ -47,8 +47,8 @@ information about the MTG and DRF syntax. Note that the following code should be
     :linenos:
 
     from openalea.mtg.aml import MTG
-    from openalea.mtg.dresser import dressing_data_from_file
-    from openalea.mtg.plantframe import PlantFrame, compute_axes, build_scene
+    from openalea.mtg.plantframe.dresser import dressing_data_from_file
+    from openalea.mtg.plantframe.plantframe import PlantFrame, compute_axes, build_scene
     g = MTG('agraf.mtg')
     dressing_data = dressing_data_from_file('agraf.drf')
     topdia = lambda x:  g.property('TopDia').get(x)
@@ -56,7 +56,7 @@ information about the MTG and DRF syntax. Note that the following code should be
     axes = compute_axes(g, 3, pf.points, pf.origin)
     diameters = pf.algo_diameter()
     scene = build_scene(pf.g, pf.origin, axes, pf.points, diameters, 10000)
-    from  vplants.plantgl.all import Viewer
+    from openalea.plantgl.all import Viewer
     Viewer.display(scene)
 
 .. figure:: fig3_5_bis.png
