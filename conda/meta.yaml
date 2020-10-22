@@ -1,4 +1,4 @@
-{% set version = "2.0.2" %}
+{% set version = "2.0.3" %}
 
 package:
   name: openalea.mtg
@@ -18,7 +18,7 @@ requirements:
     - openalea.deploy
   run:
     - python
-    - openalea.deploy
+    #- openalea.deploy
     # - openalea.core
     - numpy
     - matplotlib
