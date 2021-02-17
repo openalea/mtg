@@ -1,5 +1,6 @@
-import openalea.mtg.rewriting as rw; reload(rw) 
+import openalea.mtg.rewriting as rw; importlib.reload(rw) 
 from openalea.mtg.rewriting import *
+import importlib
 
 
 module('Plant',       1, globals())
@@ -12,15 +13,15 @@ def axiom():
     return produce(Plant(), BS(), Internode(), Segment(), [Internode(), Segment()], GrowthPoint(), [Internode(), Segment()] , Internode(), Segment() )
 
 def printresult(mtg):
-    print
-    print 'Result:'
+    print()
+    print('Result:')
     mtg.display(display_scale=True)
 
 def runsimu(simu, display=True):
     simu.init()
     mtg = simu.currentmtg
 
-    print 'Axiom:'
+    print('Axiom:')
     mtg.display(display_scale=True)
 
     mtg = simu.run()
@@ -51,11 +52,11 @@ def test2():
     mtg.display(display_scale=True)
 
     for vid in [6,8,10]:
-        print vid,'->',mtg.parent(vid)
+        print(vid,'->',mtg.parent(vid))
     mtg.replace_parent(8,3)
     mtg.replace_parent(10,3)
     for vid in [6,8,10]:
-        print vid,'->',mtg.parent(vid)
+        print(vid,'->',mtg.parent(vid))
 
 def test3():
     class MySimu(MTGLsystem):

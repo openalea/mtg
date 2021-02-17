@@ -83,7 +83,7 @@ def test4():
     g = read_mtg_file(fn)
 
     t1=clock(); t, dt = t1, t1-t
-    print 'readmtg in ', dt 
+    print('readmtg in ', dt) 
 
     topdia = lambda x: g.property('TopDia').get(x)
 
@@ -94,23 +94,23 @@ def test4():
     pf.propagate_constraints()
 
     t1=clock(); t, dt = t1, t1-t
-    print 'empty plantframe in ', dt 
+    print('empty plantframe in ', dt) 
 
     diameters = pf.algo_diameter()
 
     t1=clock(); t, dt = t1, t1-t
-    print 'diameter in ', dt 
+    print('diameter in ', dt) 
 
     axes = plantframe.compute_axes(g,3, pf.points, pf.origin)
     axes[0][0].insert(0,pf.origin)
 
     t1=clock(); t, dt = t1, t1-t
-    print 'points in ', dt 
+    print('points in ', dt) 
 
     scene=plantframe.build_scene(pf.g, pf.origin, axes, pf.points, diameters, 10000)
 
     t1=clock(); t, dt = t1, t1-t
-    print 'scene in ', dt 
+    print('scene in ', dt) 
     return scene, pf
 
 def test5():
@@ -122,7 +122,7 @@ def test5():
     g = read_mtg_file(fn)
 
     t1=clock(); t, dt = t1, t1-t
-    print 'readmtg in ', dt 
+    print('readmtg in ', dt) 
 
     topdia = lambda x: g.property('TopDia').get(x)
 
@@ -133,24 +133,24 @@ def test5():
     pf.propagate_constraints()
 
     t1=clock(); t, dt = t1, t1-t
-    print 'empty plantframe in ', dt 
+    print('empty plantframe in ', dt) 
 
     diameters = pf.algo_diameter()
 
     t1=clock(); t, dt = t1, t1-t
-    print 'diameter in ', dt 
+    print('diameter in ', dt) 
 
-    root = g.roots_iter(scale=g.max_scale()).next()
+    root = next(g.roots_iter(scale=g.max_scale()))
     axes = plantframe.compute_axes(g,root, pf.points, pf.origin)
     axes[0][0].insert(0,pf.origin)
 
     t1=clock(); t, dt = t1, t1-t
-    print 'points in ', dt 
+    print('points in ', dt) 
 
     scene=plantframe.build_scene(pf.g, pf.origin, axes, pf.points, diameters, 10000, option='cylinder')
 
     t1=clock(); t, dt = t1, t1-t
-    print 'scene in ', dt 
+    print('scene in ', dt) 
 
     return scene, pf
 
@@ -179,7 +179,7 @@ def test_colors():
 
     g = pf.g
     colors =defaultdict(lambda x: (0,255,0), 
-        zip(range(8), [ ((i&2**0)*255, ((i&2**1)>>1)*255, ((i&2**2)>>2)*255) for i in range(8)])) 
+        list(zip(list(range(8)), [ ((i&2**0)*255, ((i&2**1)>>1)*255, ((i&2**2)>>2)*255) for i in range(8)]))) 
     def my_color(vid):
         return colors[g.order(vid)]
 
@@ -206,7 +206,7 @@ def fun3():
 
     lengths = []
     for root in g.vertices(scale=1):
-        vr = g.component_roots_at_scale_iter(root,scale=2).next()
+        vr = next(g.component_roots_at_scale_iter(root,scale=2))
         h = aml.Height(vr)
         lv = [v for v in algo.trunk(g,vr, RestrictedTo='SameComplex', ConatinedIn=root) if v in pf.length]
         P.plot([aml.Height(v)-h for v in lv], [pf.length.get(v) for v in lv], 'o-')

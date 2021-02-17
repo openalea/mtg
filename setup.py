@@ -50,11 +50,11 @@ setup_kwds = dict(
 # #}
 # change setup_kwds below before the next pkglts tag
 
-setup_kwds['share_dirs'] = {'share': 'share'}
+# setup_kwds['share_dirs'] = {'share': 'share'}
 
 setup_kwds['entry_points']["wralea"] = ["mtg = openalea.mtg_wralea"]
-setup_kwds['setup_requires'] = ['openalea.deploy']
-setup_kwds['dependency_links'] = ['http://openalea.gforge.inria.fr/pi']
+#setup_kwds['setup_requires'] = ['openalea.deploy']
+#setup_kwds['dependency_links'] = ['http://openalea.gforge.inria.fr/pi']
 setup_kwds['pylint_packages'] = ['src/mtg', 'src/mtg/interface']
 
 # do not change things below

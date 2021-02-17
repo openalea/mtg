@@ -17,8 +17,8 @@ def colormap(g, property_name, cmap='jet',lognorm=True):
 
     """
     prop = g.property(property_name)
-    keys = prop.keys()
-    values = np.array(prop.values())
+    keys = list(prop.keys())
+    values = np.array(list(prop.values()))
     #m, M = int(values.min()), int(values.max())
 
     _cmap = get_cmap(cmap)
@@ -29,7 +29,7 @@ def colormap(g, property_name, cmap='jet',lognorm=True):
     colors = (_cmap(values)[:,0:3])*255
     colors = np.array(colors,dtype=np.int).tolist()
 
-    g.properties()['color'] = dict(zip(keys,colors))
+    g.properties()['color'] = dict(list(zip(keys,colors)))
     return g
 
 def hex2color(s):
@@ -39,16 +39,16 @@ def lut(g, property_name, colors=[], N=0):
 
     """
     prop = g.property(property_name)
-    keys = prop.keys()
-    values = prop.values()
+    keys = list(prop.keys())
+    values = list(prop.values())
     #m, M = int(values.min()), int(values.max())
 
     if not colors:
-        colors = [hex2color(c) for c in matplotlib.colors.cnames.values()]
+        colors = [hex2color(c) for c in list(matplotlib.colors.cnames.values())]
 
     n = len(colors)
     if n < max(values):
-        print 'values max ', max(values), '  when nb colors is ', n
+        print('values max ', max(values), '  when nb colors is ', n)
     g.properties()['color'] = dict((keys[i], colors[values[i]%n]) for i in range(len(keys)))
     return g, colors
 
@@ -58,8 +58,8 @@ def colorbar(g, property_name, cmap='jet',lognorm=True, N=5, fmt='%.1e'):
     ax = fig.add_axes([0.05, 0.65, 0.9, 0.15])
 
     prop = g.property(property_name)
-    keys = prop.keys()
-    values = np.array(prop.values())
+    keys = list(prop.keys())
+    values = np.array(list(prop.values()))
     m, M = values.min(), values.max()
 
     ticks = np.linspace(m,M,N)
@@ -86,17 +86,17 @@ def colorbar_lut(g, property_name, colors=[], N=5, fmt='%d'):
     ax = fig.add_axes([0.05, 0.65, 0.9, 0.15])
 
     if not colors:
-        colors = [hex2color(c) for c in matplotlib.colors.cnames.values()]
+        colors = [hex2color(c) for c in list(matplotlib.colors.cnames.values())]
 
     prop = g.property(property_name)
-    keys = prop.keys()
-    values = prop.values()
+    keys = list(prop.keys())
+    values = list(prop.values())
     m, M = min(values), max(values)
 
     n = len(colors)
 
     m , M = 0, min(n,M)
-    values = range(M)
+    values = list(range(M))
 
     ticks = np.linspace(m,M,M+1)
 
@@ -150,7 +150,7 @@ def plot3d(g):
         shape.id = vid
         scene.add(shape)
 
-    for vid, mesh in geometries.iteritems():
+    for vid, mesh in geometries.items():
         geom2shape(vid, mesh, scene)
     pgl.Viewer.display(scene)
     return scene
