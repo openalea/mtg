@@ -45,7 +45,7 @@ class ObservedVertex(Observed):
         self.notify_listeners(("metadata_changed", "position", pos))
 
     def notify_update(self, **kwargs):
-        for item in kwargs.iteritems():
+        for item in kwargs.items():
             self.notify_listeners(item)
 
         pos = self.g().node(self.vid).position
@@ -375,7 +375,7 @@ def initialise_graph_view_from_model(graphView, graphModel):
     """
     g = graphModel.graph
     gm = graphModel
-    print g, gm
+    print(g, gm)
     for v in g:
         if v is not g.root:
             gm.notify_listeners(("vertex_added", ("vertex", gm.vid2obj(v))))

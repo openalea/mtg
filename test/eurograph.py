@@ -3,8 +3,9 @@ import os, sys
 
 from openalea.mtg import *
 import openalea.mtg.io as io
+import importlib
 
-reload(io)
+importlib.reload(io)
 
 #io.debug = 1
 fn = r'data/agraf.mtg'

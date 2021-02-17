@@ -217,7 +217,7 @@ def test_reindex():
     for i in range(1,4):
         assert g.nb_vertices(scale=i) ==g.nb_vertices(scale=i)
 
-    mapping = dict(zip(iter_mtg2(g1, g1.root), iter_mtg2(g, g.root)))
+    mapping = dict(list(zip(iter_mtg2(g1, g1.root), iter_mtg2(g, g.root))))
     g0 = g1.reindex(mapping, copy=False)
     
     # compare g0 and g: Have to be similar.

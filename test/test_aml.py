@@ -59,7 +59,7 @@ def compare(func_name, *args, **kwds):
     if args: 
         params.extend((str(x) for x in args))
     if kwds: 
-        params.extend(('%s=%s'%(k,v) for k, v in kwds.iteritems()))
+        params.extend(('%s=%s'%(k,v) for k, v in kwds.items()))
 
     f = func_name+'('+','.join(params)+')'
     try:

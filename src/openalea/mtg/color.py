@@ -12,8 +12,8 @@ def colormap(g, property_name, cmap='jet',lognorm=True):
     """
     prop = g.property(property_name)
 
-    keys = prop.keys()
-    v = np.array(prop.values())
+    keys = list(prop.keys())
+    v = np.array(list(prop.values()))
 
     _cmap = cm.get_cmap(cmap)
     norm = Normalize() if not lognorm else LogNorm() 
@@ -22,6 +22,6 @@ def colormap(g, property_name, cmap='jet',lognorm=True):
     colors = (_cmap(values)[:,0:3])*255
     colors = np.array(colors,dtype=np.int).tolist()
 
-    g.properties()['color'] = dict(zip(keys,colors))
+    g.properties()['color'] = dict(list(zip(keys,colors)))
     return g
     

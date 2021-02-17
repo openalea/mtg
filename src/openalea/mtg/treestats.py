@@ -31,7 +31,7 @@
     - explicit identifier for sequence (e.g. year of growth or date of observation)
 
 '''
-from itertools import chain, ifilter, imap
+from itertools import chain
 
 from openalea.tree_statistic.trees import etrees
 from openalea.mtg import algo
@@ -75,7 +75,7 @@ def extract_trees(g, scale, visitor=None, variable_funcs=[], variable_names=[], 
             for p in variable_names:
                 if not(p in property_names):
                     msg = "Property " + str(p) + " not present in MTG"
-                    raise ValueError, msg
+                    raise ValueError(msg)
                 else:
                     variable_funcs += [lambda vid: g.property(p).get(vid)]
     elif len(variable_names) == 0:

@@ -25,8 +25,8 @@ def check(tree):
     parents = tree._parent
     kids = tree._children
 
-    sons = set(v for v in l for l in kids.itervalues()) 
-    vtx = set(v for v in parents.itervalues() if v is not None)
+    sons = set(v for v in l for l in kids.values()) 
+    vtx = set(v for v in parents.values() if v is not None)
 
 
 

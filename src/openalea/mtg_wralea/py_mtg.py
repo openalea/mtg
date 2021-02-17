@@ -92,8 +92,8 @@ Ouput : MTG object if the parsing process succeeds.
         if obj:
             try:
                 g = MTG(obj, **kwds)
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
 
         return g
 
@@ -218,7 +218,7 @@ Output:
 
         Node.__init__(self)
 
-        funs= self.vtx_func.keys()
+        funs= list(self.vtx_func.keys())
         funs.sort()
         self.add_input( name = "Name", interface = IEnumStr(funs), value = funs[0])
         self.add_input( name = "Vtx" )
@@ -268,7 +268,7 @@ class TopoFunction( Node ):
 
         Node.__init__(self)
 
-        funs= self.vtx_func.keys()
+        funs= list(self.vtx_func.keys())
         funs.sort()
         self.add_input( name = "name", interface = IEnumStr(funs), value = funs[0])
         self.add_input( name = "Vtx" )
@@ -434,8 +434,8 @@ Input:
 
         try:
             pf = PlantFrame(vtx, **kwds)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             pf=None
 
         return (pf,)
@@ -450,8 +450,8 @@ def py_dressingdata(g,filename):
     if filename:
         try:
             d = DressingData(filename)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             d = None
         return (d,)
 
@@ -522,8 +522,8 @@ Input:
 
         try:
             pf = PlantFrame(vtx, **kwds)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             pf=None
 
         return (pf,)

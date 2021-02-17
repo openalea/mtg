@@ -102,13 +102,13 @@ def to_scipy_sparse_matrix(g, vertexlist=None, dtype=None,
         msg = "Ambiguous ordering: `vertexlist` contained duplicates."
         raise Exception(msg)
 
-    index = dict(zip(vertexlist,range(nlen)))
+    index = dict(list(zip(vertexlist,list(range(nlen)))))
     if len(vertexlist) < 2:
         row,col,data=[],[],[]
     else:
-        row,col,data=zip(*((index[g.parent(vid)],index[vid],1)
+        row,col,data=list(zip(*((index[g.parent(vid)],index[vid],1)
                            for vid in vertexlist
-                           if g.parent(vid) in index and vid in index))
+                           if g.parent(vid) in index and vid in index)))
     M = sparse.coo_matrix((data,(row,col)),shape=(nlen,nlen), dtype=dtype)
 
     try:
