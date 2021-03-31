@@ -37,7 +37,7 @@ test:
     - test/data/**
   commands:
     - cd test
-    - pytest -v --ignore=test_aml.py --ignore=test_parsing_mtg.py --ignore=test_stat.py
+    - pytest -v --ignore=test_aml.py  --ignore=test_stat.py
 
 about:
   home: http://openalea.gforge.inria.fr/
