@@ -31,11 +31,11 @@ test:
   imports:
     - openalea.mtg
    source_files:
-     - test/**
-     - test/data/**
+    - test/**
+    - test/data/**
    commands:
-     - cd test
-     - pytest -v --ignore=test_aml.py --ignore=test_parsing_mtg.py --ignore=test_parsing_axialtree.py  --ignore=test_stat.py
+    - cd test
+    - pytest -v --ignore=test_aml.py --ignore=test_parsing_mtg.py --ignore=test_parsing_axialtree.py  --ignore=test_stat.py
 
 about:
   home: http://openalea.gforge.inria.fr/
