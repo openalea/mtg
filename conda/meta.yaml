@@ -1,8 +1,8 @@
-{% set version = "2.0.3" %}
+{% set data = load_setup_py_data() %}
 
 package:
   name: openalea.mtg
-  version: {{ version }}
+  version: {{ data.get('version') }}
 
 source:
   path: ..
@@ -30,10 +30,10 @@ test:
     - pytest
   imports:
     - openalea.mtg
-   source_files:
+  source_files:
     - test/**
     - test/data/**
-   commands:
+  commands:
     - cd test
     - pytest -v --ignore=test_aml.py --ignore=test_parsing_mtg.py --ignore=test_parsing_axialtree.py  --ignore=test_stat.py
 
