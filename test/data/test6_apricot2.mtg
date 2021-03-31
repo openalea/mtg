@@ -1,9 +1,9 @@
-# B= Branche ; U=Unité de croissance ; L= distance/ insertion sur tronc ; b= ramification"				
-# Long= longueur de U en cm ; LAB,LAC et LBC= distances en cm entre les trois piquets (constantes pour une même branche) qui définissent le plan ."				
+# B= Branche ; U=Unite de croissance ; L= distance/ insertion sur tronc ; b= ramification				
+# Long= longueur de U en cm ; LAB,LAC et LBC= distances en cm entre les trois piquets (constantes pour une meme branche) qui definissent le plan .		
 # LA, LB et LC= distances en mm d'un point de la branche (segments de 10 cm) au sommet de chacun des trois piquets				
-# Diamètres= en mm à la base de l' U.C, du segment et de la ramification.				
-# Zone= région d'insertion de la ramification (1=face supérieure de la branche, 2=faces latérales et 3=face inférieure) ; Poids = de la ramification, en g."				
-# 1, 2, 3 et 4= position angulaire de la mesure de DRLM (1=face supérieure ou 0°, 2=90°, 3=180° et 4=270°).				
+# Diametres= en mm a la base de l' U.C, du segment et de la ramification.				
+# Zone= region d'insertion de la ramification (1=face superieure de la branche, 2=faces laterales et 3=face inferieure) ; Poids = de la ramification, en g.			
+# 1, 2, 3 et 4= position angulaire de la mesure de DRLM (1=face superieure ou 0, 2=90, 3=180 et 4=270).				
 
 
 CODE :	FORM-A			
