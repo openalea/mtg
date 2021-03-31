@@ -32,18 +32,18 @@ setup_kwds = dict(
     packages=find_packages('src'),
     namespace_packages=['openalea'],
     package_dir={'': 'src'},
-    setup_requires=[
-        "pytest-runner",
-        ],
-    install_requires=[
-        ],
-    tests_require=[
-        "coverage",
-        "mock",
-        "pytest",
-        "pytest-cov",
-        "sphinx",
-        ],
+    #setup_requires=[
+    #    "pytest-runner",
+    #    ],
+    #install_requires=[
+    #    ],
+    #tests_require=[
+    #    "coverage",
+    #    "mock",
+    #    "pytest",
+    #    "pytest-cov",
+    #    "sphinx",
+    #    ],
     entry_points={},
     keywords='',
     )

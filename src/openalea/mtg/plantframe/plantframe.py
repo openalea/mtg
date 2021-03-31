@@ -1475,7 +1475,7 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
 
     rad = diameters
     if option == 'cylinder':
-        for vid in points :
+        for vid in points.keys() :
             if hide is not None and hide(vid):
                 continue
             if g.scale(vid) != scale:
@@ -1514,8 +1514,9 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
 
         return scene
 
-    for order in axes:
-        for axe in axes[order]:
+    for order, oaxes in axes.items():
+        for axe in oaxes:
+            print(axe)
             if hide is not None and hide(axe[0]):
                 continue
             parent = g.parent(axe[0])
@@ -1545,7 +1546,7 @@ def build_scene(g, origin, axes, points, diameters, default_radius, option='axe'
 
                 curve, radius = clean_curve(curve, radius)
                 shape = Shape(Extrusion(curve, section, radius),Material(Color3(*color)))
-                shape.id = vid
+                shape.id = axe[0]
                 scene += shape
 
     return scene
