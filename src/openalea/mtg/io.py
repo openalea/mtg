@@ -190,7 +190,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
 
     # remove from the date format the /
     if has_date:
-        print('replace all the date format by -')
+        # print('replace all the date format by -')
         if 'DD/MM/YY' in list(class_type.values()):
             date_format = 'DD/MM/YY'
         else:
