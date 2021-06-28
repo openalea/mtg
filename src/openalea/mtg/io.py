@@ -643,7 +643,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
                 if module.hasParameter(p):
                     params[p] = module.getParameter(p)
                 # otherwise check in parameterset
-                elif module.argSize() is 1:
+                elif module.argSize() == 1:
                     try:
                         pset = module.args[0]
                         if p in list(pset.__dict__.keys()):
@@ -753,7 +753,7 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
         l = [name]
 
         params = parameters.get(name, [])
-        if 'parameter_set' in params and len(params) is 1:
+        if 'parameter_set' in params and len(params) == 1:
             from openalea.lpy.parameterset import ParameterSet
             exclude = ['geometry','label','edge_type','_axial_id']
             pset = {}
@@ -800,7 +800,7 @@ def lpy2mtg(axial_tree, lsystem, scene = None):
     for m in modules:
         label = m.name
         parameters[label] = m.parameterNames
-        if 'parameter_set' in m.parameterNames and len(m.parameterNames) is 1:
+        if 'parameter_set' in m.parameterNames and len(m.parameterNames) == 1:
             if axial_tree.count(label) > 0:
                 index = axial_tree.find(label + '(p)')
                 pset = axial_tree[index].args[0]
