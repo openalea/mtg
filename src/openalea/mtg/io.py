@@ -212,7 +212,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
     s = s.replace('*(', '\n(')
 
 
-    l = filter( None, s.split('\n'))
+    l = list(filter( None, s.split('\n')))
 
     for node in l:
         if node.startswith('<<'):
@@ -1038,7 +1038,9 @@ class Reader(object):
                 self.warnings.append((self._no_line, "Unknown left symbol %s."%left))
             right = ''.join(line[1:-2])
             rights = [symbol.strip() for symbol in right.split(',')]
+            
             bad_right=  [x for x in rights if x not in self._symbols]
+
             if bad_right:
                 self.warnings.append((self._no_line, "Unknown right symbols %s."%bad_right))
 
