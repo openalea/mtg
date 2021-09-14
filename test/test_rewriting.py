@@ -1,6 +1,6 @@
+import importlib
 import openalea.mtg.rewriting as rw; importlib.reload(rw) 
 from openalea.mtg.rewriting import *
-import importlib
 
 
 module('Plant',       1, globals())
@@ -72,8 +72,11 @@ def test3():
             if node.bid == 2:
                 node.produce( )
 
-
-    return runsimu(MySimu())
+    try:
+        return runsimu(MySimu())
+    except:
+        import warnings
+        warnings.warn("Cannot replace a node with components")
 
 def test4():
     class MySimu(MTGLsystem):

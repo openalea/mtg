@@ -1,7 +1,7 @@
 from openalea.mtg.io import axialtree2mtg, mtg2mss , lpy2mtg, mtg2lpy
 from openalea.lpy import AxialTree, generateScene, Lsystem
 from openalea.plantgl.all import Scene, Viewer
-from openalea.core.path import path
+from path import Path as path
 
 def str2mtg(s):
     #s = s.replace('N', 'F')

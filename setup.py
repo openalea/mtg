@@ -17,10 +17,11 @@ version = {}
 with open("src/openalea/mtg/version.py") as fp:
     exec(fp.read(), version)
 
+mtg_version = version["__version__"]
 
 setup_kwds = dict(
     name='openalea.mtg',
-    version=version["__version__"],
+    version=mtg_version,
     description=short_descr,
     long_description=readme + '\n\n' + history,
     author="Christophe Pradal",
@@ -32,18 +33,18 @@ setup_kwds = dict(
     packages=find_packages('src'),
     namespace_packages=['openalea'],
     package_dir={'': 'src'},
-    setup_requires=[
-        "pytest-runner",
-        ],
-    install_requires=[
-        ],
-    tests_require=[
-        "coverage",
-        "mock",
-        "pytest",
-        "pytest-cov",
-        "sphinx",
-        ],
+    #setup_requires=[
+    #    "pytest-runner",
+    #    ],
+    #install_requires=[
+    #    ],
+    #tests_require=[
+    #    "coverage",
+    #    "mock",
+    #    "pytest",
+    #    "pytest-cov",
+    #    "sphinx",
+    #    ],
     entry_points={},
     keywords='',
     )
