@@ -18,12 +18,12 @@ requirements:
     # - openalea.deploy
   run:
     - python
-    #- openalea.deploy
-    # - openalea.core
+    - openalea.plantgl
     - numpy
     - matplotlib
     - pandas
-    - openalea.plantgl
+    # - openalea.deploy
+    # - openalea.core
 
 test:
   requires:
