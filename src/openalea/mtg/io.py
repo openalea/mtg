@@ -1038,7 +1038,7 @@ class Reader(object):
                 self.warnings.append((self._no_line, "Unknown left symbol %s."%left))
             right = ''.join(line[1:-2])
             rights = [symbol.strip() for symbol in right.split(',')]
-            bad_right= filter(lambda x: x not in self._symbols, rights)
+            bad_right= list(filter(lambda x: x not in self._symbols, rights))
             if bad_right:
                 self.warnings.append((self._no_line, "Unknown right symbols %s."%bad_right))
 
