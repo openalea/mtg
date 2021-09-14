@@ -643,7 +643,7 @@ def axialtree2mtg(tree, scale, scene, parameters = None):
                 if module.hasParameter(p):
                     params[p] = module.getParameter(p)
                 # otherwise check in parameterset
-                elif module.argSize() is 1:
+                elif module.argSize() == 1:
                     try:
                         pset = module.args[0]
                         if p in list(pset.__dict__.keys()):
@@ -753,7 +753,7 @@ def mtg2axialtree(g, parameters=None, axial_tree=None):
         l = [name]
 
         params = parameters.get(name, [])
-        if 'parameter_set' in params and len(params) is 1:
+        if 'parameter_set' in params and len(params) == 1:
             from openalea.lpy.parameterset import ParameterSet
             exclude = ['geometry','label','edge_type','_axial_id']
             pset = {}
@@ -800,7 +800,7 @@ def lpy2mtg(axial_tree, lsystem, scene = None):
     for m in modules:
         label = m.name
         parameters[label] = m.parameterNames
-        if 'parameter_set' in m.parameterNames and len(m.parameterNames) is 1:
+        if 'parameter_set' in m.parameterNames and len(m.parameterNames) == 1:
             if axial_tree.count(label) > 0:
                 index = axial_tree.find(label + '(p)')
                 pset = axial_tree[index].args[0]
@@ -1394,11 +1394,15 @@ class Writer(object):
         desc = self.description()
         features = self.features()
 
-    def code(self, property_names, nb_tab=12,
+    def code(self, property_names, nb_tab=None,
              display_id=False, display_scale=False, filter=None):
         """
         Traverse the MTG and write the code.
         """
+        if nb_tab is None:
+            from .algo import orders
+            nb_tab = max(orders(self.g))+1
+       
         head = ['MTG :']
 
         entity = ['ENTITY-CODE']
@@ -1652,7 +1656,7 @@ class Writer(object):
 
         return symbols
 
-def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False):
+def write_mtg(g, properties=[], class_at_scale=None, nb_tab=None, display_id=False):
     """ Transform an MTG into a multi-line string in the MTG format.
 
     This method build a generic header, then traverses the MTG and transform
@@ -1726,7 +1730,7 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False
 
     return '\n'.join(header)
 
-def display(g, max_scale=0, display_id=True, display_scale=False, nb_tab=12,**kwds):
+def display(g, max_scale=0, display_id=True, display_scale=False, nb_tab=None,**kwds):
     """
     Display MTG
     """

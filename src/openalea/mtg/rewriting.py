@@ -42,8 +42,8 @@ def module(name, scale, namespace):
     def __init_custom_module__(self, **args):
         Module.__init__(self, name, scale, **args)
 
-    from new import classobj
-    namespace[name] = classobj(name,(Module,),{'__init__':__init_custom_module__})
+    #from new import classobj
+    namespace[name] = type(name,(Module,),{'__init__':__init_custom_module__})
 
 def retrieve_modules(mtg, namespace):
     labels = mtg.property('label')
@@ -188,10 +188,10 @@ def __replace_and_produce__(mtg, vid, production):
             mtg.replace_parent(mchild, lasts[mscale])
 
     # removal of vid and its components
-    # def remove_components(mtg, vid):
-    #     for compvid in mtg.components(vid):
-    #         remove_components(mtg, compvid)
-    #         mtg.remove_vertex(compvid)
+    #def remove_components(mtg, vid):
+    #    for compvid in mtg.components(vid):
+    #        remove_components(mtg, compvid)
+    #        mtg.remove_vertex(compvid)
     #remove_components(mtg, vid)
 
     # removal of vid

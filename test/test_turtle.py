@@ -1,4 +1,4 @@
-from openalea.mtg.turtle import *
+from openalea.mtg.plantframe.turtle import *
 
 def test1():
     fn = r'data/mtg1.mtg'
