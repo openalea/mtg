@@ -1,7 +1,7 @@
 from openalea.mtg.io import axialtree2mtg, mtg2mss , lpy2mtg, mtg2lpy
 from openalea.lpy import AxialTree, generateScene, Lsystem
 from openalea.plantgl.all import Scene, Viewer
-from openalea.core.path import path
+from path import Path as path
 
 def str2mtg(s):
     #s = s.replace('N', 'F')
@@ -10,7 +10,7 @@ def str2mtg(s):
     l.addInterpretationRule('N --> F', 0)
     geom_tree = l.homomorphism(tree)
     scene = l.sceneInterpretation(geom_tree)
-    scale = dict(zip(('P','A','N', 'L', 'F'),(1,2,3,3,3)))
+    scale = dict(list(zip(('P','A','N', 'L', 'F'),(1,2,3,3,3))))
     mtg = axialtree2mtg(tree, scale, scene)
     return tree, mtg, scene
 
@@ -32,7 +32,7 @@ def check(tree, mtg, scene):
     assert v3 == geom3, str(v3)+'!='+str(geom3)
         
 def check_mss(mss, mtg, tree, s=None):
-    if not mss: print tree
+    if not mss: print(tree)
     assert mss.depth == mtg.max_scale()
     for scale in range(1,mss.depth+1):
         assert len(set(mss.get1Scale(scale))) == len(set(mtg.vertices(scale=scale))), (str(set(mss.get1Scale(scale)))+' !='+ str(set(mtg.vertices(scale=scale))),s)
@@ -77,9 +77,9 @@ PANNN[+ANNN[+ANNN[+ANNN][-ANNN]NNNANAN]][-ANNN[+ANNN[-ANNN]]NN]NANAN
 '''
     envelop = ['CvxHull', 'Box', 'Sphere']
     for s in trees.split():
-        print s
+        print(s)
         for env in envelop:
-            print env
+            print(env)
             check_mss( *str2mss(s, env) )
 
 def test_mtglpy():
@@ -94,10 +94,10 @@ def test_mtglpy():
     scene = l.sceneInterpretation(tree)
 
     mtg = lpy2mtg(tree, l, scene)
-    print len(mtg)
+    print(len(mtg))
     axial_tree = AxialTree()
     axial_tree = mtg2lpy(mtg, l, axial_tree)
-    print len(axial_tree)
+    print(len(axial_tree))
     #axial_tree = mtg2axialtree(mtg, scale, parameters, axial_tree)
     
     # Check
@@ -125,7 +125,7 @@ def test_mtglpy_topvine():
 
     mtg = lpy2mtg(tree, l, scene)
 
-    print len(mtg)
+    print(len(mtg))
     axial_tree = AxialTree()
     axial_tree = mtg2lpy(mtg, l, axial_tree)
 

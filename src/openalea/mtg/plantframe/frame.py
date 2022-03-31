@@ -316,7 +316,7 @@ def compute_radius(g, v, last_radius):
     for vid in post_order(g, v):
         r2 = max(sum([all_r2[c] for c in g.children_iter(vid)]), last_radius)
         all_r2[vid] = r2
-    for k, v in all_r2.iteritems():
+    for k, v in all_r2.items():
         all_r2[k] = sqrt(v)
     return all_r2
 

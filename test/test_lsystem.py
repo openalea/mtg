@@ -1,5 +1,5 @@
-from openalea.mtg.io import *
-from openalea.plantgl.all import *
+import openalea.mtg.io as io
+import openalea.plantgl.all as pgl
 
 symbols = {'newPlant' : 1, 'newAxe' : 2, 'newMetamer' :3, 'StemElement':4, 'LeafElement':4}
 functions = {}
@@ -8,8 +8,8 @@ functions = {}
 def StemElement(optical_species, length, diameter_base, diameter_top ):
     mesh = None
     if length > 0 and diameter_base > 0:
-        cylinder = Cylinder(height = length, radius = diameter_base/2.)
-        tess = Tesselator()
+        cylinder = pgl.Cylinder(height = length, radius = diameter_base/2.)
+        tess = pgl.Tesselator()
         cylinder.apply(tess) 
         mesh = tess.triangulation
     return {'geometry':mesh}
@@ -18,8 +18,8 @@ def LeafElement(optical_species, final_length, radius_max, s_base, s_top, leaf_r
     mesh = None
     length = final_length * (s_top - s_base)
     if length > 0 and radius_max > 0:
-        cylinder = Cylinder(height = length, radius = radius_max)
-        tess = Tesselator()
+        cylinder = pgl.Cylinder(height = length, radius = radius_max)
+        tess = pgl.Tesselator()
         cylinder.apply(tess) 
         mesh = tess.triangulation
     return {'geometry':mesh}
@@ -32,14 +32,14 @@ def check_connectivity(g):
     for scale in g.scales():
         assert len(list(g.roots(scale=scale))) == 1, 'g.roots(scale=%d) != %d'%(scale, len(list(g.roots(scale=scale))))
 
-def test1():
+def test0():
     # simple set of two successives axes
     s = """
 newPlant
 [+(45)newAxe
 ]
 """
-    g = read_lsystem_string(s, symbols)
+    g = io.read_lsystem_string(s, symbols)
     assert len(g) == 3
     assert g.nb_vertices(scale=1)==1
     assert g.nb_vertices(scale=2)==1
@@ -66,7 +66,7 @@ StemElement(1,0.000000,0.04,0.04)
 StemElement(1,0.000000,0.04,0.04)[/(180.000000)+(0.000000)LeafElement(1,7.900000,0.455263,1.000000,1,8,0.5)]
 ]
 """
-    g = read_lsystem_string(s, symbols)
+    g = io.read_lsystem_string(s, symbols)
     assert len(g) == 18
     assert g.nb_scales() == 5
     assert g.max_scale() == 4
@@ -86,7 +86,7 @@ StemElement(1,0.000000,0.04,0.04)
  ]
 StemElement(1,0.436111,0.04,0.04)[/(180.000000)+(45.000000)LeafElement(1,7.665278,0.346528,0.000000,1,10,0.5)]
 """
-    g = read_lsystem_string(s, symbols)
+    g = io.read_lsystem_string(s, symbols)
     assert len(g) == 8
     assert g.nb_scales() == 5
     assert g.max_scale() == 4
@@ -108,7 +108,7 @@ StemElement(1,0.436111,0.04,0.04)[/(180.000000)+(45.000000)LeafElement(1,7.66527
 newMetamer
 
 """
-    g = read_lsystem_string(s, symbols)
+    g = io.read_lsystem_string(s, symbols)
     assert len(g) == 9
     assert g.nb_scales() == 5
     assert g.max_scale() == 4
@@ -133,7 +133,7 @@ StemElement(1,0.000000,0.04,0.04)
  ]
 StemElement(1,0.000000,0.04,0.04)[/(0.000000)+(0.631719)LeafElement(1,10.050000,0.383524,0.368281,1,9,0.5)]
 """
-    g = read_lsystem_string(s, symbols)
+    g = io.read_lsystem_string(s, symbols)
     assert len(g) ==13 
     assert g.nb_scales() == 5
     assert g.max_scale() == 4
@@ -153,7 +153,7 @@ StemElement(1,0.000000,0.04,0.04)
  newMetamer
  StemElement(1,0.000000,0.04,0.04)StemElement(1,0.540000,0.04,0.04)[/(180.000000)+(45.000000)LeafElement(1,5.095000,0.308000,0.000000,1,7,0.5)]]]
 """
-    g = read_lsystem_string(s, symbols)
+    g = io.read_lsystem_string(s, symbols)
     assert len(g) ==10 
     assert g.nb_scales() == 5
     assert g.max_scale() == 4
@@ -174,7 +174,7 @@ StemElement(1,0.000000,0.04,0.04)
  StemElement(1,0.000000,0.04,0.04)StemElement(1,0.540000,0.04,0.04)[/(180.000000)+(45.000000)LeafElement(1,5.095000,0.308000,0.000000,1,7,0.5)]]]
 """
     s = s+s+s
-    g = read_lsystem_string(s, symbols)
+    g = io.read_lsystem_string(s, symbols)
 
     #assert len(g) ==10 
     assert g.nb_scales() == 5
@@ -252,7 +252,7 @@ newMetamer
 StemElement(1,3.200001,0.04,0.04)StemElement(1,16.250000,0.04,0.04)[/(180.000000)+(45.000000)LeafElement(1,19.549999,1.438667,0.000000,1,0,0.5)]
 ]
 """
-    g = read_lsystem_string(s, symbols, functions)
+    g = io.read_lsystem_string(s, symbols, functions)
     assert len(g) ==113 
     assert g.nb_scales() == 5
     assert g.max_scale() == 4

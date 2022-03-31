@@ -7,8 +7,9 @@ from openalea.mtg.traversal import *
 import openalea.mtg.util as util
 from openalea.plantgl.all import *
 from math import sqrt
+import importlib
 
-reload(util)
+importlib.reload(util)
 
 #io.debug = 1
 fn = r'data/mtg5.mtg'
@@ -72,7 +73,7 @@ def compute_radius(g, v, last_radius):
     for vid in post_order(g, v):
         r2 = max(sum([all_r2[c] for c in g.children(vid)]), last_radius)
         all_r2[vid] = r2
-    for k, v in all_r2.iteritems():
+    for k, v in all_r2.items():
         all_r2[k] = sqrt(v)
     return all_r2
 

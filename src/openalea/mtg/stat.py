@@ -30,7 +30,7 @@
     - explicit identifier for sequence (e.g. year of growth or date of observation)
 
 '''
-from itertools import chain, ifilter, imap
+from itertools import chain
 try:
     from openalea.sequence_analysis import *
 except ImportError:
@@ -177,7 +177,7 @@ def extract_axes(g, scale=0, **kwds):
 def filter_sequence(seq, pred):
     """ Select a Sequence if only the predicate is true for each element.
     """
-    ok = all(imap(pred, seq))
+    ok = all(map(pred, seq))
     return ok
 
 def first_component_root(g, vid):
@@ -223,7 +223,7 @@ def write_sequences(seqs, variables, VertexIdentifiers):
         n = len(seq)
         for j, value in enumerate(seq):
             vid = VertexIdentifiers[i][j]
-            record = [str(vid)] + map(str,value)
+            record = [str(vid)] + list(map(str,value))
             if j < n-1:
                 record.append('\\')
             else:

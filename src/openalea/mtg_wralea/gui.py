@@ -33,11 +33,11 @@ class MTGEditor(QtGui.QWidget, NodeWidget):
 
     def notify(self, sender, event):
         """ Function called by observed objects """
-        print event
+        print(event)
         if event[0] == 'input_modified':
             if event[1] == 0:
                 g = self.node.get_input(0)
-                print g
+                print(g)
                 if self.editor.scene().get_graph() is None:
                     obsg = ObservableMTG(g)
                     self.editor.scene().set_graph(obsg)

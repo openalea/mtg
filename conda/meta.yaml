@@ -1,8 +1,8 @@
-{% set version = "2.0.1" %}
+{% set data = load_setup_py_data() %}
 
 package:
   name: openalea.mtg
-  version: {{ version }}
+  version: {{ data.get('version') }}
 
 source:
   path: ..
@@ -15,19 +15,29 @@ build:
 requirements:
   build:
     - python
-    - openalea.deploy
+    # - openalea.deploy
   run:
     - python
-    - openalea.deploy
-    - openalea.core
-    - numpy
+    - openalea.plantgl
+    - numpy =1.20
     - matplotlib
     - pandas
-    - openalea.plantgl
+    # - openalea.deploy
+    # - openalea.core
 
 test:
+  requires:
+    - pytest
+    - path.py
+    - openalea.lpy
   imports:
     - openalea.mtg
+  source_files:
+    - test/**
+    - test/data/**
+  commands:
+    - cd test
+    - pytest -v --ignore=test_aml.py  --ignore=test_stat.py
 
 about:
   home: http://openalea.gforge.inria.fr/
