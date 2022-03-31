@@ -3,7 +3,7 @@ import openalea.mtg.plantframe as plantframe
 import openalea.mtg.algo as algo 
 from openalea.mtg import aml, dresser
 
-from time import clock
+from time import perf_counter as clock
 from collections import defaultdict
 
 def test1():
@@ -102,7 +102,7 @@ def test4():
     print('diameter in ', dt) 
 
     axes = plantframe.compute_axes(g,3, pf.points, pf.origin)
-    axes[0][0].insert(0,pf.origin)
+    #axes[0][0].insert(0,pf.origin)
 
     t1=clock(); t, dt = t1, t1-t
     print('points in ', dt) 

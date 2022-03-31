@@ -1396,11 +1396,15 @@ class Writer(object):
         desc = self.description()
         features = self.features()
 
-    def code(self, property_names, nb_tab=12,
+    def code(self, property_names, nb_tab=None,
              display_id=False, display_scale=False, filter=None):
         """
         Traverse the MTG and write the code.
         """
+        if nb_tab is None:
+            from .algo import orders
+            nb_tab = max(orders(self.g))+1
+       
         head = ['MTG :']
 
         entity = ['ENTITY-CODE']
@@ -1654,7 +1658,7 @@ class Writer(object):
 
         return symbols
 
-def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False):
+def write_mtg(g, properties=[], class_at_scale=None, nb_tab=None, display_id=False):
     """ Transform an MTG into a multi-line string in the MTG format.
 
     This method build a generic header, then traverses the MTG and transform
@@ -1728,7 +1732,7 @@ def write_mtg(g, properties=[], class_at_scale=None, nb_tab=12, display_id=False
 
     return '\n'.join(header)
 
-def display(g, max_scale=0, display_id=True, display_scale=False, nb_tab=12,**kwds):
+def display(g, max_scale=0, display_id=True, display_scale=False, nb_tab=None,**kwds):
     """
     Display MTG
     """

@@ -17,25 +17,24 @@
 import os
 from itertools import repeat
 from glob import glob
+import pytest
 
 from openalea.mtg import *
 from openalea.mtg.io import *
 
-from openalea import aml
-
-def test():
+def files_to_check():
     files = glob('data/*.mtg')
-    exclude = '''
+    exclude = set('''
     reconstructed_appletree.mtg
-    '''.split()
-    files = [f for f in files for e in exclude if e not in f]
+    test6_apricot2.mtg
+    mtg_dynamic.mtg
+    '''.split())
+    files = [f for f in files if os.path.basename(f) not in exclude]
 
-    files = glob('data/test13*.mtg')
-    exclude = []
-    for fn in files:
+    #files = list(glob('data/test13*.mtg'))
+    print(files)
+    return files
 
-        g, s = build_mtg_and_check(fn)
-        yield check, g, s, fn
 
 def build_mtg_and_check(fn):
     g = read_mtg_file(fn)
@@ -54,17 +53,20 @@ def build_mtg_and_check(fn):
     return g, s
 
 def check(g, s, fn):
-    res = True
+    from openalea.mtg import MTG
     f = open('tmp.mtg', 'w')
     f.write(s)
     f.close()
     try:
-        g1 = aml.MTG('tmp.mtg')
+        g1 = MTG('tmp.mtg')
     except Exception as e:
         os.remove('tmp.mtg')
         assert False, fn
     
     os.remove('tmp.mtg')
 
-    return res
+@pytest.mark.parametrize('fn', files_to_check())
+def test_files(fn):
+        g, s = build_mtg_and_check(fn)
+        check(g, s, fn)
 

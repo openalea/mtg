@@ -17,10 +17,11 @@ version = {}
 with open("src/openalea/mtg/version.py") as fp:
     exec(fp.read(), version)
 
+mtg_version = version["__version__"]
 
 setup_kwds = dict(
     name='openalea.mtg',
-    version=version["__version__"],
+    version=mtg_version,
     description=short_descr,
     long_description=readme + '\n\n' + history,
     author="Christophe Pradal",
@@ -32,18 +33,6 @@ setup_kwds = dict(
     packages=find_packages('src'),
     namespace_packages=['openalea'],
     package_dir={'': 'src'},
-    setup_requires=[
-        "pytest-runner",
-        ],
-    install_requires=[
-        ],
-    tests_require=[
-        "coverage",
-        "mock",
-        "pytest",
-        "pytest-cov",
-        "sphinx",
-        ],
     entry_points={},
     keywords='',
     )
@@ -53,8 +42,6 @@ setup_kwds = dict(
 # setup_kwds['share_dirs'] = {'share': 'share'}
 
 setup_kwds['entry_points']["wralea"] = ["mtg = openalea.mtg_wralea"]
-#setup_kwds['setup_requires'] = ['openalea.deploy']
-#setup_kwds['dependency_links'] = ['http://openalea.gforge.inria.fr/pi']
 setup_kwds['pylint_packages'] = ['src/mtg', 'src/mtg/interface']
 
 # do not change things below
