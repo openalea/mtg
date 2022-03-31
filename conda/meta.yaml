@@ -19,7 +19,7 @@ requirements:
   run:
     - python
     - openalea.plantgl
-    - numpy =1.20
+    - numpy =1.20|>=1.21.5
     - matplotlib
     - pandas
     # - openalea.deploy
@@ -33,6 +33,7 @@ test:
   imports:
     - openalea.mtg
   source_files:
+    - share/data/**
     - test/**
     - test/data/**
   commands:
