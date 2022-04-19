@@ -31,7 +31,7 @@ setup_kwds = dict(
     zip_safe=False,
 
     packages=find_packages('src'),
-    namespace_packages=['openalea'],
+    #namespace_packages=['openalea'],
     package_dir={'': 'src'},
     entry_points={},
     keywords='',
