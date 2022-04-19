@@ -31,7 +31,7 @@ setup_kwds = dict(
     zip_safe=False,
 
     packages=find_packages('src'),
-    namespace_packages=['openalea'],
+    #namespace_packages=['openalea'],
     package_dir={'': 'src'},
     entry_points={},
     keywords='',
@@ -39,10 +39,11 @@ setup_kwds = dict(
 # #}
 # change setup_kwds below before the next pkglts tag
 
-# setup_kwds['share_dirs'] = {'share': 'share'}
+setup_kwds['share_dirs'] = {'share': 'share'}
 
 setup_kwds['entry_points']["wralea"] = ["mtg = openalea.mtg_wralea"]
 setup_kwds['pylint_packages'] = ['src/mtg', 'src/mtg/interface']
+setup_kwds['setup_requires'] = ['openalea.deploy']
 
 # do not change things below
 # {# pkglts, pysetup.call

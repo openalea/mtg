@@ -95,3 +95,9 @@ doc/_dvlpt/
 
 # Notebook
 .ipynb_checkpoints/
+
+# Mac
+.DS_Store
+# VS Code
+.vscode
+*.code-workspace
