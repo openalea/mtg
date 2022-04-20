@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+
 # {# pkglts, pysetup.kwds
 # format setup arguments
-
 from setuptools import setup, find_packages
 
 
