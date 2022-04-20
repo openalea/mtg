@@ -8,17 +8,16 @@ source:
   path: ..
 
 build:
-  noarch: python
   preserve_egg_dir: True
-  number: 2
-  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
     - python {{PY_VER}}
     - openalea.deploy
   run:
-    - python >=3.6
+    - python {{PY_VER}}
     - openalea.plantgl
     - matplotlib
     - pandas
@@ -41,5 +40,5 @@ test:
 about:
   home: {{ data.get('url') }}
   license: CeCILL-C
-  summary: OpenAlea.MTG implements Multiscale Tree Graph datastructure and interfaces
+  summary: {{ data.get('description') }}
 
