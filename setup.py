@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+
 # {# pkglts, pysetup.kwds
 # format setup arguments
-
 from setuptools import setup, find_packages
 
 
@@ -31,7 +32,6 @@ setup_kwds = dict(
     zip_safe=False,
 
     packages=find_packages('src'),
-    #namespace_packages=['openalea'],
     package_dir={'': 'src'},
     entry_points={},
     keywords='',
@@ -44,6 +44,9 @@ setup_kwds['share_dirs'] = {'share': 'share'}
 setup_kwds['entry_points']["wralea"] = ["mtg = openalea.mtg_wralea"]
 setup_kwds['pylint_packages'] = ['src/mtg', 'src/mtg/interface']
 setup_kwds['setup_requires'] = ['openalea.deploy']
+
+if ('CONDA_PREFIX' not in os.environ) and ('PREFIX' not in os.environ):
+    setup_kwds['namespace_packages']=['openalea'] # Never used in a conda env...
 
 # do not change things below
 # {# pkglts, pysetup.call
