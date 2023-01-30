@@ -35,3 +35,11 @@ MTG package aims to define :
   * Export to various graph format.
   * Several algorithms for MTG.
 
+
+Installation
+============
+
+Install this package using conda ::
+
+    conda install -c openalea3 -c conda-forge openalea.mtg
+
