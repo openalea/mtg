@@ -1,11 +1,15 @@
-.. image:: https://travis-ci.org/openalea/mtg.svg?branch=master
-    :target: https://travis-ci.org/openalea/mtg
+.. image:: https://github.com/openalea/mtg/actions/workflows/conda-package-build.yml/badge.svg
+    :alt: CI status
+    :target: https://github.com/openalea/mtg/actions/workflows/conda-package-build.yml
 
-.. image:: https://ci.appveyor.com/api/projects/status/wc3p28tg6jbf8t0k/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/fredboudon/mtg
     
+.. image:: https://anaconda.org/openalea3/openalea.mtg/badges/version.svg   
+    :target: https://anaconda.org/openalea3/openalea.mtg
+
+
 ..  image:: https://readthedocs.org/projects/mtg/badge/?version=latest
     :target: http://mtg.readthedocs.io/en/latest/
+    :alt: Documentation Status
 
 
 ============
