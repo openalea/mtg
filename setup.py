@@ -5,7 +5,7 @@ import os
 
 # {# pkglts, pysetup.kwds
 # format setup arguments
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 
 short_descr = "Multiscale Tree Graph datastructure and interfaces"
@@ -14,27 +14,27 @@ history = open('HISTORY.rst').read()
 
 
 # find version number in src/openalea/mtg/version.py
-version = {}
+_version = {}
 with open("src/openalea/mtg/version.py") as fp:
-    exec(fp.read(), version)
+    exec(fp.read(), _version)
 
-mtg_version = version["__version__"]
+version = _version["__version__"]
 
 setup_kwds = dict(
     name='openalea.mtg',
-    version=mtg_version,
+    version=version,
     description=short_descr,
     long_description=readme + '\n\n' + history,
     author="Christophe Pradal",
     author_email="christophe pradal __at__ cirad fr",
     url='http://github.com/openalea/mtg',
-    license='cecill-c',
+    license='CeCILL-C',
+    keywords=['OpenAlea', 'MTG', 'Plant Architecture', 'Tree Graph'],
     zip_safe=False,
 
-    packages=find_packages('src'),
+    packages=find_namespace_packages(where='src', include=['openalea', 'openalea.*']),
     package_dir={'': 'src'},
     entry_points={},
-    keywords='',
     )
 # #}
 # change setup_kwds below before the next pkglts tag
