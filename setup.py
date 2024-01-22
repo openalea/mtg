@@ -5,7 +5,7 @@ import os
 
 # {# pkglts, pysetup.kwds
 # format setup arguments
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 
 short_descr = "Multiscale Tree Graph datastructure and interfaces"
@@ -31,7 +31,7 @@ setup_kwds = dict(
     license='cecill-c',
     zip_safe=False,
 
-    packages=find_packages('src'),
+    packages=find_namespace_packages(where='src', include=['openalea', 'openalea.*']),
     package_dir={'': 'src'},
     entry_points={},
     keywords='',
