@@ -20,6 +20,8 @@ with open("src/openalea/mtg/version.py") as fp:
 
 version = _version["__version__"]
 
+packages=find_namespace_packages(where='src', include=['openalea.*'])
+
 setup_kwds = dict(
     name='openalea.mtg',
     version=version,
@@ -32,7 +34,7 @@ setup_kwds = dict(
     keywords=['OpenAlea', 'MTG', 'Plant Architecture', 'Tree Graph'],
     zip_safe=False,
 
-    packages=find_namespace_packages(where='src', include=['openalea', 'openalea.*']),
+    packages=packages,
     package_dir={'': 'src'},
     entry_points={},
     )
