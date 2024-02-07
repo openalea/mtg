@@ -3,7 +3,7 @@ Install
 
 Use conda to install openalea.mtg::
 
-    conda install openalea.mtg -c openalea
+    conda install openalea.mtg -c openalea3 -c conda-forge
 
 Use
 ===
