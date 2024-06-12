@@ -43,7 +43,7 @@ test:
 about:
   home: {{ data.get('url') }}
   license: CeCILL-C
-  license_family: CeCILL
+  #license_family: 
   summary: {{ data.get('description') }}
   description: {{ data.get('long_description') }}
   doc_url: http://github.com/openalea/mtg
