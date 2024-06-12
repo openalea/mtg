@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openalea.mtg"
-version = "0.1.0"  # Remplacer par la version réelle
+version = "0.1.0"
 description = "Multiscale Tree Graph datastructure and interfaces"
 readme = "README.rst"
 authors = [
@@ -17,13 +17,16 @@ dependencies = []
 [project.urls]
 homepage = "http://github.com/openalea/mtg"
 
-[tool.setuptools]
-packages = ["find_namespace:src"]
-namespace_packages = ["openalea"]
-package_dir = {"" = "src"}
+[tool.setuptools.packages.find]
+where = ["src"]
 
-[tool.setuptools.dynamic]
-version = {file = "src/openalea/mtg/version.py"}
+#[tool.setuptools]
+#packages = ["find_namespace:src"]
+#namespace_packages = ["openalea"]
+#package_dir = {"" = "src"}
 
-[tool.setuptools.entry-points.wralea]
-mtg = "openalea.mtg_wralea"
+#[tool.setuptools.dynamic]
+#version = {file = "src/openalea/mtg/version.py"}
+
+#[tool.setuptools.entry-points.wralea]
+#mtg = "openalea.mtg_wralea"
