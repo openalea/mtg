@@ -12,6 +12,7 @@ build:
   preserve_egg_dir: True
   number: 2
   script: {{PYTHON}} setup.py install #--single-version-externally-managed --record=record.txt
+ #script: {{ PYTHON }} -m pip install .
 
 requirements:
   build:
@@ -42,5 +43,12 @@ test:
 about:
   home: {{ data.get('url') }}
   license: CeCILL-C
+  license_family: CeCILL
   summary: {{ data.get('description') }}
+  description: {{ data.get('long_description') }}
+  doc_url: http://github.com/openalea/mtg
+  dev_url: http://github.com/openalea/mtg
 
+extra:
+  recipe-maintainers:
+    - https://github.com/pradal
