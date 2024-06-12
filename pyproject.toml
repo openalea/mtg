@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openalea.mtg"
+version = "0.1.0"  # Remplacer par la version réelle
+description = "Multiscale Tree Graph datastructure and interfaces"
+readme = "README.rst"
+authors = [
+    { name = "Christophe Pradal", email = "christophe.pradal@cirad.fr" }
+]
+license = { text = "CeCILL-C" }
+keywords = ["OpenAlea", "MTG", "Plant Architecture", "Tree Graph"]
+dependencies = []
+
+[project.urls]
+homepage = "http://github.com/openalea/mtg"
+
+[tool.setuptools]
+packages = ["find_namespace:src"]
+namespace_packages = ["openalea"]
+package_dir = {"" = "src"}
+
+[tool.setuptools.dynamic]
+version = {file = "src/openalea/mtg/version.py"}
+
+[tool.setuptools.entry-points.wralea]
+mtg = "openalea.mtg_wralea"
