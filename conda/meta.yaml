@@ -34,10 +34,10 @@ test:
     - openalea.mtg
   source_files:
     - share/data/**
-    - test/**
-    - test/data/**
+    - tests/**
+    - tests/data/**
   commands:
-    - cd test
+    - cd tests
     - pytest -v --ignore=test_aml.py  --ignore=test_stat.py
 
 about:
@@ -45,10 +45,10 @@ about:
   license: CeCILL-C
   #license_family: 
   summary: {{ data.get('description') }}
-  description: {{ data.get('long_description') }}
+  #description: {{ data.get('long_description') }}
   doc_url: http://github.com/openalea/mtg
   dev_url: http://github.com/openalea/mtg
 
 extra:
   recipe-maintainers:
-    - https://github.com/pradal
+    - pradal
