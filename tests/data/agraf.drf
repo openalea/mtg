@@ -1,0 +1,54 @@
+# Dressing file for apple trees
+
+#SMBPath = D:/Documents/pradal/devlp/vplants/aml/databases/SMBFiles
+SMBPath = ../../../databases/SMBFiles
+
+SMBModel entrenoeud = nentn105
+SMBModel entrenoeud2 = nentn104
+SMBModel Feuille = feui146 #feui113
+SMBModel Fruit = pommecyl
+
+Class U = entrenoeud
+Class B = entrenoeud
+Class E = entrenoeud
+
+Class Z = Feuille
+Class A = Fruit
+
+LeafClass = Z
+FruitClass = A
+
+LeafAlpha = 45
+LeafBeta  = 120
+LeafLength = 100	
+LeafTopDiameter = 1000
+LeafBottomDiameter = 1000
+
+
+Phyllotaxy = 150
+
+MinTopDiameter I = 50
+MinBottomDiameter I = 50
+
+MinTopDiameter U = 500
+MinBottomDiameter U = 500
+
+MinTopDiameter E = 500
+MinBottomDiameter E = 500
+
+MinTopDiameter B = 1
+MinBottomDiameter B = 1
+
+MinLength C = 5   
+MinLength E = 1
+MinLength F = 0
+MinLength B = 5
+MinLength I = 5
+MinLength U = 5
+
+
+DiameterUnit = 10
+LengthUnit = 1
+
+Alpha = Relative
+
