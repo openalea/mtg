@@ -31,16 +31,15 @@ homepage = "http://github.com/openalea/mtg"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-#ADD ENTRY POINTS
+namespaces = true
 
 #[tool.setuptools]
 #packages = ["find_namespace:src"]
 #namespace_packages = ["openalea"]
 #package_dir = {"" = "src"}
 
-#[tool.setuptools.dynamic]
-#version = {file = "src/openalea/mtg/version.py"}
-
 #[tool.setuptools.entry-points.wralea]
 #mtg = "openalea.mtg_wralea"
+
+#[tool.setuptools.dynamic]
+#version = {file = "src/openalea/mtg/version.py"}
