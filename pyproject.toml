@@ -12,7 +12,19 @@ authors = [
 ]
 license = { text = "CeCILL-C" }
 keywords = ["OpenAlea", "MTG", "Plant Architecture", "Tree Graph"]
-dependencies = []
+
+dependencies = [
+    "openalea.plantgl",
+    "matplotlib",
+    "pandas"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "path",
+    "openalea.lpy"
+]
 
 [project.urls]
 homepage = "http://github.com/openalea/mtg"
