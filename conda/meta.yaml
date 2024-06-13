@@ -20,7 +20,7 @@ requirements:
     - setuptools
     - openalea.deploy
   run:
-    - python >=3.6
+    - python >=3.10
     - openalea.plantgl
     - matplotlib
     - pandas
