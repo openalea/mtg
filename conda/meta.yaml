@@ -34,10 +34,10 @@ test:
     - openalea.mtg
   source_files:
     - share/data/**
-    - tests/**
-    - tests/data/**
+    - test/**
+    - test/data/**
   commands:
-    - cd tests
+    - cd test
     - pytest -v --ignore=test_aml.py  --ignore=test_stat.py
 
 about:
