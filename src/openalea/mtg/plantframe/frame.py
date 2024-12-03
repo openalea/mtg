@@ -34,7 +34,7 @@ from openalea.mtg.traversal import post_order
 
 
 
-class Frame(object):
+class Frame():
     """ Frame representing geometric variables of each topologic elements.
     
     A frame is used to have a common representation of the geometric information 
@@ -137,7 +137,7 @@ class Frame(object):
     top_radius = property(get_top_radius, set_top_radius, 'top_radius of the Frame')
 
 
-class AxialFrames(object):
+class AxialFrames():
     ''' Solve continuity constraints on an axis, i.e. a set of frames.
 
     '''
@@ -145,7 +145,7 @@ class AxialFrames(object):
 
 
 
-class PlantFrame(object):
+class PlantFrame():
     ''' Engine to compute the geometry of a plant based on 
     its topological description and parameters.
     '''

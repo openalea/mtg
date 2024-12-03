@@ -2753,7 +2753,7 @@ def return_tuple_proxy(f):
     new_f.__doc__ = mtg_f.__doc__
     return new_f
 
-class _ProxyNode(object):
+class _ProxyNode():
     def __init__(self, g, vid):
         self.__dict__['_g'] = g
         self.__dict__['_vid'] = vid

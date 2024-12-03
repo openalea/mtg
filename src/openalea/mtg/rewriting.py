@@ -20,7 +20,7 @@ from .mtg import _ProxyNode, MTG
 
 #### Module declaration #######
 
-class Module(object):
+class Module():
     def __init__(self, name, scale, **parameters):
         self.name = name
         self.scale = scale
@@ -299,7 +299,7 @@ def interpretation(f):
 
 eForward, eBackward = 1,0
 
-class MTGLsystem(object):
+class MTGLsystem():
     rules = dict()
 
     def __init__(self):

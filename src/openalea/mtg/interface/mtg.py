@@ -18,7 +18,7 @@
 This module provides multiscale tree concepts to form MTG interface.
 """
 
-class MultiscaleTreeConcept(object):
+class MultiscaleTreeConcept():
     """
     Multiscale Tree Graph definition.
     """

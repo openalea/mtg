@@ -43,7 +43,7 @@ from math import pi
 import os
 from openalea.plantgl.scenegraph import AmapSymbol
 
-class DressingData(object):
+class DressingData():
     """ Data and default geometric parameters.
 
     The dressing data are the default data that are used to define 
@@ -205,7 +205,7 @@ def dressing_data(file):
 
 ###############################################################
 ## Define the parser which is just a dict from keyword to a function 
-class Reader(object):
+class Reader():
     def __init__(self, dresser):
         self.dresser = dresser
         

@@ -271,7 +271,7 @@ def traverse_tree(tree, vtx_id, visitor):
   yield visitor.post_order(vtx_id)
 
 
-class Visitor(object):
+class Visitor():
   ''' Used during a tree traversal. '''
 
   def pre_order(self, vtx_id): 
