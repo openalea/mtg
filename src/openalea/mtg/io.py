@@ -130,14 +130,17 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
                         args[k] = klass(v)
                     except:
                         if vid is not None:
+                            if k =='_line':
+                                continue
                             print('Args ', v, 'of vertex ', vid, 'of type ', k, 'is not of type ', str(klass))
                         else:
                             print('Args ', v, 'of type ', k, 'is not of type ', str(klass))
         return args
 
     def add_dynamic_properties(mtg, vid, args):
-        print("Existing properties at ", vid, " ", mtg.get_vertex_property(vid))
-        print("New property: ", args)
+        if mtg.verbose:
+            log("Existing properties at ", vid, " ", mtg.get_vertex_property(vid))
+            log("New property: ", args)
 
         # a property can be a list but not a timeserie.
         # Create a real timeserie object...
@@ -167,7 +170,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
     implicit_scale = bool(symbol_at_scale)
 
     if debug:
-        print(list(symbol_at_scale.keys()))
+        log(list(symbol_at_scale.keys()))
 
     mtg = mtg if mtg else MTG()
 
@@ -234,7 +237,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
             scale = mtg.scale(vid)
         elif tag == '*':
             args = get_properties(name, vid=vid, time=True)
-            print(vid, '*(', args, ')')
+            log(vid, '*(', args, ')')
             # CPL Manage Dynamic_MTG
             add_dynamic_properties(mtg, vid, args)
         else:
@@ -252,7 +255,7 @@ def multiscale_edit(s, symbol_at_scale = {}, class_type={}, has_date = False, mt
                 try:
                     new_scale = symbol_at_scale[symbol_class]
                 except:
-                    print('NODE ',node, bool(tag=='*'))
+                    print('NODE ',symbol_class, node, tag, bool(tag=='*'))
                 if tag == '/' and new_scale <= scale:
                     new_scale -= 1
                     pending_edge = '/'
@@ -457,7 +460,7 @@ def read_lsystem_string( string,
                     current_vertex = vid
                     pending_edge = ''
 
-                    log('','Cas 1.1', scale,
+                    log('','Case 1.1', scale,
                         'mtg.scale(vid)', mtg.scale(vid),
                         'generated vertex', vid)
 
@@ -467,7 +470,7 @@ def read_lsystem_string( string,
                     current_vertex = mtg.add_child(current_vertex,
                                                    edge_type=edge_type,
                                                    label=name)
-                    log('', 'Cas 1.2', scale,
+                    log('', 'Case 1.2', scale,
                         'mtg.scale(vid)', mtg.scale(vid),
                         'generated vertex', current_vertex)
                     assert mtg.scale(current_vertex) == module_scale
@@ -481,7 +484,7 @@ def read_lsystem_string( string,
                         assert vid == current_vertex
                         vid = mtg.add_component(vid)
                         current_vertex = vid
-                        log('', '', 'Cas 2.1', scale, 'generate new component', current_vertex)
+                        log('', '', 'Case 2.1', scale, 'generate new component', current_vertex)
                         scale += 1
                         if module_scale == scale:
                             assert mtg.scale(current_vertex) == module_scale
@@ -893,7 +896,7 @@ class Reader(object):
     The code contains topology relations and properties.
     """
 
-    def __init__(self, string, has_line_as_param=True, mtg=None, has_date=False):
+    def __init__(self, string, has_line_as_param=True, mtg=None, has_date=False, verbose=True):
         self.mtg = mtg
 
         # First implementation.
@@ -912,14 +915,17 @@ class Reader(object):
         self._no_line = 0
         self.warnings = []
         self.has_line_as_param = has_line_as_param
+        self.verbose = verbose
 
     def parse(self):
-        """
+        """ Read the header and parse the code.
         """
         self.header()
         self.code()
 
-        self.errors()
+        if self.verbose:
+            self.errors()
+        
         return self.mtg
 
     def header(self):
@@ -1120,6 +1126,7 @@ class Reader(object):
                 print(warning)
             else:
                 print(id, " ", warning)
+    
     ############################################################################
     ### Parsing of the MTG code
     ### That's the real stuff...
@@ -1270,7 +1277,7 @@ class Reader(object):
         self.mtg = multiscale_edit(self._new_code, self._symbols, self._features, self.has_date, mtg=self.mtg)
         #self.mtg = multiscale_edit(self._new_code, {}, self._features)
 
-def read_mtg(s, mtg=None, has_date=False):
+def read_mtg(s, mtg=None, has_date=False, verbose=True):
     """ Create an MTG from its string representation in the MTG format.
 
     :Parameter:
@@ -1290,11 +1297,11 @@ def read_mtg(s, mtg=None, has_date=False):
     .. seealso:: :func:`read_mtg_file`.
 
     """
-    reader = Reader(s, mtg=mtg, has_date=has_date)
+    reader = Reader(s, mtg=mtg, has_date=has_date, verbose=verbose)
     g = reader.parse()
     return g
 
-def read_mtg_file(fn, mtg=None, has_date=False):
+def read_mtg_file(fn, mtg=None, has_date=False, verbose=True):
     """ Create an MTG from a filename.
 
     :Usage:
@@ -1306,7 +1313,7 @@ def read_mtg_file(fn, mtg=None, has_date=False):
     f = open(fn)
     txt = f.read()
     f.close()
-    return read_mtg(txt, mtg=mtg, has_date=has_date)
+    return read_mtg(txt, mtg=mtg, has_date=has_date, verbose=verbose)
 
 
 def mtg_display(g, vtx_id, tab='  ', edge_type=None, label=None):

@@ -56,7 +56,7 @@ from openalea.plantgl.all import *
 error = True
 epsilon = 1e-5
 
-class PlantFrame(object):
+class PlantFrame():
     ''' Engine to compute the geometry of a plant based on
     its topological description and parameters.
     '''

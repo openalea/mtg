@@ -67,7 +67,7 @@ class MTG(PropertyTree):
 
     '''
 
-    def __init__(self, filename='', has_date=False):
+    def __init__(self, filename='', has_date=False, verbose=False):
         ''' Create a new MTG object.
 
         :Usage:
@@ -77,6 +77,8 @@ class MTG(PropertyTree):
         '''
 
         super(MTG, self).__init__()
+
+        self.verbose = verbose
 
         # Map a vid to its scale
         self._scale = {0:0}
@@ -93,7 +95,9 @@ class MTG(PropertyTree):
 
         if filename:
             from .io import read_mtg_file
-            self = read_mtg_file(filename, mtg=self, has_date=has_date)
+            self = read_mtg_file(filename, mtg=self, has_date=has_date, verbose=verbose)
+
+        
 
     def __getitem__(self, vtx_id):
         """A simple getitem to extract relevant information on a vertex.
@@ -2389,7 +2393,8 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
     for vid in roots:
         components = mtg._components.get(vid)
         if components is None:
-            print('ERROR: Missing component for vertex %d'%vid)
+            if mtg.verbose: 
+                print('ERROR: Missing component for vertex %d'%vid)
             continue
         #assert len(components) == 1
         cid = components[0]
@@ -2398,7 +2403,8 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
         parent_id = mtg.complex(mtg.parent(cid))
         if parent_id is None:
             #roots.append(vid)
-            print('ERROR: Missing parent for vertex %d'%cid)
+            if mtg.verbose:
+                print('ERROR: Missing parent for vertex %d'%cid)
             continue
         if edge_type_property:
             edge_type = edge_type_property.get(cid)
@@ -2753,7 +2759,7 @@ def return_tuple_proxy(f):
     new_f.__doc__ = mtg_f.__doc__
     return new_f
 
-class _ProxyNode(object):
+class _ProxyNode():
     def __init__(self, g, vid):
         self.__dict__['_g'] = g
         self.__dict__['_vid'] = vid

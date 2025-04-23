@@ -43,7 +43,7 @@ class InvalidVertex (GraphError, KeyError) :
     exception raised when a wrong vertex id is provided
     """
 
-class Tree(object):
+class Tree():
     '''
     Implementation of a rooted :class:`Tree`, 
     with methods to add and remove vertex.
