@@ -16,4 +16,5 @@ jobs:
     secrets: 
       anaconda_token: ${{ secrets.ANACONDA_TOKEN }}
     with:
-      operating_system: [ ubuntu-latest, macos-13, windows-latest]
+      operating_system: '["ubuntu-latest", "macos-13", "windows-latest"]'
+
