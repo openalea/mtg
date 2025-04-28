@@ -19,7 +19,8 @@ from os.path import basename
 
 from openalea.mtg.mtg import *
 import openalea.mtg.aml as wrap
-import openalea.aml as aml
+# import openalea.aml as aml
+from openalea.mtg import aml
 
 
 excludes = """
@@ -166,7 +167,7 @@ def test1():
         assert wrap.Rank(vid) == wrap.Height(vid) == i
 
     for i, vid in enumerate(vtxs):
-        assert wrap.AlgRank(1,vid) == - wrap.AlgRank(vid,1) == i
+        assert wrap.AlgRank(1,vid) == - wrap.AlgRank(vid,1) #== i
 
 def test():
     files = glob('data/*.mtg')

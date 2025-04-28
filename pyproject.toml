@@ -1,6 +1,12 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools",
+    "wheel",
+    "setuptools_scm",
+  ]
 build-backend = "setuptools.build_meta"
+
+# enable dynamic versioning based on git tags
+[tool.setuptools_scm]
 
 [project]
 name = "openalea.mtg"
@@ -10,13 +16,25 @@ readme = "README.rst"
 authors = [
     { name = "Christophe Pradal", email = "christophe.pradal@cirad.fr" }
 ]
-license = { text = "CeCILL-C" }
+license = "CECILL-C"
+license-files = ["LICEN[CS]E*"]
 keywords = ["OpenAlea", "MTG", "Plant Architecture", "Tree Graph"]
 
 dependencies = [
-    "openalea.plantgl",
     "matplotlib",
     "pandas"
+]
+
+# section specific to conda-only distributed package (not used by pip yet)
+# based on astk, used in hydroroot with a meta.yaml that only use metadata from
+# pyproject => only pyproject.toml must be modified
+[conda.environment]
+channels = [
+  "openalea3",
+  "conda-forge"
+]
+dependencies = [
+    "openalea.plantgl",
 ]
 
 [project.optional-dependencies]
@@ -25,9 +43,17 @@ test = [
     "path",
     "openalea.lpy"
 ]
+doc = [
+  "sphinx-favicon",
+  "sphinx-rtd-theme",
+  "pydata-sphinx-theme",
+  "myst-parser",
+  "sphinx-favicon",
+  "nbsphinx",
+]
 
 [project.urls]
-homepage = "http://github.com/openalea/mtg"
+Homepage = "http://github.com/openalea/mtg"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -38,8 +64,8 @@ namespaces = true
 #namespace_packages = ["openalea"]
 #package_dir = {"" = "src"}
 
-#[tool.setuptools.entry-points.wralea]
-#mtg = "openalea.mtg_wralea"
+[project.entry-points."wralea"]
+mtg = "openalea.mtg_wralea"
 
 #[tool.setuptools.dynamic]
 #version = {file = "src/openalea/mtg/version.py"}

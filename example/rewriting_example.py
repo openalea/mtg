@@ -1,4 +1,4 @@
-import openalea.mtg.rewriting as rw; reload(rw) 
+# import openalea.mtg.rewriting as rw; reload(rw)
 from openalea.mtg.rewriting import *
 
 display = False
@@ -13,12 +13,11 @@ module('LSegment',  3, globals())
 
 
 def example1(display = False):
-    from openalea.plantgl.all import *
-    from openalea.mtg import *
+    from openalea.plantgl.all import PglTurtle, Viewer
 
     axiom = produce(Plant(), Internode(), ISegment(), [Internode(), ISegment()], LeafBud(size=3))
 
-    print 'Axiom:'
+    print('Axiom:')
     axiom.display(display_scale=True)
 
     mtg = axiom
@@ -32,7 +31,7 @@ def example1(display = False):
 
             node.nproduce('[',Internode(),ISegment())
             node.nproduce('[',Leaf(length=length))
-            for i in xrange(5):
+            for i in range(5):
                 node.nproduce(LSegment(radius = 3))
             node.nproduce(']')
             node.produce(']')
@@ -61,7 +60,7 @@ class MySimu(MTGLsystem):
     def axiom(self):
         mtg = produce(Plant(), Internode(), ISegment(length=3), [ LeafBud()], AxisBud(age=0))
         
-        print 'Axiom:'
+        print('Axiom:')
         mtg.display(display_scale=True)
 
         return mtg
@@ -73,7 +72,7 @@ class MySimu(MTGLsystem):
             #node.nproduce(node)
 
             node.nproduce('[',Internode(), ISegment(length=2), Leaf())
-            for i in xrange(5):
+            for i in range(5):
                 node.nproduce(LSegment(radius = sin((i+1)*pi/6.5)))
             node.produce(']')
 
@@ -114,10 +113,10 @@ mtg = simu.animate(30)
 
 
 
-print
-print 'Result:'
+print()
+print('Result:')
 mtg.display(display_scale=True)
 
-print
+print()
 #for vid in mtg:
 #    print mtg.edge_type(vid), vid, mtg.label(vid), mtg.scale(vid) #, mtg[vid]
