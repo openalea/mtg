@@ -150,7 +150,6 @@ pygments_style = 'sphinx'
 
 
 # -- Options for HTML output -------------------------------------------
-# copy from hydroroot itself from openalea or hydroshoot doc
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'pydata_sphinx_theme'
