@@ -1,0 +1,54 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: openalea.mtg
+  version: {{ data.get('version') }}
+
+source:
+  path: ..
+
+build:
+  noarch: python
+  preserve_egg_dir: True
+  number: 2
+  #script: {{PYTHON}} setup.py install #--single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps
+
+requirements:
+  build:
+    - python {{PY_VER}}
+    - setuptools
+    - openalea.deploy
+  run:
+    - python
+    - openalea.plantgl
+    - matplotlib
+    - pandas
+
+test:
+  requires:
+    - pytest
+    - path
+    - openalea.lpy
+  imports:
+    - openalea.mtg
+  source_files:
+    - share/data/**
+    - test/**
+    - test/data/**
+  commands:
+    - cd test
+    - pytest -v --ignore=test_aml.py  --ignore=test_stat.py
+
+about:
+  home: {{ data.get('url') }}
+  license: CeCILL-C
+  #license_family: 
+  summary: {{ data.get('description') }}
+  #description: {{ data.get('long_description') }}
+  doc_url: http://github.com/openalea/mtg
+  dev_url: http://github.com/openalea/mtg
+
+extra:
+  recipe-maintainers:
+    - pradal

@@ -1,8 +1,8 @@
-{% set data = load_setup_py_data() %}
+{% set pyproject = load_file_data('../pyproject.toml', from_recipe_dir=True) %}
 
 package:
-  name: openalea.mtg
-  version: {{ data.get('version') }}
+  name: {{ pyproject["project"]["name"] }}
+  version: {{ GIT_DESCRIBE_TAG  | replace("v", "") }}
 
 source:
   path: ..
@@ -11,24 +11,30 @@ build:
   noarch: python
   preserve_egg_dir: True
   number: 2
-  script: {{PYTHON}} setup.py install #--single-version-externally-managed --record=record.txt
+  #script: {{PYTHON}} setup.py install #--single-version-externally-managed --record=record.txt
+  script: {{PYTHON}} -m pip install . -vv
 
 requirements:
   build:
-    - python {{PY_VER}}
-    - setuptools
-    - openalea.deploy
+    - python
+    {% for dep in pyproject["build-system"]["requires"] %}
+    - {{ dep.lower() }}
+    {% endfor %}
+
   run:
-    - python >=3.6
-    - openalea.plantgl
-    - matplotlib
-    - pandas
+    - python
+    {% for dep in pyproject["project"]["dependencies"] %}
+    - {{ dep.lower() }}
+    {% endfor %}
+    {% for dep in pyproject["conda"]["environment"]["dependencies"] %}
+    - {{ dep.lower() }}
+    {% endfor %}
 
 test:
   requires:
-    - pytest
-    - path
-    - openalea.lpy
+    {% for dep in pyproject["project"]["optional-dependencies"]["test"] %}
+    - {{ dep.lower() }}
+    {% endfor %}
   imports:
     - openalea.mtg
   source_files:
@@ -37,10 +43,15 @@ test:
     - test/data/**
   commands:
     - cd test
-    - pytest -v --ignore=test_aml.py  --ignore=test_stat.py
+    - pytest -v --ignore=test_stat.py
 
 about:
-  home: {{ data.get('url') }}
-  license: CeCILL-C
-  summary: {{ data.get('description') }}
+  summary: {{ pyproject["project"]["description"] }}
+  license: {{ pyproject["project"]["license"] }}
+  home: {{ pyproject["project"]["urls"]["Homepage"] }}
+  doc_url: mtg.rtfd.io
+  dev_url: http://github.com/openalea/mtg
 
+extra:
+  recipe-maintainers:
+    - pradal

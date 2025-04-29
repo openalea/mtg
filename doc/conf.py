@@ -17,6 +17,8 @@
 import sys
 import os
 
+import pydata_sphinx_theme # Pydata theme: https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html
+
 # If extensions (or modules to document with autodoc) are in another
 # directory, add these directories to sys.path here. If the directory is
 # relative to the documentation root, use os.path.abspath to make it
@@ -52,7 +54,10 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinx_favicon',      # support for favicon
+    'nbsphinx',     # for integrating jupyter notebooks
+    'myst_parser'   # for parsing .md files
 ]
 
 # try to add more extensions which are not default
@@ -68,7 +73,7 @@ except ImportError:
 # default settings that can be redefined outside of the pkglts block
 todo_include_todos = True
 autosummary_generate = True
-intersphinx_mapping = {'python': ('https://docs.python.org/3.4', None)}
+intersphinx_mapping = {'python': ('https://docs.python.org/', None)}
 inheritance_node_attrs = dict(shape='ellipse', fontsize=12,
                               color='orange', style='filled')
 
@@ -86,7 +91,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'openalea.mtg'
-copyright = u'2015, openalea.mtg'
+copyright = u'2015-2025, openalea.mtg'
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -145,88 +150,53 @@ pygments_style = 'sphinx'
 
 
 # -- Options for HTML output -------------------------------------------
-
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
-
-# Theme options are theme-specific and customize the look and feel of a
-# theme further.  For a list of options available for each theme, see the
+html_theme = 'pydata_sphinx_theme'
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
-
-# Add any paths that contain custom themes here, relative to this directory.
-# html_theme_path = []
-
-# The name for this set of Sphinx documents.  If None, it defaults to
-# "<project> v<release> documentation".
-# html_title = None
-
-# A shorter title for the navigation bar.  Default is the same as
-# html_title.
-# html_short_title = None
-
-# The name of an image file (relative to this directory) to place at the
-# top of the sidebar.
-# html_logo = None
-
-# The name of an image file (within the static path) to use as favicon
-# of the docs.  This file should be a Windows icon file (.ico) being
-# 16x16 or 32x32 pixels large.
-# html_favicon = None
-
-# Add any paths that contain custom static files (such as style sheets)
-# here, relative to this directory. They are copied after the builtin
-# static files, so a file named "default.css" will overwrite the builtin
-# "default.css".
+html_theme_options = {
+  "header_links_before_dropdown": 6,
+  "sidebarwidth": 200,
+  "sticky_navigation": "false",
+  "collapse_navigation": "false",
+  "display_version": "true",
+  "icon_links": [
+    {
+        "name": "GitHub",
+        "url": "https://github.com/openalea/openalea.rtfd.io",
+        "icon": "fa-brands fa-github",
+    },
+    ],
+    "show_version_warning_banner": True,
+    "footer_start": ["copyright"],
+    "footer_center": ["sphinx-version"],
+    "secondary_sidebar_items": {
+        "**/*": ["page-toc", "edit-this-page", "sourcelink"],
+        "examples/no-sidebar": [],
+    },
+  }
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
-# If not '', a 'Last updated on:' timestamp is inserted at every page
-# bottom, using the given strftime format.
-# html_last_updated_fmt = '%b %d, %Y'
-
-# If true, SmartyPants will be used to convert quotes and dashes to
-# typographically correct entities.
-# html_use_smartypants = True
-
-# Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
-
-# Additional templates that should be rendered to pages, maps page names
-# to template names.
-# html_additional_pages = {}
-
+html_logo = "_static/openalea_web.svg"
+html_favicon = "_static/openalea_web.svg"
 # If false, no module index is generated.
-# html_domain_indices = True
-
+html_domain_indices = True
 # If false, no index is generated.
-# html_use_index = True
-
+html_use_index = True
 # If true, the index is split into individual pages for each letter.
-# html_split_index = False
-
+html_split_index = False
 # If true, links to the reST sources are added to the pages.
-# html_show_sourcelink = True
-
-# If true, "Created using Sphinx" is shown in the HTML footer.
-# Default is True.
-# html_show_sphinx = True
-
-# If true, "(C) Copyright ..." is shown in the HTML footer.
-# Default is True.
-# html_show_copyright = True
-
-# If true, an OpenSearch description file will be output, and all pages
-# will contain a <link> tag referring to it.  The value of this option
-# must be the base URL from which the finished HTML is served.
-# html_use_opensearch = ''
-
-# This is the file name suffix for HTML files (e.g. ".xhtml").
-# html_file_suffix = None
-
+html_show_sourcelink = True
+# If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
+html_show_sphinx = True
+# If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
+html_show_copyright = True
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'mtgdoc'
-
+htmlhelp_basename = 'mtg_documentation'
 
 # -- Options for LaTeX output ------------------------------------------
 
@@ -315,8 +285,8 @@ texinfo_documents = [
 # use apidoc to generate developer doc
 import os
 from os import path
-from sphinx.ext.apidoc import main
 
+from sphinx.ext.apidoc import main
 
 rootpath = path.abspath(path.join(project_root, "src"))
 destdir = path.abspath(path.join(project_root, "doc", "_dvlpt"))
