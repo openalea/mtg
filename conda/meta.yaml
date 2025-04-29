@@ -49,7 +49,7 @@ about:
   summary: {{ pyproject["project"]["description"] }}
   license: {{ pyproject["project"]["license"] }}
   home: {{ pyproject["project"]["urls"]["Homepage"] }}
-  doc_url: http://github.com/openalea/mtg
+  doc_url: mtg.rtfd.io
   dev_url: http://github.com/openalea/mtg
 
 extra:
