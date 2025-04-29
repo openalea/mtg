@@ -6,4 +6,7 @@ channels:
 dependencies:
   - python
   - sphinx_rtd_theme
-  - openalea.mtg
+  - openalea.plantgl
+  - pip
+  - pip:
+    - -e ..[doc]
