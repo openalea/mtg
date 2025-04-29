@@ -17,4 +17,5 @@ jobs:
       anaconda_token: ${{ secrets.ANACONDA_TOKEN }}
     with:
       operating-system: '["ubuntu-latest", "macos-13", "windows-latest"]'
+      python-minor-version: '[9, 10, 11, 12]'
 
