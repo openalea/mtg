@@ -38,7 +38,6 @@ test:
   imports:
     - openalea.mtg
   source_files:
-    - share/data/**
     - test/**
     - test/data/**
   commands:
