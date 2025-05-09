@@ -5,9 +5,8 @@ PlantFrame (3D reconstruction of plant architecture)
 
 .. topic:: Section contents
 
-    In this section, we introduce the `PlantFrame 
-    <http://openalea.gforge.inria.fr/dokuwiki/doku.php?id=documentation:demo:mtg_reconstruction&s[]=plantframe>`_
-    vocabulary that we use through-out `vplants` and give a 
+    In this section, we introduce the `PlantFrame`
+    vocabulary that we use through-out `openalea` and give a 
     series of examples.
 
 
@@ -31,32 +30,30 @@ The stages of the PlantFrame are:
 Where are the data?
 ==========================
 
- The `tutorial` package comes with a few datasets. The data are in
- `share/data/PlantFrame` directory from the root. ::
+ The `mtg` package comes with a few datasets. The data are in
+ `src/openalea/mtg/data` directory from the root. ::
 
     >>> import openalea.mtg
-    >>> from openalea.deploy.shared_data import shared_data
-    >>> import vplants.tutorial
-    >>> data = shared_data(vplants.tutorial)/'PlantFrame'
+    >>> from openalea.mtg.data import data_dir
 
 Visualisation of a digitized Tree
 =================================
 
-First, we load the digitized Walnut :download:`noylum2.mtg <../../share/data/noylum2.mtg>`
+First, we load the digitized Walnut :download:`noylum2.mtg <../../src/openalea/mtg/data/noylum2.mtg>`
 
 ::
 
     >>> from openalea.mtg import * 
-    >>> g = MTG(data/'noylum2.mtg')
+    >>> g = MTG(data_dir/'noylum2.mtg')
 
 
 
 Then, a file containing a set of default geometric parameters is loaded to build a
-DressingData (:download:`walnut.drf <../../share/data/walnut.drf>` )
+DressingData (:download:`walnut.drf <../../src/openalea/mtg/walnut.drf>` )
 
 ::
 
-    >>> drf = data/'walnut.drf'
+    >>> drf = data_dir/'walnut.drf'
     >>> dressing_data = dresser.dressing_data_from_file(drf)
 
 Another solution is to create the default parameters directly
@@ -90,15 +87,15 @@ Visualise the plant in 3D
 Simple visualisation of a monopodial plant
 ===========================================
 
-First,  we load the MTG :download:`monopodial_plant.mtg <../../share/data/monopodial_plant.mtg>`
+First,  we load the MTG :download:`monopodial_plant.mtg <../../src/openalea/mtg/monopodial_plant.mtg>`
 
-.. literalinclude:: ../../share/data/PlantFrame/monopodial_plant.mtg
+.. literalinclude:: ../../src/openalea/mtg/data/monopodial_plant.mtg
     :lines: 22-
     
 ::
 
     >>> from openalea.mtg import * 
-    >>> g = MTG(data/'monopodial_plant.mtg')
+    >>> g = MTG(data_dir/'monopodial_plant.mtg')
 
 
 .. code-block:: python

@@ -1,14 +1,12 @@
-# {# pkglts, version
-#  -*- coding: utf-8 -*-
+import importlib.metadata
 
-major = 2
-"""(int) Version major component."""
+__version__ =  importlib.metadata.version("openalea.mtg")
 
-minor = 3
-"""(int) Version minor component."""
+numbers = __version__.split(".")
 
-post = 1
-"""(int) Version post or bugfix component."""
-
-__version__ = ".".join([str(s) for s in (major, minor, post)])
-# #}
+try:
+    major, minor, post = numbers[0], numbers[1], numbers[2]
+    patch = '.'.join(numbers[3:])
+except IndexError:
+    major, minor, post = '2', '4', '0'
+    patch = '0'

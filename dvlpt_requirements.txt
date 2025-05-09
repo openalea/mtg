@@ -1,8 +1,0 @@
-# {# pkglts, pysetup
-coverage # conda install coverage
-mock # conda install mock
-pytest # conda install pytest
-pytest-cov # conda install pytest-cov
-sphinx # conda install sphinx
-
-# #}
