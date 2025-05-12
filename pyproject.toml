@@ -25,17 +25,14 @@ dependencies = [
     "pandas"
 ]
 
-# section specific to conda-only distributed package (not used by pip yet)
-# based on astk, used in hydroroot with a meta.yaml that only use metadata from
-# pyproject => only pyproject.toml must be modified
-[conda.environment]
-channels = [
-  "openalea3",
-  "conda-forge"
-]
-dependencies = [
-    "openalea.plantgl",
-]
+[project.urls]
+Homepage = "http://github.com/openalea/mtg"
+
+[project.entry-points."wralea"]
+mtg = "openalea.mtg_wralea"
+
+
+
 
 [project.optional-dependencies]
 test = [
@@ -52,20 +49,22 @@ doc = [
   "nbsphinx",
 ]
 
-[project.urls]
-Homepage = "http://github.com/openalea/mtg"
+# section specific to conda-only distributed package (not used by pip yet)
+# based on astk, used in hydroroot with a meta.yaml that only use metadata from
+# pyproject => only pyproject.toml must be modified
+[conda.environment]
+channels = [
+  "openalea3",
+  "conda-forge"
+]
+dependencies = [
+    "openalea.plantgl",
+]
+
 
 [tool.setuptools.packages.find]
 where = ["src"]
 namespaces = true
 
-#[tool.setuptools]
-#packages = ["find_namespace:src"]
-#namespace_packages = ["openalea"]
-#package_dir = {"" = "src"}
-
-[project.entry-points."wralea"]
-mtg = "openalea.mtg_wralea"
-
-#[tool.setuptools.dynamic]
-#version = {file = "src/openalea/mtg/version.py"}
+[tool.setuptools.package-data]
+"*" = ["*.mtg", "*.drf", "*.txt"]

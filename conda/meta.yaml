@@ -9,8 +9,7 @@ source:
 
 build:
   noarch: python
-  preserve_egg_dir: True
-  number: 2
+  number: 0
   #script: {{PYTHON}} setup.py install #--single-version-externally-managed --record=record.txt
   script: {{PYTHON}} -m pip install . -vv
 
@@ -38,7 +37,6 @@ test:
   imports:
     - openalea.mtg
   source_files:
-    - share/data/**
     - test/**
     - test/data/**
   commands:
