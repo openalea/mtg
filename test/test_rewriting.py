@@ -44,7 +44,7 @@ def test1():
             node.produce( BS(), Internode(), Segment())
 
 
-    return runsimu(MySimu())
+    runsimu(MySimu())
 
 
 def test2():
@@ -95,7 +95,7 @@ def test4():
 
     printresult(mtg)
 
-    return mtg
+    #return mtg
 
 def test5():
     class MySimu(MTGLsystem):
@@ -111,7 +111,7 @@ def test5():
             node.produce( )
 
 
-    return runsimu(MySimu())
+    runsimu(MySimu())
 
 
 

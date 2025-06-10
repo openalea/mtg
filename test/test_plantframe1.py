@@ -34,7 +34,7 @@ def test1():
     
     length = pf.algo_length()
 
-    return pf
+    #return pf
 
 def __test2():
     fn = r'data/hetre.mtg'
@@ -70,7 +70,7 @@ def test3():
     length = pf.algo_length()
     
     
-    return pf
+    #return pf
 
 
 
@@ -111,7 +111,7 @@ def test4():
 
     t1=clock(); t, dt = t1, t1-t
     print('scene in ', dt) 
-    return scene, pf
+    #return scene, pf
 
 def test5():
     fn = r'data/test10_agraf.mtg'
@@ -152,7 +152,7 @@ def test5():
     t1=clock(); t, dt = t1, t1-t
     print('scene in ', dt) 
 
-    return scene, pf
+    #return scene, pf
 
 def walnut():
     fn = r'data/test9_noylum2.mtg'
@@ -184,7 +184,7 @@ def test_colors():
         return colors[g.order(vid)]
 
     scene=plantframe.build_scene(pf.g, pf.origin, axes, pf.points, diameters, 10000, option='cylinder', colors = my_color)
-    return scene
+    #return scene
 
 
 

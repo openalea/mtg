@@ -69,7 +69,8 @@ def test_insert_scale():
     
     quotient = lambda v: g.edge_type(v) != '<'
 
-    return g.insert_scale(inf_scale=2, partition=quotient) 
+    G = g.insert_scale(inf_scale=2, partition=quotient) 
+    
 
 def parent_of_components(g, u):
     """
@@ -124,7 +125,7 @@ def test_remove_scale():
 
     g.insert_scale(inf_scale=2, partition=quotient) 
     g, _ = g.remove_scale(scale=2)
-    return g
+    #return g
 
 if __name__ == "__main__":
     test_insert_scale()

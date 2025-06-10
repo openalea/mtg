@@ -8,7 +8,7 @@ def test1():
     dr = dressing_data(f)
 
     f.close()
-    return dr
+    #return dr
 
 def files_to_check():
     try:
