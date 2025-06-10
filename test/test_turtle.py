@@ -3,12 +3,14 @@ from openalea.mtg.plantframe.turtle import *
 def test1():
     fn = r'data/mtg1.mtg'
     g = read_mtg_file(fn)
-    return TurtleFrame(g)
+    t = TurtleFrame(g)
+    assert(t is not None)
 
 def test2():
     fn = r'data/monopodial_plant.mtg'
     g = read_mtg_file(fn)
-    return TurtleFrame(g)
+    t = TurtleFrame(g)
+    assert(t is not None)
 
 def test3():
     fn = r'data/monopodial_plant.mtg'
@@ -21,5 +23,7 @@ def test3():
         turtle.F()
         turtle.rollL()
 
-    return TurtleFrame(g, visitor)
+    t= TurtleFrame(g, visitor)
+    assert(t is not None)
+
 
