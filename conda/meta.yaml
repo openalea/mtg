@@ -1,8 +1,16 @@
 {% set pyproject = load_file_data('../pyproject.toml', from_recipe_dir=True) %}
+{% set name = pyproject.get('project').get('name') %}
+{% set description = pyproject.get('project').get('description') %}
+{% set version = environ.get('SETUPTOOLS_SCM_PRETEND_VERSION', "0.0.0.dev") %}
+{% set license = pyproject.get('project').get('license') %}
+{% set home = pyproject.get('project', {}).get('urls', {}).get('Homepage', '') %}
+{% set build_deps = pyproject.get("build-system", {}).get("requires", []) %}
+{% set deps = pyproject.get('project', {}).get('dependencies', []) %}
+{% set conda_deps = pyproject.get('tool', {}).get('conda-environment', {}).get('dependencies',[]) %}
 
 package:
-  name: {{ pyproject["project"]["name"] }}
-  version: {{ GIT_DESCRIBE_TAG  | replace("v", "") }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   path: ..
@@ -10,30 +18,33 @@ source:
 build:
   noarch: python
   number: 0
-  #script: {{PYTHON}} setup.py install #--single-version-externally-managed --record=record.txt
-  script: {{PYTHON}} -m pip install . -vv
+  preserve_egg_dir: True
+  string: py{{ PY_VER }}
+  script:
+    - {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-build-isolation -vv
 
 requirements:
-  build:
+  host:
     - python
-    {% for dep in pyproject["build-system"]["requires"] %}
-    - {{ dep.lower() }}
-    {% endfor %}
+    {% for dep in build_deps %}
+    - {{ dep }}
+    {% endfor  %}
+
+  build:
+    - {{ compiler("cxx") }}
 
   run:
     - python
-    {% for dep in pyproject["project"]["dependencies"] %}
-    - {{ dep.lower() }}
+    {% for dep in deps + conda_deps %}
+    - {{ dep }}
     {% endfor %}
-    {% for dep in pyproject["conda"]["environment"]["dependencies"] %}
-    - {{ dep.lower() }}
-    {% endfor %}
+
 
 test:
   requires:
-    {% for dep in pyproject["project"]["optional-dependencies"]["test"] %}
-    - {{ dep.lower() }}
-    {% endfor %}
+    - pytest
+    - openalea.lpy
+    - path
   imports:
     - openalea.mtg
   source_files:
@@ -44,11 +55,9 @@ test:
     - pytest -v --ignore=test_stat.py
 
 about:
-  summary: {{ pyproject["project"]["description"] }}
-  license: {{ pyproject["project"]["license"] }}
-  home: {{ pyproject["project"]["urls"]["Homepage"] }}
-  doc_url: mtg.rtfd.io
-  dev_url: http://github.com/openalea/mtg
+  home: {{ home }}
+  summary: {{ description }}
+  license: {{ license }}
 
 extra:
   recipe-maintainers:
