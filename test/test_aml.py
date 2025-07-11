@@ -170,7 +170,6 @@ def test1():
     for i, vid in enumerate(vtxs):
         assert wrap.AlgRank(1,vid) == - wrap.AlgRank(vid,1) #== i
 
-"""
 def test():
     files = glob('data/*.mtg')
     exclude = '''
@@ -178,8 +177,8 @@ def test():
     '''.split()
     files = [f for f in files for e in exclude if e not in f]
     for fn in files:
-        yield check, fn
-"""
+        return check, fn
+
 
 #test_check = check
 
