@@ -1,4 +1,4 @@
-name: mtg
+name: mtg_dev
 channels:
   - openalea3
   - conda-forge

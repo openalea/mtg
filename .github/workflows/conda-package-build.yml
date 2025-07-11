@@ -1,22 +1,23 @@
-name: build_publish_anaconda
+name: OpenAlea CI
 
 on:
   push:
-    branches: 
-      - '**'
+    branches:
+      - main
+      - master
     tags:
       - 'v*'
   pull_request:
-    branches: 
-      - '**'
+    types:
+      - opened
+      - synchronize
+      - reopened
+  release:
+    types:
+      - published
 
 jobs:
   build:
-    uses: openalea/github-action-conda-build/.github/workflows/conda-package-build.yml@main
-    secrets: 
+    uses: openalea/action-build-publish-anaconda/.github/workflows/openalea_ci.yml@main
+    secrets:
       anaconda_token: ${{ secrets.ANACONDA_TOKEN }}
-    with:
-      operating-system: '["ubuntu-latest", "macos-13", "windows-latest"]'
-      python-minor-version: '[9, 10, 11, 12]'
-      build-options: ""
-
