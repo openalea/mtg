@@ -27,12 +27,12 @@ MTG creation
 
     g = mtg.MTG()
 
-    print len(g)
-    print g.nb_vertices()
-    print g.nb_scales()
+    print(len(g))
+    print(g.nb_vertices())
+    print(g.nb_scales())
 
     root = g.root
-    print g.scale(root)
+    print(g.scale(root))
 
 
 * First, the package is imported (**line 1**). 
@@ -82,11 +82,11 @@ They will return an iterator on the traversed vertices.
 
     from openalea.container.traversal.tree import *
 
-    print list(g.components(root))
+    print(list(g.components(root)))
 
-    print list(pre_order(g, root1))
-    print list(post_order(g, root1))
-    print list(level_order(g, root1))
+    print(list(pre_order(g, root1)))
+    print(list(post_order(g, root1)))
+    print(list(level_order(g, root1)))
 
 .. warning::
 
@@ -97,7 +97,7 @@ They will return an iterator on the traversed vertices.
     or compute its length.
 
 
-        >>> print len(g.components(root)) #doctest: +SKIP
+        >>> print(len(g.components(root))) #doctest: +SKIP
         Traceback (most recent call last):
           File "<stdin>", line 1, in <module>
         TypeError: object of type 'generator' has no len()
@@ -105,7 +105,7 @@ They will return an iterator on the traversed vertices.
     Use rather:
 
         >>> components = list(g.components(root)) #doctest: +SKIP
-        >>> print components #doctest: +SKIP
+        >>> print(components) #doctest: +SKIP
         [1, 2, 3, 4]
 
 

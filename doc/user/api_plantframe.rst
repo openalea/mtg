@@ -42,5 +42,5 @@ Plot a PlantFrame.
 .. automodule:: openalea.mtg.plantframe.turtle
 
 
-Download the source files :download:`../../src/mtg/plantframe/plantframe.py`, :download:`../../src/mtg/plantframe/dresser.py`, :download:`../../src/mtg/plantframe/turtle.py`, 
+Download the source files :download:`../../src/openalea/mtg/plantframe/plantframe.py`, :download:`../../src/openalea/mtg/plantframe/dresser.py`, :download:`../../src/openalea/mtg/plantframe/turtle.py`,
 

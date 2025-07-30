@@ -2476,7 +2476,7 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
 
     :Optional Parameters:
         - `nb_vertices`
-        - `nb_children` : an int or a discrete distribution sampling function.
+        - `nb_children`: an int or a discrete distribution sampling function.
 
     :Returns:
 
@@ -2489,16 +2489,17 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
             g = MTG()
             vid = g.add_component(g.root)
             random_tree(g, vid, nb_children=2, nb_vertices=20)
-            print(len(g)) # 22
+            print(len(g))
 
         .. code-block:: python
+
             from scipy.stats import poisson, binom
 
             g = MTG()
             vid = g.add_component(g.root)
             dist = poisson(1., loc=1).rvs
             random_tree(g, vid, nb_children=dist)
-            print(len(g)) # 22
+            print(len(g))
 
             dist = binom(5, 0.5, loc=1).rvs
             random_tree(g, vid, nb_children=dist)

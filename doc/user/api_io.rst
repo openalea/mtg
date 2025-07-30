@@ -44,5 +44,5 @@ Mss
 
 .. autofunction:: mtg2mss
 
-Download the source file :download:`../../src/mtg/io.py`.
+Download the source file :download:`../../src/openalea/mtg/io.py`.
 

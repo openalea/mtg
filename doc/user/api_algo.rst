@@ -11,5 +11,5 @@ Common algorithms
     :show-inheritance:
     :synopsis: Implementation of a set of algorithms for the MTG datastructure
 
-Download the source file :download:`../../src/mtg/algo.py`.
+Download the source file :download:`../../src/openalea/mtg/algo.py`.
 
