@@ -28,7 +28,7 @@ r._feature_slice=slice(5,7)
 
 #debug
 r.preprocess_code()
-print r._new_code
+print(r._new_code)
 """
 g = io.read_mtg_file(fn)
 

@@ -311,7 +311,7 @@ def iter_mtg(mtg, vtx_id):
     ::
         
         for vid in iter_mtg(g,g.root):
-            print vid
+            print(vid)
 
 
     :Parameters:
@@ -358,7 +358,7 @@ def iter_mtg2(mtg, vtx_id):
     ::
         
         for vid in iter_mtg2(g,g.root):
-            print vid
+            print(vid)
 
 
     :Parameters:
@@ -471,10 +471,10 @@ def iter_mtg_with_filter(mtg, vtx_id, pre_order_filter= None, post_order_visitor
     .. code-block:: python
 
         def pre_order_visitor(vid): 
-            print vid
+            print(vid)
             return True
         def post_order_visitor(vid):
-            print vid
+            print(vid)
         for vid in iter_mtg_with_filter(g,g.root, pre_order_visitor, post_order_visitor):
             pass
 
@@ -536,10 +536,10 @@ def iter_mtg2_with_filter(mtg, vtx_id, pre_order_filter=None, post_order_visitor
     .. code-block:: python
 
         def pre_order_visitor(vid): 
-            print vid
+            print(vid)
             return True
         def post_order_visitor(vid):
-            print vid
+            print(vid)
         for vid in iter_mtg_with_filter(g,g.root, pre_order_visitor, post_order_visitor):
             pass
 

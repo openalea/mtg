@@ -12,4 +12,4 @@ Traversal methods on tree and MTG
     :show-inheritance:
     :synopsis: Tree  and MTG Traversals
 
-Download the source file :download:`../../src/mtg/traversal.py`.
+Download the source file :download:`../../src/openalea/mtg/traversal.py`.

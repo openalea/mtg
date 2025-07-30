@@ -49,7 +49,7 @@ First, we load the digitized Walnut :download:`noylum2.mtg <../../src/openalea/m
 
 
 Then, a file containing a set of default geometric parameters is loaded to build a
-DressingData (:download:`walnut.drf <../../src/openalea/mtg/walnut.drf>` )
+DressingData (:download:`walnut.drf <../../src/openalea/mtg/data/walnut.drf>` )
 
 ::
 
@@ -87,7 +87,7 @@ Visualise the plant in 3D
 Simple visualisation of a monopodial plant
 ===========================================
 
-First,  we load the MTG :download:`monopodial_plant.mtg <../../src/openalea/mtg/monopodial_plant.mtg>`
+First,  we load the MTG :download:`monopodial_plant.mtg <../../src/openalea/mtg/data/monopodial_plant.mtg>`
 
 .. literalinclude:: ../../src/openalea/mtg/data/monopodial_plant.mtg
     :lines: 22-
@@ -98,42 +98,7 @@ First,  we load the MTG :download:`monopodial_plant.mtg <../../src/openalea/mtg/
     >>> g = MTG(data_dir/'monopodial_plant.mtg')
 
 
-.. code-block:: python
 
-    >>> def coloring(mtg, vertex):
-            try:
-                mtg.property('diam')[vertex]
-                return "g"
-            except: return "r"
-
-    >>> def legend(mtg, vertex):
-            try:
-                return "diam: "+str(mtg.property('diam')[vertex])
-            except: return "diam: NA"
-            
-    >>> def label(mtg, vertex):
-            return mtg.label(vertex)
-
-    >>> g.plot(roots=4, node=dict(fc=coloring, label=label, legend=legend), prog="dot")
-            
-.. image:: images/monopod2d1.png
-    :width: 80%
-    :align: center
-    :alt: PlantFrame            
-
-.. code-block:: python
-
-    >>> def legend(mtg, vertex):
-            try:
-                return "diam: "+str(mtg.property('diam')[vertex])
-            except: return "diam: NA"
-            
-    >>> g.plot(roots=4, node=dict(fc=coloring, label=label, legend=legend), prog="dot")
-
-.. image:: images/monopod2d2.png
-    :width: 80%
-    :align: center
-    :alt: PlantFrame  
 
 The mtg `monopodial_plant.mtg` is loaded. To draw it, just run::
 

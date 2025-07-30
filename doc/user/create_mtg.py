@@ -60,16 +60,16 @@ i = g.add_child(i,label='I19', edge_type='<' )
 
 #fat_mtg(g)
 
-print g.is_valid()
-print g
+print(g.is_valid())
+print(g)
 
 for id in g.vertices():
-    print g[id]
+    print(g[id])
 from openalea.mtg.io import *
 
-print list(g.property_names())
+print(list(g.property_names()))
 properties = [(p, 'REAL') for p in g.property_names() if p not in ['edge_type', 'index', 'label']]
-print properties
+print(properties)
 mtg_lines = write_mtg(g, properties)
 f = open('test.mtg', 'w')
 f.write(mtg_lines)

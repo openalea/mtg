@@ -48,7 +48,7 @@ Apart from giving a natural view of the plants contained in the database, these 
 This representation emphasises different informations related to the branching order: it can be seen in Figure 3-7b that the maximum branching order is 4, that this order is reached only once in the tree crown, and that this occurs at a floral site (black component).
 
 
-.. htmlonly::
+.. only:: html
 
     .. tabularcolumns:: |c|c|
 
@@ -61,7 +61,7 @@ This representation emphasises different informations related to the branching o
     | **Figure 3.7**                                  |
     +------------------------+------------------------+
 
-.. latexonly::
+.. only:: latex
 
     .. image:: fig3_7a.png
     .. image:: fig3_7b.png

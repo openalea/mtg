@@ -11,5 +11,5 @@ utilities (plots)
     :show-inheritance:
     :synopsis: 
 
-Download the source file :download:`../../src/mtg/util.py`.
+Download the source file :download:`../../src/openalea/mtg/util.py`.
 

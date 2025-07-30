@@ -182,7 +182,7 @@ class MTG(PropertyTree):
         By convention, the mtg contains scales in :math:`[0,max\_scale]`.
 
         :Usage:
-            >>> print g.max_scale()
+            >>> print(g.max_scale())
 
         :Returns:
             S, the maximum scale identifier.
@@ -235,7 +235,7 @@ class MTG(PropertyTree):
             g = MTG()
             len(g) == len(list(g.vertices()))
             for vid in g.vertices(scale=2):
-                print g.class_name(vid)
+                print(g.class_name(vid))
 
         :Optional Parameters:
             - `scale` (int): used to select vertices at a given scale.
@@ -269,7 +269,7 @@ class MTG(PropertyTree):
             g = MTG()
             len(g) == len(list(g.vertices()))
             for vid in g.vertices(scale=2):
-                print g.class_name(vid)
+                print(g.class_name(vid))
 
         :Optional Parameters:
             - `scale` (int): used to select vertices at a given scale.
@@ -303,7 +303,7 @@ class MTG(PropertyTree):
         .. code-block:: python
 
             for v in g:
-                print g.class_name(v)
+                print(g.class_name(v))
 
         '''
         return self.vertices_iter()
@@ -317,7 +317,7 @@ class MTG(PropertyTree):
         .. code-block:: python
 
             if v in g:
-                print v, " is in the mtg."
+                print(v, " is in the mtg.")
         '''
         return self.has_vertex(vid)
 
@@ -1342,13 +1342,13 @@ class MTG(PropertyTree):
         .. code-block:: python
 
             node = g.node(1)
-            print node.edge_type
-            print node.label
+            print(node.edge_type)
+            print(node.label)
             node.label = 'B'
-            print g.label(1)
+            print(g.label(1))
 
-            print node.parent
-            print list(node.children)
+            print(node.parent)
+            print(list(node.children))
         """
         if klass is None:
             klass = _ProxyNode
@@ -2444,7 +2444,7 @@ def simple_tree(tree, vtx_id, nb_children=3, nb_vertices=20):
             g = MTG()
             vid = g.add_component(g.root)
             simple_tree(g, vid, nb_children=2, nb_vertices=20)
-            print len(g) # 22
+            print(len(g)) # 22
 
     .. seealso:: :func:`random_tree`, :func:`random_mtg`
 
@@ -2476,7 +2476,7 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
 
     :Optional Parameters:
         - `nb_vertices`
-        - `nb_children` : an int or a discrete distribution sampling function.
+        - `nb_children`: an int or a discrete distribution sampling function.
 
     :Returns:
 
@@ -2489,16 +2489,17 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
             g = MTG()
             vid = g.add_component(g.root)
             random_tree(g, vid, nb_children=2, nb_vertices=20)
-            print len(g) # 22
+            print(len(g))
 
         .. code-block:: python
+
             from scipy.stats import poisson, binom
 
             g = MTG()
             vid = g.add_component(g.root)
             dist = poisson(1., loc=1).rvs
             random_tree(g, vid, nb_children=dist)
-            print len(g) # 22
+            print(len(g))
 
             dist = binom(5, 0.5, loc=1).rvs
             random_tree(g, vid, nb_children=dist)
@@ -2548,7 +2549,7 @@ def random_mtg(tree, nb_scales):
 
             g = MTG()
             random_tree(g, g.root, nb_children=2, nb_vertices=20)
-            print len(g) # 21
+            print(len(g)) # 21
 
     .. seealso:: :func:`simple_tree`, :func:`random_tree`
 

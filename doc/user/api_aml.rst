@@ -12,5 +12,5 @@ High level reporting function compatible with AML
     :show-inheritance:
     :synopsis: Interface to use the new MTG implementation with the old AMAPmod interface.
 
-Download the source file :download:`../../src/mtg/aml.py`.
+Download the source file :download:`../../src/openalea/mtg/aml.py`.
 

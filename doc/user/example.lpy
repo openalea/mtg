@@ -6,7 +6,7 @@ Axiom: X
 
 def EndEach(lstring):
 
-    print lstring
+    print(lstring)
 
 derivation length: 7
 production:

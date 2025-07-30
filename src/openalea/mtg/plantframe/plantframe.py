@@ -1367,9 +1367,9 @@ def compute_missing_points(g, axe, fixed_points, origin=None):
                             #new_points[v] = pt
 
                             if v == 2503:
-                                print 2, v, p1, p2, step, pt21
+                                print(2, v, p1, p2, step, pt21)
                                 if g.parent(v) in fixed_points:
-                                    print step - (p1-fixed_points[g.parent(v)])
+                                    print(step - (p1-fixed_points[g.parent(v)]))
             """
             print('TODO : point for ', i0[0])
 

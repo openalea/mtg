@@ -73,5 +73,5 @@ All
 .. autofunction:: display_tree
 .. autofunction:: display_mtg
 
-Download the source file :download:`../../src/mtg/mtg.py`.
+Download the source file :download:`../../src/openalea/mtg/mtg.py`.
 
