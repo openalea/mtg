@@ -5,8 +5,8 @@ channels:
 
 dependencies:
   - python
-  - sphinx_rtd_theme
   - openalea.plantgl
+  - openalea.lpy
   - pip
   - pip:
-    - -e ..[doc]
+    - -e .."[doc, test]"

@@ -7,6 +7,7 @@
 {% set build_deps = pyproject.get("build-system", {}).get("requires", []) %}
 {% set deps = pyproject.get('project', {}).get('dependencies', []) %}
 {% set conda_deps = pyproject.get('tool', {}).get('conda', {}).get('environment', {}).get('dependencies',[]) %}
+{% set test_deps = pyproject.get('project', {}).get('optional-dependencies', {}).get('test',[]) %}
 
 package:
   name: {{ name }}
@@ -42,9 +43,9 @@ requirements:
 
 test:
   requires:
-    - pytest
-    - openalea.lpy
-    - path
+    {% for dep in test_deps %}
+    - {{ dep }}
+    {% endfor %}
   imports:
     - openalea.mtg
   source_files:
