@@ -47,7 +47,7 @@ def build_mtg_and_check(fn):
     s = write_mtg(g, props)
     """
     except Exception, e:
-        print e
+        print(e)
         #assert False, 'MTG %s can not be written'%fn
     """
     return g, s
