@@ -43,6 +43,7 @@ test:
     {% for dep in test_deps %}
     - {{ dep }}
     {% endfor %}
+    - openalea.lpy
   imports:
     - openalea.mtg
   source_files:
@@ -50,7 +51,7 @@ test:
     - test/data/**
   commands:
     - cd test
-    - pytest -v --ignore=test_stat.py --ignore=test_parsing_axialtree.py
+    - pytest -v --ignore=test_stat.py
 
 about:
   home: {{ home }}
