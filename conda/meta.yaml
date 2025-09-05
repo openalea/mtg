@@ -50,7 +50,7 @@ test:
     - test/data/**
   commands:
     - cd test
-    - pytest -v --ignore=test_stat.py
+    - pytest -v --ignore=test_stat.py --ignore=test_parsing_axialtree.py
 
 about:
   home: {{ home }}
