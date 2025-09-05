@@ -6,7 +6,7 @@ channels:
 dependencies:
   - python
   - openalea.plantgl
-  - openalea.lpy
+  - matplotlib-base
   - pip
   - pip:
     - -e .."[doc, test]"

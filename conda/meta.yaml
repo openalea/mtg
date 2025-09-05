@@ -31,9 +31,6 @@ requirements:
     - {{ dep }}
     {% endfor  %}
 
-  build:
-    - {{ compiler("cxx") }}
-
   run:
     - python
     {% for dep in deps + conda_deps %}
@@ -46,6 +43,7 @@ test:
     {% for dep in test_deps %}
     - {{ dep }}
     {% endfor %}
+    - openalea.lpy
   imports:
     - openalea.mtg
   source_files:
