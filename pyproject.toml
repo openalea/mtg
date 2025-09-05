@@ -8,6 +8,10 @@ build-backend = "setuptools.build_meta"
 
 # enable dynamic versioning based on git tags
 [tool.setuptools_scm]
+# Format version to ease alignment with conda/meta.yaml tag-based versioning
+fallback_version = "2.2.0.dev0"
+version_scheme = "guess-next-dev"
+local_scheme = "no-local-version"
 
 [project]
 name = "openalea.mtg"
@@ -26,12 +30,12 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering",
 ]
 keywords = ["OpenAlea", "MTG", "Plant Architecture", "Tree Graph"]
 
 dependencies = [
-    "matplotlib-base",
     "pandas"
 ]
 
@@ -68,7 +72,8 @@ channels = [
 ]
 dependencies = [
     "openalea.plantgl",
-    "openalea.lpy"
+    "openalea.lpy",
+    "matplotlib-base",
 ]
 
 
