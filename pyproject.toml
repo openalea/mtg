@@ -72,7 +72,6 @@ channels = [
 ]
 dependencies = [
     "openalea.plantgl",
-    "openalea.lpy",
     "matplotlib-base",
 ]
 
