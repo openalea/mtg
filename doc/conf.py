@@ -165,7 +165,7 @@ html_theme_options = {
   "icon_links": [
     {
         "name": "GitHub",
-        "url": "https://github.com/openalea/openalea.rtfd.io",
+        "url": "https://github.com/openalea/mtg",
         "icon": "fa-brands fa-github",
     },
     ],
