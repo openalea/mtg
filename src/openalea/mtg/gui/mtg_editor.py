@@ -176,15 +176,15 @@ class ObservableMTG(GraphAdapterBase, Observed):
 ##############################################
 # -- The graphical part of the MTG editor -- #
 ##############################################
-from PyQt4 import QtGui, QtCore
+from qtpy import QtGui, QtCore, QtWidgets
 
 class Vertex( qt.DefaultGraphicalVertex ):
     max_scale = 6
 
     def __init__(self, *args, **kwargs):
         qt.DefaultGraphicalVertex.__init__(self, *args, **kwargs)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
-        self._label = QtGui.QGraphicsSimpleTextItem(self)
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsFocusable, True)
+        self._label = QtWidgets.QGraphicsSimpleTextItem(self)
 
     def _mtg(self):
         return self.graph().graph
@@ -401,10 +401,10 @@ if __name__ == "__main__":
     from random import randint as rint
 
     #THE APPLICATION'S MAIN WINDOW
-    class MainWindow(QtGui.QMainWindow):
+    class MainWindow(QtWidgets.QMainWindow):
         def __init__(self, parent=None):
             """                """
-            QtGui.QMainWindow.__init__(self, parent)
+            QtWidgets.QMainWindow.__init__(self, parent)
 
             self.setMinimumSize(800,600)
             self.__graph = ObservableMTG()
@@ -413,8 +413,8 @@ if __name__ == "__main__":
             self.setCentralWidget(self.__graphView)
 
 
-    app = QtGui.QApplication(["GraphEditor and Mtg test"])
-    QtGui.QApplication.processEvents()
+    app = QtWidgets.QApplication(["GraphEditor and Mtg test"])
+    QtWidgets.QApplication.processEvents()
     w = MainWindow()
     w.show()
     app.exec_()
