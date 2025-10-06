@@ -2,6 +2,8 @@
 Welcome to openalea.mtg's documentation!
 ========================================
 
+.. image:: user/images/noylum2.png
+
 Contents:
 
 .. toctree::
