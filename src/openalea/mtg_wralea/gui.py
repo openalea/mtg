@@ -18,7 +18,7 @@
 from openalea.visualea.node_widget import NodeWidget
 from openalea.mtg.gui.mtg_editor import GraphicalMtgFactory, ObservableMTG
 
-from PyQt4 import QtGui
+from qtpy import QtGui
 
 class MTGEditor(QtGui.QWidget, NodeWidget):
     def __init__(self, node, parent):
