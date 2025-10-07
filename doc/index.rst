@@ -4,7 +4,8 @@ Welcome to openalea.mtg's documentation!
 
 .. image:: user/images/noylum2.png
 
-Contents:
+MTG (Multi-scale Tree Graph) is a common data structure to represent
+plant architecture at various scales.
 
 .. toctree::
    :maxdepth: 2
