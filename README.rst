@@ -1,6 +1,6 @@
-.. image:: https://github.com/openalea/mtg/actions/workflows/conda-package-build.yml/badge.svg
+.. image:: https://github.com/openalea/mtg/actions/workflows/openalea_ci.yml/badge.svg
     :alt: CI status
-    :target: https://github.com/openalea/mtg/actions/workflows/conda-package-build.yml
+    :target: https://github.com/openalea/mtg/actions/workflows/openalea_ci.yml
 
     
 .. image:: https://anaconda.org/openalea3/openalea.mtg/badges/version.svg   
