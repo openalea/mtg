@@ -47,3 +47,6 @@ CecILL-C
 ```bash
 mamba env create -f ./conda/environment.yml
 ```
+
+### Documentation
+https://mtg.readthedocs.io
