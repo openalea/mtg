@@ -49,4 +49,5 @@ mamba env create -f ./conda/environment.yml
 ```
 
 ### Documentation
-https://mtg.readthedocs.io
+
+[![Documentation](https://readthedocs.org/projects/mtg/badge/?version=latest)](https://mtg.readthedocs.io/)
