@@ -1,7 +1,17 @@
 from openalea.mtg.io import axialtree2mtg, mtg2mss , lpy2mtg, mtg2lpy
-from openalea.lpy import AxialTree, generateScene, Lsystem
 from openalea.plantgl.all import Scene, Viewer
-from path import Path as path
+from pathlib import Path as path
+
+import pytest
+
+try:
+    from openalea.lpy import AxialTree, generateScene, Lsystem
+    WITH_LPY = True
+except ImportError:
+    WITH_LPY = False
+
+if not WITH_LPY:
+    pytest.skip("openalea.lpy not available", allow_module_level=True)
 
 def str2mtg(s):
     #s = s.replace('N', 'F')
