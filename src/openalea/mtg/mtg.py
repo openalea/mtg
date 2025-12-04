@@ -179,7 +179,7 @@ class MTG(PropertyTree):
     def max_scale(self):
         '''Return the max scale identifier.
 
-        By convention, the mtg contains scales in :math:`[0,max\_scale]`.
+        By convention, the mtg contains scales in :math:`[0,max_scale]`.
 
         :Usage:
             >>> print(g.max_scale())
