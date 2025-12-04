@@ -312,8 +312,8 @@ class PlantFrame():
         for vid in self.bottom_diameter:
             pid = g.parent(vid)
             if pid is not None :
-                if pid not in (self.top_diameter and
-                                (g.nb_children(pid) == 1 or edge_type.get(vid) == '<')):
+                if (pid not in self.top_diameter and
+                    (g.nb_children(pid) == 1 or edge_type.get(vid) == '<')):
                     self.top_diameter[pid] = self.bottom_diameter[vid]
 
 
