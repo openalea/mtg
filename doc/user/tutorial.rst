@@ -67,11 +67,10 @@ Traversing the mtg at one scale
 
 
 The mtg can be traversed at any scales like a regular tree.
-Their are three traversal algorithms working on Tree data structures (:ref:`container_algo_traversal`):
+Their are three traversal algorithms working on Tree data structures:
 
     * :class:`pre_order`
     * :class:`post_order`
-    * :class:`level_order`
 
 These methods take as parameters a tree like data structure, and a vertex.
 They will traverse the subtree rooted on this vertex in a specific order.
@@ -80,13 +79,12 @@ They will return an iterator on the traversed vertices.
 .. code-block:: python
     :linenos:
 
-    from openalea.container.traversal.tree import *
+    from openalea.mtg.traversal import *
 
     print(list(g.components(root)))
 
     print(list(pre_order(g, root1)))
     print(list(post_order(g, root1)))
-    print(list(level_order(g, root1)))
 
 .. warning::
 
