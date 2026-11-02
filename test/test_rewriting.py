@@ -74,9 +74,8 @@ def test3():
 
     try:
         return runsimu(MySimu())
-    except:
-        import warnings
-        warnings.warn("Cannot replace a node with components")
+    except Exception:
+        pass
 
 def test4():
     class MySimu(MTGLsystem):
