@@ -177,7 +177,7 @@ class MTG(PropertyTree):
         return list(self.scales_iter())
 
     def max_scale(self):
-        '''Return the max scale identifier.
+        r'''Return the max scale identifier.
 
         By convention, the mtg contains scales in :math:`[0,max\_scale]`.
 
@@ -197,7 +197,7 @@ class MTG(PropertyTree):
     # Some Vertex List Graph Concept methods.
     #########################################################################
     def nb_vertices(self, scale = -1):
-        '''
+        r'''
         Returns the number of vertices.
 
         :Usage:
@@ -220,7 +220,7 @@ class MTG(PropertyTree):
             return len(self.vertices(scale=scale))
 
     def vertices(self, scale = -1):
-        '''
+        r'''
         Return a list of the vertices contained in an MTG.
 
         The set of all vertices in the MTG is returned.
@@ -254,7 +254,7 @@ class MTG(PropertyTree):
         return list(self.vertices_iter(scale=scale))
 
     def vertices_iter(self, scale = -1):
-        '''
+        r'''
         Return an iterator of the vertices contained in an MTG.
 
         The set of all vertices in the MTG is returned.
@@ -295,7 +295,7 @@ class MTG(PropertyTree):
     # Python Iterator and Container interfaces
     #########################################################################
     def __iter__(self):
-        '''
+        r'''
         Iterable interface.
 
         :Usage:
@@ -309,7 +309,7 @@ class MTG(PropertyTree):
         return self.vertices_iter()
 
     def __contains__(self, vid):
-        '''
+        r'''
         Container interface
 
         :Usage:
@@ -326,7 +326,7 @@ class MTG(PropertyTree):
     # GraphConcept methods.
     #########################################################################
     def has_vertex(self, vid):
-        """
+        r"""
         Tests whether a vertex belongs to the graph.
 
         :Parameters:
@@ -338,7 +338,7 @@ class MTG(PropertyTree):
 
 
     def is_valid(self):
-        """
+        r"""
         Tests the validity of the graph. Currently
         always returns True.
 
@@ -353,7 +353,7 @@ class MTG(PropertyTree):
         return self.iter_edges(scale)
 
     def iter_edges(self, scale=-1):
-        """
+        r"""
         :Parameters:
          - `scale` (int) - Scale at which to iterate.
         :Returns:
@@ -368,7 +368,7 @@ class MTG(PropertyTree):
             return ((parent, child) for child, parent in self._parent.items() if self.scale(parent) == scale)
 
     def edges(self, scale=-1):
-        """
+        r"""
         :Parameters:
          - `scale` (int) - Scale at which to iterate.
         :Returns:
@@ -385,7 +385,7 @@ class MTG(PropertyTree):
     #########################################################################
 
     def add_element(self, parent_id, edge_type = '/', scale_id=None):
-        """
+        r"""
         Add an element to the graph, if vid is not provided create a new vid ???
         .. warning: Not Implemented.
 
@@ -405,7 +405,7 @@ class MTG(PropertyTree):
         raise NotImplementedError
 
     def remove_vertex(self, vid, reparent_child=False):
-        """
+        r"""
         Remove a specified vertex of the graph and
         remove all the edges attached to it.
 
@@ -442,7 +442,7 @@ class MTG(PropertyTree):
             'Use remove_tree instead.'%vid)
 
     def clear(self):
-        """Remove all vertices and edges from the MTG.
+        r"""Remove all vertices and edges from the MTG.
 
         This also removes all vertex properties.
         Don't change references to object such as internal dictionaries.
@@ -467,7 +467,7 @@ class MTG(PropertyTree):
         self._components.clear()
 
     def clear_properties(self, exclude=[]):
-        """Remove all the properties of the MTG.
+        r"""Remove all the properties of the MTG.
 
         :Example:
             .. code-block:: python
@@ -485,7 +485,7 @@ class MTG(PropertyTree):
             del self._properties[k]
 
     def copy(self):
-        """ Return a copy of the graph.
+        r""" Return a copy of the graph.
 
         :Returns:
             - `g` (MTG) - A copy of the MTG
@@ -494,7 +494,7 @@ class MTG(PropertyTree):
         return copy.deepcopy(self)
 
     def roots_iter(self, scale=0):
-        ''' Returns an iterator of the roots of the tree graphs at a given scale.
+        r''' Returns an iterator of the roots of the tree graphs at a given scale.
 
         In an MTG, the MTG root vertex, namely the vertex `g.root`,
         can be decomposed into several, non-connected, tree graphs at a given scale.
@@ -514,7 +514,7 @@ class MTG(PropertyTree):
         return (vid for vid in self.vertices_iter(scale=scale) if self.parent(vid) is None)
 
     def roots(self, scale=0):
-        ''' Returns a list of the roots of the tree graphs at a given scale.
+        r''' Returns a list of the roots of the tree graphs at a given scale.
 
         In an MTG, the MTG root vertex, namely the vertex `g.root`,
         can be decomposed into several, non-connected, tree graphs at a given scale.
@@ -538,7 +538,7 @@ class MTG(PropertyTree):
     # MutableTreeConcept methods.
     #########################################################################
     def add_child(self, parent, child=None, **properties):
-        ''' Add a child to a parent. Child is appended to the parent's child list.
+        r''' Add a child to a parent. Child is appended to the parent's child list.
 
         :Parameters:
          - `parent` (int) - The parent identifier.
@@ -556,7 +556,7 @@ class MTG(PropertyTree):
         return child
 
     def insert_sibling(self, vtx_id1, vtx_id2=None, **properties):
-        '''
+        r'''
         Insert a sibling of vtk_id1. The vertex in inserted before vtx_id1.
 
         :Parameters:
@@ -573,7 +573,7 @@ class MTG(PropertyTree):
         return vtx_id2
 
     def insert_parent(self, vtx_id, parent_id=None, **properties):
-        '''
+        r'''
         Insert parent_id between vtx_id and its actual parent.
         Inherit of the complex of the parent of vtx_id.
 
@@ -597,7 +597,7 @@ class MTG(PropertyTree):
         return parent_id
 
     def replace_parent(self, vtx_id, new_parent_id, **properties):
-        '''
+        r'''
         Change the parent of vtx_id to new_parent_id.
         The new parent of vtx_id is new_parent_id.
         vtx_id and new_parent_id must have the same scale.
@@ -631,7 +631,7 @@ class MTG(PropertyTree):
     #########################################################################
 
     def complex(self, vtx_id):
-        '''
+        r'''
         Returns the complex of `vtx_id`.
 
         :Parameters:
@@ -651,7 +651,7 @@ class MTG(PropertyTree):
         return complex_id
 
     def complex_at_scale(self, vtx_id, scale):
-        '''
+        r'''
         Returns the complex of `vtx_id` at scale `scale`.
 
         :Parameters:
@@ -670,7 +670,7 @@ class MTG(PropertyTree):
         return complex_id
 
     def components_iter(self, vid):
-        '''
+        r'''
         returns a vertex iterator
 
         :param vid: The vertex identifier.
@@ -684,7 +684,7 @@ class MTG(PropertyTree):
                     yield vtx
 
     def components(self, vid):
-        '''
+        r'''
         returns the components of a vertex
 
         :param vid: The vertex identifier.
@@ -694,7 +694,7 @@ class MTG(PropertyTree):
         return list(self.components_iter(vid))
 
     def components_at_scale_iter(self, vid, scale):
-        '''
+        r'''
         returns a vertex iterator
 
         :Parameters:
@@ -714,7 +714,7 @@ class MTG(PropertyTree):
         return gen
 
     def components_at_scale(self, vid, scale):
-        '''
+        r'''
         returns a vertex iterator
 
         :Parameters:
@@ -725,7 +725,7 @@ class MTG(PropertyTree):
         return list(self.components_at_scale_iter(vid, scale))
 
     def component_roots_iter(self, vtx_id):
-        '''Return an iterator of the roots of the tree graphs that compose a vertex.
+        r'''Return an iterator of the roots of the tree graphs that compose a vertex.
         '''
         components = self._components.get(vtx_id,[])
 
@@ -735,12 +735,12 @@ class MTG(PropertyTree):
                 yield ci
 
     def component_roots(self, vtx_id):
-        '''Return the set of roots of the tree graphs that compose a vertex.
+        r'''Return the set of roots of the tree graphs that compose a vertex.
         '''
         return list(self.component_roots_iter(vtx_id))
 
     def component_roots_at_scale_iter(self, vtx_id, scale):
-        '''Return the set of roots of the tree graphs that compose a vertex.
+        r'''Return the set of roots of the tree graphs that compose a vertex.
         '''
         cur_scale = self.scale(vtx_id)
         if scale == -1 or scale == cur_scale+1:
@@ -754,12 +754,12 @@ class MTG(PropertyTree):
             return iter([])
 
     def component_roots_at_scale(self, vtx_id, scale):
-        '''Return the list of roots of the tree graphs that compose a vertex.
+        r'''Return the list of roots of the tree graphs that compose a vertex.
         '''
         return list(self.component_roots_at_scale_iter(vtx_id, scale))
 
     def nb_components(self, vid):
-        '''
+        r'''
         returns the number of components
 
         :Parameters:
@@ -771,7 +771,7 @@ class MTG(PropertyTree):
 
     # mutable
     def add_component(self, complex_id, component_id=None, **properties):
-        '''
+        r'''
         Add a component at the end of the components
 
         :Parameters:
@@ -793,7 +793,7 @@ class MTG(PropertyTree):
         return component_id
 
     def add_child_and_complex(self, parent, child=None, complex=None, **properties):
-        '''
+        r'''
         Add a child at the end of children that belong to an other complex.
 
         :Parameters:
@@ -838,7 +838,7 @@ class MTG(PropertyTree):
 
     def display(self, max_scale=0, display_id=True, display_scale=False,
                 nb_tab=12, **kwds):
-        """ Print an MTG on the console.
+        r""" Print an MTG on the console.
 
         :Optional Parameters:
             - `max_scale`: do not print vertices of scale greater than max_scale
@@ -986,7 +986,7 @@ class MTG(PropertyTree):
 
 
     def reindex(self, mapping=None, copy=False):
-        """ Assign a new identifier to each vertex.
+        r""" Assign a new identifier to each vertex.
 
         This method assigns a new identifier to each vertex of the MTG. The mapping can be user defined or
         is implicit (`mapping`). This method modify the MTG in place or return a new MTG (`copy`).
@@ -1065,7 +1065,7 @@ class MTG(PropertyTree):
             return self
 
     def insert_scale(self, inf_scale=None, partition=None, default_label=None, preserve_order=True):
-        """
+        r"""
         Add a scale to MTG
 
         :Parameters:
@@ -1149,7 +1149,7 @@ class MTG(PropertyTree):
         return fat_mtg(g, preserve_order)
 
     def remove_scale(self, scale):
-        """ Remove all the vertices at a given scale.
+        r""" Remove all the vertices at a given scale.
 
         The upper and lower scale are then connected.
 
@@ -1222,7 +1222,7 @@ class MTG(PropertyTree):
     # Specialised algorithms for aml compatibility.
     #########################################################################
     def order(self, v1):
-        """
+        r"""
         Order of a vertex in a graph.
 
         The order of a vertex in a graph is the number of '+' edges crossed
@@ -1245,7 +1245,7 @@ class MTG(PropertyTree):
         return _order
 
     def edge_type(self, vid):
-        """
+        r"""
         Type of the edge between a vertex and its parent.
 
         The different values are '<' for successor, and '+' for ramification.
@@ -1253,7 +1253,7 @@ class MTG(PropertyTree):
         return self.property('edge_type').get(vid,'')
 
     def label(self, vid):
-        """Label of a vertex.
+        r"""Label of a vertex.
 
         :Usage:
 
@@ -1270,7 +1270,7 @@ class MTG(PropertyTree):
         return self.property('label').get(vid, '')
 
     def class_name(self, vid):
-        """Class of a vertex.
+        r"""Class of a vertex.
 
         The Class of a vertex are the first characters of the label.
         The label of a vertex is the string defined by the concatenation
@@ -1306,7 +1306,7 @@ class MTG(PropertyTree):
                 return ''
 
     def index(self, vid):
-        """
+        r"""
         Index of a vertex
 
         The Index of a vertex is a feature always defined and independent of time
@@ -1332,7 +1332,7 @@ class MTG(PropertyTree):
     # Proxy node interface
     #########################################################################
     def node(self, vid, klass=None):
-        """
+        r"""
         Return a node associated to the vertex `vid`.
 
         It allows to access to the properties with an object oriented interface.
@@ -1364,7 +1364,7 @@ class MTG(PropertyTree):
     #########################################################################
 
     def VtxList(self, Scale=-1):
-        """
+        r"""
         Array of vertices contained in a MTG
 
         The set of all vertices in the :func:`MTG` is returned as an array.
@@ -1400,7 +1400,7 @@ class MTG(PropertyTree):
     Scale = scale
 
     def ClassScale(self, c):
-        """
+        r"""
         Scale at which appears a given class of vertex
 
         Every vertex is associated with a unique class.
@@ -1429,7 +1429,7 @@ class MTG(PropertyTree):
                 return self.scale(x)
 
     def EdgeType(self, v1, v2):
-        """
+        r"""
         Type of connection between two vertices.
 
         Returns the symbol of the type of connection between two vertices (either `<` or `+`).
@@ -1461,7 +1461,7 @@ class MTG(PropertyTree):
         return self.property('edge_type').get(v2)
 
     def Defined(self, vid):
-        """
+        r"""
         Test whether a given vertex belongs to the active MTG.
 
         :Usage:
@@ -1483,7 +1483,7 @@ class MTG(PropertyTree):
         return vid in self
 
     def Rank(self, v1, v2=None):
-        """
+        r"""
         Rank of one vertex with respect to another one.
 
         This function returns the number of consecutive '<'-type edges between two components,
@@ -1515,7 +1515,7 @@ class MTG(PropertyTree):
         return algo.rank(self,v1,v2)
 
     def Height(self, v1, v2=None):
-        """
+        r"""
         Number of components existing between two components in a tree graph.
 
         The height of a vertex (`v2`) with respect to another vertex (`v1`)
@@ -1554,7 +1554,7 @@ class MTG(PropertyTree):
         return algo.height(self, v1, v2)
 
     def AlgOrder(self, v1, v2):
-        """
+        r"""
         Algebraic value defining the relative order of one vertex with respect to another one.
 
         This function is similar to function `Order(v1, v2)` : it returns the number of `+`-type edges
@@ -1588,7 +1588,7 @@ class MTG(PropertyTree):
         return algo.alg_order(self, v1, v2)
 
     def AlgRank(self, v1, v2):
-        """
+        r"""
         Algebraic value defining the relative rank of one vertex with respect to another one.
 
         This function is similar to function `Rank(v1, v2)` : it returns the number of `<`-type edges
@@ -1622,7 +1622,7 @@ class MTG(PropertyTree):
         return algo.alg_rank(self, v1, v2)
 
     def AlgHeight(self, v1, v2):
-        """
+        r"""
         Algebraic value defining the number of components between two components.
 
         This function is similar to function `Height(v1, v2)` : it returns the number of components
@@ -1656,7 +1656,7 @@ class MTG(PropertyTree):
         return algo.alg_height(self, v1, v2)
 
     def Father(self, v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None, Scale = -1):
-        """
+        r"""
         Topological father of a given vertex.
 
         Returns the topological father of a given vertex. And `None` if the father does not exist.
@@ -1730,7 +1730,7 @@ class MTG(PropertyTree):
         return algo.father(self, v, scale=Scale, EdgeType=EdgeType, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
 
     def Successor(self, v, RestrictedTo='NoRestriction', ContainedIn=None):
-        """
+        r"""
         Vertex that is connected to a given vertex by a '<' edge type (i.e. in the same botanical axis).
 
         This function is equivalent to Sons(v, EdgeType='<')[0].
@@ -1778,7 +1778,7 @@ class MTG(PropertyTree):
         return algo.successor(_g, v, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn)
 
     def Predecessor(self, v, **kwds):
-        """
+        r"""
         Father of a vertex connected to it by a '<' edge
 
         This function is equivalent to Father(v, EdgeType-> '<').
@@ -1821,7 +1821,7 @@ class MTG(PropertyTree):
         return self.Father(v, EdgeType='<', **kwds)
 
     def Root(self, v, RestrictedTo='*', ContainedIn=None):
-        """
+        r"""
         Root of the branching system containing a vertex
 
         This function is equivalent to Ancestors(v, EdgeType='<')[-1].
@@ -1865,7 +1865,7 @@ class MTG(PropertyTree):
                          ContainedIn=ContainedIn)
 
     def Complex(self, v, Scale=-1):
-        """
+        r"""
         Complex of a vertex.
 
         Returns the complex of `v`. The complex of a vertex `v` has a scale lower than `v` :
@@ -1908,7 +1908,7 @@ class MTG(PropertyTree):
             return _g.complex_at_scale(v, scale=Scale)
 
     def Sons(self, v, RestrictedTo='NoRestriction', EdgeType='*', Scale=-1, ContainedIn= None):
-        """
+        r"""
         Set of vertices born or preceded by a vertex
 
         The set of sons of a given vertex is returned as an array of vertices.
@@ -1971,7 +1971,7 @@ class MTG(PropertyTree):
                          ContainedIn=ContainedIn)
 
     def Ancestors(self, v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
-        """
+        r"""
         Array of all vertices which are ancestors of a given vertex
 
         This function returns the array of vertices which are located
@@ -2022,7 +2022,7 @@ class MTG(PropertyTree):
                                               ContainedIn=ContainedIn))
 
     def Descendants(self, v, EdgeType='*', RestrictedTo='NoRestriction', ContainedIn=None):
-        """
+        r"""
         Set of vertices in the branching system borne by a vertex.
 
         This function returns the set of descendants of its argument as an array of vertices.
@@ -2073,7 +2073,7 @@ class MTG(PropertyTree):
                                      ContainedIn=ContainedIn))
 
     def Extremities(self, v, RestrictedTo='NoRestriction', ContainedIn=None):
-        """
+        r"""
         Set of vertices that are the extremities of the branching system
         born by a given vertex.
 
@@ -2115,7 +2115,7 @@ class MTG(PropertyTree):
         return list(algo.extremities(self, v, RestrictedTo=RestrictedTo, ContainedIn=ContainedIn))
 
     def Components(self, v, Scale=-1):
-        """
+        r"""
         Set of components of a vertex.
 
         The set of components of a vertex is returned as a list of vertices.
@@ -2159,7 +2159,7 @@ class MTG(PropertyTree):
         return components
 
     def ComponentRoots(self, v, Scale=-1):
-        """
+        r"""
         Set of roots of the tree graphs that compose a vertex
 
         In a MTG, a vertex may have be decomposed into components.
@@ -2212,7 +2212,7 @@ class MTG(PropertyTree):
         return self.component_roots_at_scale(v, scale=Scale)
 
     def Path(self, v1, v2):
-        """
+        r"""
         List of vertices defining the path between two vertices
 
         This function returns the list of vertices defining the path
@@ -2260,7 +2260,7 @@ class MTG(PropertyTree):
         return list(algo.path(self, v1, v2)[0])
 
     def Axis(self, v, Scale=-1):
-        """
+        r"""
         Array of vertices constituting a botanical axis
 
         An axis is a maximal sequence of vertices connected by '<'-type edges.
@@ -2293,7 +2293,7 @@ class MTG(PropertyTree):
         return list(algo.axis(self, v, scale=Scale))
 
     def Trunk(self, v, Scale=-1):
-        """
+        r"""
         List of vertices constituting the bearing botanical axis of a branching system.
 
         Trunk returns the list of vertices representing the botanical axis defined as
@@ -2329,7 +2329,7 @@ class MTG(PropertyTree):
 # Graph generators
 ################################################################################
 def fat_mtg(slim_mtg, preserve_order=False):
-    """
+    r"""
     Compute missing edges at each scales based on the explicit edges
     defines at finer scales and decomposition relationship.
     If preserve_order is True, the order of children at coarsest scales
@@ -2377,7 +2377,7 @@ def fat_mtg(slim_mtg, preserve_order=False):
 
 
 def _compute_missing_edges(mtg, scale, edge_type_property=None):
-    """ Compute missing edges on an incomplete MTG at a given scale.
+    r""" Compute missing edges on an incomplete MTG at a given scale.
 
     This is often usefull to create a minimal MTG with missing edges.
     The missing edges can be computing by using the tree at the finer scale,
@@ -2421,7 +2421,7 @@ def _compute_missing_edges(mtg, scale, edge_type_property=None):
 ################################################################################
 
 def simple_tree(tree, vtx_id, nb_children=3, nb_vertices=20):
-    """ Generate and add a regular tree to an existing one at a given vertex.
+    r""" Generate and add a regular tree to an existing one at a given vertex.
 
     Add a regular tree at a given vertex id position `vtx_id`.
     The length of the sub_tree is `nb_vertices`. Each new vertex has
@@ -2462,7 +2462,7 @@ def simple_tree(tree, vtx_id, nb_children=3, nb_vertices=20):
     return tree
 
 def random_tree(mtg, root, nb_children=3, nb_vertices=20):
-    """ Generate and add a random tree to an existing one.
+    r""" Generate and add a random tree to an existing one.
 
     Add a random sub tree at a given vertex id position `root`.
     The length of the sub_tree is `nb_vertices`.
@@ -2529,7 +2529,7 @@ def random_tree(mtg, root, nb_children=3, nb_vertices=20):
     return l[-1]
 
 def random_mtg(tree, nb_scales):
-    """ Convert a tree into an MTG of `nb_scales`.
+    r""" Convert a tree into an MTG of `nb_scales`.
 
     Add a random sub tree at a given vertex id position `root`.
     The length of the sub_tree is `nb_vertices`. Each new vertex has
@@ -2573,7 +2573,7 @@ def random_mtg(tree, nb_scales):
 
 
 def colored_tree(tree, colors):
-    """
+    r"""
     Compute a mtg from a tree and the list of vertices to be quotiented.
 
     .. note:: The tree has to be a real tree and not an MTG
