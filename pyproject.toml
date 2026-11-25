@@ -1,9 +1,5 @@
 [build-system]
-requires = [
-    "setuptools",
-    "wheel",
-    "setuptools_scm",
-  ]
+requires = ["setuptools", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 # enable dynamic versioning based on git tags
@@ -18,26 +14,22 @@ name = "openalea.mtg"
 dynamic = ["version"]
 description = "Multiscale Tree Graph datastructure and interfaces"
 readme = "README.rst"
-authors = [
-    { name = "Christophe Pradal", email = "christophe.pradal@cirad.fr" }
-]
+authors = [{ name = "Christophe Pradal", email = "christophe.pradal@cirad.fr" }]
 license = "CECILL-C"
 license-files = ["LICEN[CS]E*"]
 classifiers = [
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering",
 ]
 keywords = ["OpenAlea", "MTG", "Plant Architecture", "Tree Graph"]
 
-dependencies = [
-    "pandas"
-]
+dependencies = ["pandas"]
 
 [project.urls]
 Homepage = "http://github.com/openalea/mtg"
@@ -46,13 +38,8 @@ Homepage = "http://github.com/openalea/mtg"
 mtg = "openalea.mtg_wralea"
 
 
-
-
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "path",
-]
+test = ["pytest", "path"]
 doc = [
   "sphinx-favicon",
   "sphinx-rtd-theme",
@@ -66,14 +53,8 @@ doc = [
 # based on astk, used in hydroroot with a meta.yaml that only use metadata from
 # pyproject => only pyproject.toml must be modified
 [tool.conda.environment]
-channels = [
-  "openalea3",
-  "conda-forge"
-]
-dependencies = [
-    "openalea.plantgl",
-    "matplotlib-base",
-]
+channels = ["openalea3", "conda-forge"]
+dependencies = ["openalea.plantgl", "matplotlib-base"]
 
 
 [tool.setuptools.packages.find]
